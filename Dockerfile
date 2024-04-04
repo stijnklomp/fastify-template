@@ -18,4 +18,5 @@ COPY --from=builder --chown=node:node /app/dist/ ./dist/
 COPY --from=builder --chown=node:node /app/node_modules/ ./node_modules/
 EXPOSE 3000
 ENV PORT 3000
+RUN if [ "$NODE_ENV" = "development" ]; then apk --no-cache add curl; fi
 CMD ["node", "dist/app.js"]
