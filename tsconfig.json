@@ -1,12 +1,46 @@
 {
-  "extends": "fastify-tsconfig",
-  "compilerOptions": {
-    "outDir": "dist",
-    "sourceMap": true,
-    "moduleResolution": "NodeNext",
-    "module": "NodeNext",
-    "target": "ES2022",
-    "esModuleInterop": true
-  },
-  "include": ["src/**/*.ts"]
+	"compileOnSave": false,
+	"compilerOptions": {
+		"allowJs": true,
+		"allowSyntheticDefaultImports": true,
+		"baseUrl": ".",
+		"declaration": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"incremental": true,
+		"isolatedModules": true,
+		"lib": ["ESNext"],
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"newLine": "lf",
+		"noFallthroughCasesInSwitch": false,
+		"noImplicitAny": false,
+		"pretty": true,
+		"removeComments": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"sourceMap": true,
+		"strict": true,
+		"strictBindCallApply": true,
+		"strictNullChecks": true,
+		"target": "ES2022",
+		"traceResolution": false,
+		"outDir": "dist"
+	},
+	// "watchOptions": {
+	// 	// Use native file system events for files and directories
+	// 	"watchFile": "useFsEvents",
+	// 	"watchDirectory": "useFsEvents",
+	// 	// Poll files for updates more frequently
+	// 	// when they're updated a lot.
+	// 	"fallbackPolling": "dynamicPriority",
+	// 	// Don't coalesce watch notification
+	// 	"synchronousWatchDirectory": true,
+	// 	// Finally, two additional settings for reducing the amount of possible
+	// 	// files to track  work from these directories
+	// 	"excludeDirectories": ["**/node_modules", "_build"],
+	// 	"excludeFiles": ["build/fileWhichChangesOften.ts"]
+	// },
+	"include": ["src/**/*.ts"],
+	"exclude": ["node_modules", ".husky", "dist", "test", "**/*spec.ts"]
 }

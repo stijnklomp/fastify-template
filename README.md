@@ -1,23 +1,42 @@
-# Getting Started with [Fastify-CLI](https://www.npmjs.com/package/fastify-cli)
-This project was bootstrapped with Fastify-CLI.
+# Fastify template
 
-## Available Scripts
+<p align="center">This project template serves as a starting point for building efficient and scalable server-side applications with <a href="https://fastify.dev/" target="_blank">Fastify</a>, <a href="https://www.typescriptlang.org/" target="_blank">TypeScript</a>, and best practices in place. It comes pre-configured with essential tools to ensure code quality, maintainability, and a streamlined development workflow.</p>
+<p align="center">
+<img src="https://img.shields.io/github/license/stijnklomp/fastify-template?style=flat" alt="Package License" />
+</p>
 
-In the project directory, you can run:
+## Installation
 
-### `npm run dev`
+```sh
+npm install
+```
 
-To start the app in dev mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Running the app
 
-### `npm start`
+```sh
+# development
+npm run dev
 
-For production mode
+# watch mode
+npm run dev:watch
 
-### `npm run test`
+# production mode
+npm run build && npm run start
+```
 
-Run the test cases.
+## Test
 
-## Learn More
+```sh
+# unit tests
+npm run test
 
-To learn Fastify, check out the [Fastify documentation](https://fastify.dev/docs/latest/).
+# e2e tests
+npm run test:e2e
+
+# test coverage
+npm run test:coverage
+```
+
+## License
+
+This project is licensed under the MIT License. Feel free to customize and use it for your own projects.
