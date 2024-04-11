@@ -24,6 +24,19 @@ npm run dev:watch
 npm run build && npm run start
 ```
 
+### With Docker
+
+```sh
+# development
+docker build --target production -t fastify-template-production .
+
+# watch mode
+npm run dev:watch
+
+# production mode
+npm run build && npm run start
+```
+
 ## Test
 
 ```sh

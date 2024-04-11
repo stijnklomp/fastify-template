@@ -41,6 +41,6 @@
 	// 	"excludeDirectories": ["**/node_modules", "_build"],
 	// 	"excludeFiles": ["build/fileWhichChangesOften.ts"]
 	// },
-	"include": ["src/**/*.ts"],
+	"include": ["src/**/*.ts", "schemas/**/*.ts"],
 	"exclude": ["node_modules", ".husky", "dist", "test", "**/*spec.ts"]
 }

@@ -3,9 +3,11 @@
 		"@fastify/autoload": "^5.8.0",
 		"@fastify/helmet": "^11.1.1",
 		"@fastify/sensible": "^5.5.0",
+		"ajv": "^8.12.0",
 		"fastify": "^4.26.2",
 		"fastify-cli": "^6.1.1",
-		"fastify-plugin": "^4.5.1"
+		"fastify-plugin": "^4.5.1",
+		"fluent-json-schema": "^4.2.1"
 	},
 	"description": "",
 	"devDependencies": {
@@ -42,18 +44,19 @@
 	"name": "fastify-template",
 	"private": false,
 	"scripts": {
-		"build": "rm -rf dist ; tsc",
+		"build": "rm -rf dist ; tsc --project tsconfig.production.json",
+		"build:dev": "rm -rf dist ; tsc",
 		"format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-		"start": "fastify start -l info dist/app.js",
-		"dev:start": "fastify start --ignore-watch=.ts$ -w -l info -P dist/app.js",
-		"dev": "npm run build && npm run start",
-		"dev:watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:build -- -w\" \"(npm run build && npm run dev:start)\"",
+		"start": "fastify start -l info dist/src/app.js",
+		"dev:start": "fastify start --ignore-watch=.ts$ -w -l info -P dist/src/app.js",
+		"dev": "npm run build:dev && npm run start",
+		"dev:watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:build:dev -- -w\" \"(npm run build:dev && npm run dev:start)\"",
 		"lint": "eslint .",
 		"test": "jest .",
 		"test:coverage": "npm run test -- --coverage",
 		"ci:test:coverage": "npm run test:coverage -- --coverageReporters=cobertura --passWithNoTests",
 		"test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/jest/bin/jest --runInBand",
-		"prepare": "husky install"
+		"prepare": "husky init"
 	},
 	"type": "module",
 	"version": "1.0.0"
