@@ -1,0 +1,24 @@
+version: "3.1"
+
+services:
+  local:
+    build:
+      context: .
+    ports:
+      - "3000:3000"
+    network_mode: "host"
+    tty: true
+    profiles:
+      - local
+  dev:
+    image: node:20-alpine
+    ports:
+      - "3000:3000"
+    network_mode: "host"
+    volumes:
+      - ".:/src"
+    working_dir: "/src"
+    command: /bin/sh -c "[ ! -d node_modules ] && npm ci ; npm run dev:watch"
+    tty: true
+    profiles:
+      - dev
