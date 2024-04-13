@@ -14,39 +14,41 @@ npm install
 ## Running the app
 
 ```sh
-# development
+# Development
 npm run dev
 
-# watch mode
+# Watch mode
 npm run dev:watch
 
-# production mode
+# Production mode
 npm run build && npm run start
 ```
 
 ### With Docker
 
 ```sh
-# development
-docker build --target production -t fastify-template-production .
+docker build -t fastify-template . && docker run fastify-template
+```
 
-# watch mode
-npm run dev:watch
+### With Docker Compose
 
-# production mode
-npm run build && npm run start
+```sh
+# There are multiple profiles that can be run
+# dev -> Mounts the current directory to the container and runs the service in watch mode
+# local -> Builds and runs the application image from the current code
+docker compose --profile=PROFILE up --build
 ```
 
 ## Test
 
 ```sh
-# unit tests
+# Unit tests
 npm run test
 
-# e2e tests
+# E2e tests
 npm run test:e2e
 
-# test coverage
+# Test coverage
 npm run test:coverage
 ```
 

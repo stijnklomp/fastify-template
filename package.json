@@ -56,7 +56,7 @@
 		"test:coverage": "npm run test -- --coverage",
 		"ci:test:coverage": "npm run test:coverage -- --coverageReporters=cobertura --passWithNoTests",
 		"test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/jest/bin/jest --runInBand",
-		"prepare": "husky init"
+		"prepare": "husky"
 	},
 	"type": "module",
 	"version": "1.0.0"
