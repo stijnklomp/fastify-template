@@ -1,10 +1,8 @@
 import { FastifyPluginAsync } from "fastify"
 
-const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
-	// eslint-disable-next-line prefer-arrow-callback
-	fastify.get("/", async function (request, reply) {
-		return { root: true }
-	})
+// eslint-disable-next-line @typescript-eslint/require-await
+const root: FastifyPluginAsync = async (fastify): Promise<void> => {
+	fastify.get("/", () => ({ root: true }))
 }
 
 export default root

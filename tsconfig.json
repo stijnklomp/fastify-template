@@ -15,6 +15,18 @@
 		"newLine": "lf",
 		"noFallthroughCasesInSwitch": false,
 		"noImplicitAny": false,
+		"paths": {
+			"@/controllers/*": ["controllers/*"],
+			"@/plugins/*": ["plugins/*"],
+			"@/repositories/*": ["repositories/*"],
+			"@/routes/*": ["routes/*"],
+			"@/serializers/*": ["models/serializers/*"],
+			"@/services/*": ["services/*"],
+			"@/src/*": ["src/*"],
+			"@/test/*": ["test/*"],
+			"@/types/*": ["models/types/*"],
+			"@/validators/*": ["models/validators/*"]
+		},
 		"pretty": true,
 		"removeComments": true,
 		"resolveJsonModule": true,
