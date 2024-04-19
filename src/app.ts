@@ -47,9 +47,10 @@ import Fastify, { FastifyRequest, FastifyReply } from "fastify"
 import AutoLoad from "@fastify/autoload"
 import path from "path"
 
-import { logger } from "/@lib/"
-import { cache, queue } from "/@adapters/"
-import prisma from "./utils/prisma"
+import { logger } from "/@lib"
+import { logger as test } from "src/lib"
+import { cache, queue } from "/@adapters"
+import { prisma } from "@/utils"
 
 const fastify = Fastify({
 	logger: {

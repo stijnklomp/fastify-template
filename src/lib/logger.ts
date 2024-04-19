@@ -1,4 +1,3 @@
-;("use strict")
 import winston from "winston"
 
 const colorizer = winston.format.colorize()

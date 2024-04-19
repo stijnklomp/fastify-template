@@ -1,9 +1,9 @@
 import { FastifyInstance } from "fastify"
-import { createNoteHandler, getNotesHandler } from "@/src/controllers/note"
+import { createNoteHandler, getNotesHandler } from "@/controllers"
 import {
 	createNoteValidationSchema,
 	getNotesValidationSchema,
-} from "@/src/dto/request/note"
+} from "@/src/models/validators/index"
 
 export default (fastify: FastifyInstance) => {
 	fastify.route({

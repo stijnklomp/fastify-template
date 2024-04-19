@@ -1,8 +1,8 @@
 import { FastifyReply, FastifyRequest } from "fastify"
 import { logger } from "@/lib/logger"
 
-import { CREATE_NOTE_TYPE, GET_NOTE_TYPE } from "@/types/note"
-import { noteService } from "@/services/note"
+import { CREATE_NOTE_TYPE, GET_NOTE_TYPE } from "@/types/"
+import { noteService } from "@/services/"
 
 export const createNoteHandler = async (
 	req: FastifyRequest<{
