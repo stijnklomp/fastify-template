@@ -5,7 +5,7 @@ import {
 	getNotesValidationSchema,
 } from "@/src/dto/request/note"
 
-module.exports = async function (fastify: FastifyInstance) {
+export default (fastify: FastifyInstance) => {
 	fastify.route({
 		method: "GET",
 		url: "/",

@@ -47,8 +47,8 @@ import Fastify, { FastifyRequest, FastifyReply } from "fastify"
 import AutoLoad from "@fastify/autoload"
 import path from "path"
 
-import { logger } from "./lib/logger"
-import { adapters } from "./adapters"
+import { logger } from "/@lib/"
+import { cache, queue } from "/@adapters/"
 import prisma from "./utils/prisma"
 
 const fastify = Fastify({
@@ -94,8 +94,8 @@ const start = async () => {
 			port: process.env.PORT,
 			host: "0.0.0.0",
 		})
-		await adapters().cache.primary.init()
-		await adapters().queue.init()
+		await cache.primary.init()
+		await queue.init()
 		prisma
 			.$connect()
 			.then(() => {
