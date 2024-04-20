@@ -1,12 +1,12 @@
-import { adapters } from "../adapters"
+import { sendToEvent, subscribe } from "@/adapters/rabbitMQ"
 
 const rabbitMQService = {
-	sendToEvent: async (payload: Object) => {
-		const result = await adapters().queue.sendToEvent(payload)
+	sendToEvent: (payload: object) => {
+		const result = sendToEvent(payload)
+
 		return result
 	},
-	subscribeToEvent: (q: string, listener: Function) =>
-		adapters().queue.subscribe(q, listener),
+	subscribeToEvent: (q: string, listener: Function) => subscribe(q, listener),
 }
 
 export default rabbitMQService

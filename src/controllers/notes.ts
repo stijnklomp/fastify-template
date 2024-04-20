@@ -1,25 +1,27 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { FastifyReply, FastifyRequest } from "fastify"
 
 import { logger } from "@/lib/logger"
-import { createNote, getNote } from "@/types"
-import { noteService } from "@/services"
+import { CreateNote, GetNote } from "@/serializers/notes"
+import { createNoteService, getNotesService } from "@/services/notes"
 
 export const createNoteHandler = async (
 	req: FastifyRequest<{
-		Body: createNote
+		Body: CreateNote
 	}>,
 	res: FastifyReply,
 ) => {
 	try {
-		const note = await noteService.createNote(req.body)
+		const note = await createNoteService(req.body)
 
-		res.code(200).send({
+		await res.code(200).send({
 			message: "Note Created",
 			note,
 		})
 	} catch (err) {
 		logger.error(err)
-		res.code(500).send({
+		await res.code(500).send({
 			message: "Internal Server Error",
 		})
 	}
@@ -27,19 +29,19 @@ export const createNoteHandler = async (
 
 export const getNotesHandler = async (
 	req: FastifyRequest<{
-		Querystring: getNote
+		Querystring: GetNote
 	}>,
 	res: FastifyReply,
 ) => {
 	try {
-		const notes = await noteService.getNotes(req.query)
+		const notes = await getNotesService(req.query)
 
-		res.code(201).send({
+		await res.code(201).send({
 			notes,
 		})
 	} catch (err) {
 		logger.error(err)
-		res.code(500).send({
+		await res.code(500).send({
 			message: "Internal Server Error",
 		})
 	}

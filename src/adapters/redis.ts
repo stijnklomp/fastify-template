@@ -1,7 +1,12 @@
-import { createClient } from "redis"
-import { logger } from "../lib/logger"
+import { RedisModules } from "@redis/client/dist/lib/commands"
+import { createClient, RedisClientType } from "redis"
 
-export const redis = async () => {
+import { logger } from "@/lib/logger"
+
+type ClientType = RedisClientType<RedisModules, any, any>
+let redisClient: ClientType | undefined
+
+export const createClientConnection = async () => {
 	const client = createClient({
 		socket: {
 			host: process.env.REDIS_HOST,
@@ -22,4 +27,16 @@ export const redis = async () => {
 	await client.connect()
 
 	return client
+}
+
+export const init = async () => {
+	redisClient = await createClientConnection()
+
+	return redisClient
+}
+
+export const getPrimary = () => {
+	if (!redisClient) throw new Error("Redis client not initialized")
+
+	return redisClient
 }

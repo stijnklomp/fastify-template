@@ -3,8 +3,9 @@ import {
 	createExchange,
 	sendToExchange,
 	consume,
-} from "@/lib/RabbitMQ"
-import { logger } from "../lib/logger"
+	ConsumeCallback,
+} from "@/lib/rabbitMQ"
+import { logger } from "@/lib/logger"
 
 const Exchanges = {
 	event: "x-test-event",
@@ -37,13 +38,13 @@ export const init = async () => {
 	}
 }
 
-export const sendToEvent = async (payload: Object) => {
+export const sendToEvent = (payload: object) => {
 	const exchange = Exchanges.event
-	const routing_key = RoutingKeys.x_event
+	const routingKey = RoutingKeys.x_event
 
-	await sendToExchange(exchange, routing_key, payload)
+	sendToExchange(exchange, routingKey, payload)
 }
 
-export const subscribe = (q: string, listener: Function) => {
+export const subscribe = (q: string, listener: ConsumeCallback) => {
 	consume(q, listener)
 }
