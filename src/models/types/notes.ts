@@ -1,9 +1,9 @@
-export type CREATE_NOTE_TYPE = {
+export type CreateNote = {
 	owner: string
 	note: string
 }
 
-export type GET_NOTE_TYPE = {
+export type GetNote = {
 	page: number
 	perPage: number
 }

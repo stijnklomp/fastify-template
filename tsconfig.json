@@ -43,7 +43,8 @@
 			"@/types/*": ["src/models/types/*"],
 			"@/utils": ["src/utils"],
 			"@/utils/*": ["src/utils/*"],
-			"@/validators": ["src/models/validators"]
+			"@/validators": ["src/models/validators"],
+			"@/validators/*": ["src/models/validators/*"]
 		},
 		"pretty": true,
 		"removeComments": true,

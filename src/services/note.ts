@@ -1,8 +1,9 @@
-import { CREATE_NOTE_TYPE, GET_NOTE_TYPE } from "../dto/request/note"
-import { noteRepository } from "../repositories/"
+import { createNote, getNote } from "@/types/notes"
+import {
+	createNote as repoCreateNote,
+	getNotes as repoGetNotes,
+} from "@/repositories"
 
-export const createNote = async (data: CREATE_NOTE_TYPE) =>
-	await noteRepository.createNote(data)
+export const createNote = async (data: createNote) => await repoCreateNote(data)
 
-export const getNotes = async (data: GET_NOTE_TYPE) =>
-	await noteRepository.getNotes(data)
+export const getNotes = async (data: getNote) => await repoGetNotes(data)

@@ -1,9 +1,13 @@
 import { FastifyInstance } from "fastify"
 import { createNoteHandler, getNotesHandler } from "@/controllers"
+// import {
+// 	createNoteValidationSchema,
+// 	getNotesValidationSchema,
+// } from "@/src/models/validators/index"
 import {
 	createNoteValidationSchema,
 	getNotesValidationSchema,
-} from "@/src/models/validators/index"
+} from "@/validators"
 
 export default (fastify: FastifyInstance) => {
 	fastify.route({
@@ -12,9 +16,9 @@ export default (fastify: FastifyInstance) => {
 		schema: {
 			querystring: getNotesValidationSchema,
 		},
-		validatorCompiler: ({ schema }: any) => {
-			return (data) => schema.validate(data)
-		},
+		// validatorCompiler: ({ schema }: any) => {
+		// 	return (data) => schema.validate(data)
+		// },
 		handler: getNotesHandler,
 	})
 
@@ -24,9 +28,9 @@ export default (fastify: FastifyInstance) => {
 		schema: {
 			body: createNoteValidationSchema,
 		},
-		validatorCompiler: ({ schema }: any) => {
-			return (data) => schema.validate(data)
-		},
+		// validatorCompiler: ({ schema }: any) => {
+		// 	return (data) => schema.validate(data)
+		// },
 		handler: createNoteHandler,
 	})
 }
