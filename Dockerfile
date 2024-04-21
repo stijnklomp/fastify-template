@@ -16,5 +16,6 @@ ENV PORT 3000
 WORKDIR /app
 COPY --from=deps --chown=node:node /app/package.json ./
 COPY --from=builder --chown=node:node /app/dist/ ./dist/
+COPY --from=builder --chown=node:node ./node_modules/@fastify/swagger-ui/static ./dist/static
 EXPOSE 3000
 CMD ["npm", "run", "start"]

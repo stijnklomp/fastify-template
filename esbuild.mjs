@@ -2,7 +2,26 @@ import path from "node:path"
 import { cp } from "node:fs/promises"
 import * as esbuild from "esbuild"
 import esbuildPluginPino from "esbuild-plugin-pino"
-import serve from '@es-exec/esbuild-plugin-serve'
+import serve from "@es-exec/esbuild-plugin-serve"
+import fs from "fs"
+// import path from "path"
+import { createRequire } from "module"
+
+/**
+ * Get"s the file path to a module folder.
+ * @param {string} moduleEntry
+ * @param {string} fromFile
+ */
+const getModuleDir = (moduleEntry) => {
+    const packageName = moduleEntry.includes("/")
+        ? moduleEntry.startsWith("@")
+            ? moduleEntry.split("/").slice(0, 2).join("/")
+            : moduleEntry.split("/")[0]
+        : moduleEntry;
+    const require = createRequire(import.meta.url);
+    const lookupPaths = require.resolve.paths(moduleEntry).map((p) => path.join(p, packageName));
+    return lookupPaths.find((p) => fs.existsSync(p));
+};
 
 /** esbuild plugin to copy static folder to outdir */
 function esbuildPluginFastifySwaggerUi() {
@@ -10,9 +29,7 @@ function esbuildPluginFastifySwaggerUi() {
 		name: "@fastify/swagger-ui",
 		setup(build) {
 			const { outdir } = build.initialOptions
-			const fastifySwaggerUi = path.dirname(
-				require.resolve("@fastify/swagger-ui"),
-			)
+			const fastifySwaggerUi = getModuleDir("@fastify/swagger-ui");
 			const source = path.join(fastifySwaggerUi, "static")
 			const dest = path.join(outdir, "static")
 
@@ -36,7 +53,7 @@ void (async function () {
 		tsconfig: "tsconfig.production.json",
 		plugins: [
 			esbuildPluginPino({ transports: ["pino-pretty"] }),
-			// esbuildPluginFastifySwaggerUi(),
+			esbuildPluginFastifySwaggerUi(),
 		],
 	}
 	const args = process.argv.slice(2)
