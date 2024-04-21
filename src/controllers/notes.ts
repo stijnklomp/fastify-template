@@ -46,3 +46,8 @@ export const getNotesHandler = async (
 		})
 	}
 }
+
+export default {
+	createNoteHandler,
+	getNotesHandler,
+}

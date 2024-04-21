@@ -1,4 +1,4 @@
-import { CreateNote, GetNote } from "/@serializers/notes"
+import { CreateNote, GetNote } from "@/serializers/notes"
 import { prisma } from "@/utils/prisma"
 
 export const createNoteRepository = async (data: CreateNote) =>
@@ -13,3 +13,8 @@ export const getNotesRepository = async (data: GetNote) =>
 		skip: data.page - 1,
 		take: data.perPage,
 	}) as Promise<any>
+
+export default {
+	createNoteRepository,
+	getNotesRepository,
+}

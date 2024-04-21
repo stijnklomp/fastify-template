@@ -1,5 +1,5 @@
 import {
-	initRabbitMQ,
+	init as createConnection,
 	createExchange,
 	sendToExchange,
 	consume,
@@ -22,7 +22,7 @@ const Queues = {
 
 export const init = async () => {
 	try {
-		await initRabbitMQ()
+		await createConnection()
 
 		// Initiate Exhcanges and Queues To Recieve Event Stream
 		await createExchange(
@@ -34,6 +34,7 @@ export const init = async () => {
 		)
 	} catch (err: any) {
 		logger.error("Error Initializing RabbitMQ: ", err)
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 		throw new Error(err)
 	}
 }
@@ -45,6 +46,12 @@ export const sendToEvent = (payload: object) => {
 	sendToExchange(exchange, routingKey, payload)
 }
 
-export const subscribe = (q: string, listener: ConsumeCallback) => {
-	consume(q, listener)
+export const subscribe = async (q: string, listener: ConsumeCallback) => {
+	await consume(q, listener)
+}
+
+export default {
+	init,
+	sendToEvent,
+	subscribe,
 }

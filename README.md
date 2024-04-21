@@ -8,15 +8,12 @@
 ## Installation
 
 ```sh
-npm install
+npm ci
 ```
 
 ## Running the app
 
 ```sh
-# Development
-npm run dev
-
 # Watch mode
 npm run dev:watch
 

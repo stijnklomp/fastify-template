@@ -8,3 +8,8 @@ export const createNoteService = async (data: CreateNote) =>
 export const getNotesService = async (data: GetNote) =>
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 	await getNotesRepository(data)
+
+export default {
+	createNoteService,
+	getNotesService,
+}

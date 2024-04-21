@@ -6,7 +6,7 @@ import { logger } from "@/lib/logger"
 type ClientType = RedisClientType<RedisModules, any, any>
 let redisClient: ClientType | undefined
 
-export const createClientConnection = async () => {
+const createClientConnection = async () => {
 	const client = createClient({
 		socket: {
 			host: process.env.REDIS_HOST,
@@ -39,4 +39,9 @@ export const getPrimary = () => {
 	if (!redisClient) throw new Error("Redis client not initialized")
 
 	return redisClient
+}
+
+export default {
+	init,
+	getPrimary,
 }

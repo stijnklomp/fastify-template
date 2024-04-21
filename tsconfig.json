@@ -42,7 +42,7 @@
 		"strict": true,
 		"strictBindCallApply": true,
 		"strictNullChecks": true,
-		"target": "ES2022",
+		"target": "ESNext",
 		"traceResolution": false,
 		"types": ["node", "jest"],
 		"outDir": "dist"
@@ -61,6 +61,11 @@
 	// 	"excludeDirectories": ["**/node_modules", "_build"],
 	// 	"excludeFiles": ["build/fileWhichChangesOften.ts"]
 	// },
-	"include": ["src/**/*.ts", "schemas/**/*.ts", ".eslintrc.cjs"],
+	"include": [
+		"src/**/*.ts",
+		"schemas/**/*.ts",
+		".eslintrc.cjs",
+		"esbuild.ts"
+	],
 	"exclude": ["node_modules", ".husky", "dist", "test", "**/*spec.ts"]
 }

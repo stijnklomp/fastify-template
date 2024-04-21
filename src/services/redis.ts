@@ -1,25 +1,31 @@
-import { adapters } from "@/adapters/"
+import { getPrimary } from "@/adapters/redis"
 
-const redisService = {
-	getRedisClient: () => adapters().cache.primary.getPrimary(),
-	setInRedis: async (key: string, value: string) => {
-		const redis = redisService.getRedisClient()
-		const set = await redis.set(key, value)
+export const getRedisClient = () => getPrimary()
 
-		return set
-	},
-	getFromRedis: async (key: string) => {
-		const redis = redisService.getRedisClient()
-		const set = await redis.get(key)
+export const setInRedis = async (key: string, value: string) => {
+	const redis = getRedisClient()
+	const set = await redis.set(key, value)
 
-		return set
-	},
-	deleteInRedis: async (key: string) => {
-		const redis = redisService.getRedisClient()
-		const set = await redis.del(key)
-
-		return set
-	},
+	return set
 }
 
-export default redisService
+export const getFromRedis = async (key: string) => {
+	const redis = getRedisClient()
+	const set = await redis.get(key)
+
+	return set
+}
+
+export const deleteInRedis = async (key: string) => {
+	const redis = getRedisClient()
+	const set = await redis.del(key)
+
+	return set
+}
+
+export default {
+	getRedisClient,
+	setInRedis,
+	getFromRedis,
+	deleteInRedis,
+}

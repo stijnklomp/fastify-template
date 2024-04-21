@@ -7,7 +7,5 @@ import fp from "fastify-plugin"
  * @see https://github.com/fastify/fastify-cors
  */
 module.exports = fp(async (fastify: FastifyInstance) => {
-	// await fastify.register(require("@fastify/cors"))
-
 	await fastify.register(import("@fastify/cors"))
 })

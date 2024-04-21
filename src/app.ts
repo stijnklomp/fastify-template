@@ -1,56 +1,14 @@
-// import * as path from "path"
-// import AutoLoad, { AutoloadPluginOptions } from "@fastify/autoload"
-// import { FastifyPluginAsync } from "fastify"
-// import helmet from "@fastify/helmet"
-// import { fileURLToPath } from "url"
-
-// const __filename = fileURLToPath(import.meta.url)
-// const __dirname = path.dirname(__filename)
-
-// export type AppOptions = {
-// 	// Place your custom options for app below here.
-// } & Partial<AutoloadPluginOptions>
-
-// // Pass --options via CLI arguments in command to enable these options.
-// const options: AppOptions = {}
-
-// const app: FastifyPluginAsync<AppOptions> = async (
-// 	fastify,
-// 	opts,
-// ): Promise<void> => {
-// 	void fastify.register(helmet)
-
-// 	// Do not touch the following lines
-
-// 	// This loads all plugins defined in plugins
-// 	// those should be support plugins that are reused
-// 	// through your application
-// 	// void fastify.register(AutoLoad, {
-// 	// 	dir: path.join(__dirname, "plugins"),
-// 	// 	options: opts,
-// 	// 	forceESM: true,
-// 	// })
-
-// 	// This loads all plugins defined in routes
-// 	// define your routes in one of these
-// 	void fastify.register(AutoLoad, {
-// 		dir: path.join(__dirname, "routes"),
-// 		options: opts,
-// 		forceESM: true,
-// 	})
-// }
-
-// export default app
-// export { app, options }
-
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import Fastify, { FastifyRequest, FastifyReply } from "fastify"
-import AutoLoad from "@fastify/autoload"
-import path from "path"
+// import AutoLoad from "@fastify/autoload"
+// import path from "path"
 
-import { logger } from "/@lib"
-import { logger as test } from "src/lib"
-import { cache, queue } from "/@adapters"
-import { prisma } from "@/utils"
+// import { logger } from "@/lib/logger"
+// import rabbitMQ from "@/adapters/rabbitMQ"
+// import redis from "@/adapters/redis"
+// import { prisma } from "@/utils/prisma"
 
 const fastify = Fastify({
 	logger: {
@@ -81,30 +39,33 @@ const fastify = Fastify({
 	},
 })
 
-void fastify.register(AutoLoad, {
-	dir: path.join(__dirname, "plugins"),
-})
+// void fastify.register(AutoLoad, {
+// 	dir: path.join(__dirname, "plugins"),
+// })
 
-void fastify.register(AutoLoad, {
-	dir: path.join(__dirname, "routes"),
-})
+// void fastify.register(AutoLoad, {
+// 	dir: path.join(__dirname, "routes"),
+// })
+fastify.get("/", () => ({ hello: "world" }))
 
 const start = async () => {
 	try {
+		const port = Number(process.env.PORT ?? 3000)
 		await fastify.listen({
-			port: process.env.PORT,
+			port,
 			host: "0.0.0.0",
 		})
-		await cache.primary.init()
-		await queue.init()
-		prisma
-			.$connect()
-			.then(() => {
-				logger.info("Testing DB Connection. OK")
-				prisma.$disconnect()
-			})
-			.catch(() => logger.error("Can't Connect to DB"))
-		logger.info(`Server listening on port ${process.env.PORT}`)
+		// await rabbitMQ.init()
+		// await redis.init()
+		// prisma
+		// 	.$connect()
+		// 	.then(() => {
+		// 		logger.info("Testing DB Connection. OK")
+		// 		prisma.$disconnect()
+		// 	})
+		// 	.catch(() => logger.error("Can't Connect to DB"))
+		// logger.info(`Server listening on port ${port}`)
+		console.log(`Server listening on port ${port}`)
 	} catch (err) {
 		fastify.log.error(err)
 		process.exit(1)

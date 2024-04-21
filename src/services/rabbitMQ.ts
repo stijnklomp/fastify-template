@@ -1,12 +1,19 @@
-import { sendToEvent, subscribe } from "@/adapters/rabbitMQ"
+import { ConsumeCallback } from "@/lib/rabbitMQ"
+import {
+	sendToEvent as sendToEventAdapter,
+	subscribe,
+} from "@/adapters/rabbitMQ"
 
-const rabbitMQService = {
-	sendToEvent: (payload: object) => {
-		const result = sendToEvent(payload)
+export const sendToEvent = (payload: object) => {
+	const result = sendToEventAdapter(payload)
 
-		return result
-	},
-	subscribeToEvent: (q: string, listener: Function) => subscribe(q, listener),
+	return result
 }
 
-export default rabbitMQService
+export const subscribeToEvent = (q: string, listener: ConsumeCallback) =>
+	subscribe(q, listener)
+
+export default {
+	sendToEvent,
+	subscribeToEvent,
+}

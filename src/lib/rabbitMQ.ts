@@ -5,7 +5,7 @@ const { RABBIT_HOST, RABBIT_USER, RABBIT_PASS, RABBIT_PORT } = process.env
 
 let channel: Channel | undefined
 
-export const initRabbitMQ = async () => {
+export const init = async () => {
 	const CONN_URL = `${process.env.RABBIT_TRANSPORT}://${RABBIT_USER}:${RABBIT_PASS}@${RABBIT_HOST}:${RABBIT_PORT}`
 
 	try {
@@ -94,4 +94,13 @@ export const sendToExchange = (
 			contentType: "application/json",
 		},
 	)
+}
+
+export default {
+	init,
+	send,
+	consume,
+	close,
+	createExchange,
+	sendToExchange,
 }
