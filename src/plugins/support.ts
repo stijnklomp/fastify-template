@@ -6,8 +6,11 @@ export interface SupportPluginOptions {
 
 // The use of fastify-plugin is required to be able
 // to export the decorators to the outer scope
-export default fp<SupportPluginOptions>((fastify) => {
+export default fp<SupportPluginOptions>((fastify, _options, done) => {
+	console.log("beginning of support plugin")
 	fastify.decorate("someSupport", () => "hugs")
+	console.log("end of support plugin")
+	done()
 })
 
 // When using .decorate you have to specify added properties for Typescript

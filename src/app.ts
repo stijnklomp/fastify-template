@@ -2,11 +2,13 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import Fastify, { FastifyRequest, FastifyReply } from "fastify"
-// import AutoLoad from "@fastify/autoload"
+import autoLoad from "@fastify/autoload"
 // import path from "path"
 import FastifySwagger from "@fastify/swagger"
 import FastifySwaggerUI from "@fastify/swagger-ui"
-// import path from "node:path"
+import path from "node:path"
+import plugins from "@/plugins/index"
+// import support from "@/plugins/support"
 
 // import { logger } from "@/lib/logger"
 // import rabbitMQ from "@/adapters/rabbitMQ"
@@ -14,22 +16,10 @@ import FastifySwaggerUI from "@fastify/swagger-ui"
 // import { prisma } from "@/utils/prisma"
 
 const fastify = Fastify({
-	logger: {
-		transport: {
-			target: "pino-pretty",
-			options: {
-				translateTime: "HH:MM:ss Z",
-				ignore: "pid,hostname",
-			},
-		},
-	},
-	// serializerOpts: {
-	// 	res(reply: FastifyReply) {
-	// 		return {
-	// 			statusCode: reply.statusCode,
-	// 		}
-	// 	},
+	// logger: {
 	// 	req(req: FastifyRequest) {
+	// 		console.log("serializerOpts")
+
 	// 		return {
 	// 			method: req.method,
 	// 			url: req.url,
@@ -39,7 +29,22 @@ const fastify = Fastify({
 	// 			headers: req.headers,
 	// 		}
 	// 	},
+	// 	res(reply: FastifyReply) {
+	// 		return {
+	// 			statusCode: reply.statusCode,
+	// 		}
+	// 	},
+	// 	// transport: {
+	// 	// 	target: "pino-pretty",
+	// 	// 	options: {
+	// 	// 		translateTime: "HH:MM:ss Z",
+	// 	// 		ignore: "pid,hostname",
+	// 	// 	},
+	// 	// },
 	// },
+	serializerOpts: {
+		rounding: "trunc", // Same as default but set for clarity
+	},
 })
 
 void fastify.register(FastifySwagger, {
@@ -89,13 +94,11 @@ void fastify.register(FastifySwagger, {
 })
 
 void fastify.register(FastifySwaggerUI, {
-	// exposeRoute: true,
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	// baseDir: path.resolve("static"),
-	baseDir: "/home/stijn/developer/personal/fastify-template/dist/static",
-	routePrefix: "/documentation",
+	// baseDir: "/home/stijn/developer/personal/fastify-template/dist/static",
+	baseDir: path.resolve("dist/static"),
+	routePrefix: "/docs",
 	uiConfig: {
-		docExpansion: "full",
+		docExpansion: "list",
 		deepLinking: false,
 	},
 	uiHooks: {
@@ -115,11 +118,24 @@ void fastify.register(FastifySwaggerUI, {
 	transformSpecificationClone: true,
 })
 
-// void fastify.register(AutoLoad, {
-// 	dir: path.join(__dirname, "plugins"),
+console.log("path.resolve('src/plugins'):", path.resolve("src/plugins"))
+console.log("__dirname:", __dirname)
+
+for (const property in plugins) {
+	void fastify.register(plugins[property])
+}
+
+// void fastify.register(autoLoad, {
+// 	// dir: path.resolve("src/plugins"),
+// 	dir: "/home/stijn/developer/personal/fastify-template/dist/plugins",
+// 	// dir: path.join(__dirname, "plugins"),
+// 	// dir: join(dirName, "plugins"),
+// 	// dir: path.join(__dirname, "plugins"),
 // })
 
-// void fastify.register(AutoLoad, {
+// void fastify.register(support)
+
+// void fastify.register(autoLoad, {
 // 	dir: path.join(__dirname, "routes"),
 // })
 
@@ -143,70 +159,9 @@ void fastify.register((app, options, done) => {
 	done()
 })
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-// void fastify.register((app, options, done) => {
-// 	app.route({
-// 		method: "PUT",
-// 		url: "/test",
-// 		schema: {
-// 			description: "post some data",
-// 			tags: ["user", "code"],
-// 			summary: "qwerty",
-// 			security: [{ apiKey: [] }],
-// 			params: {
-// 				type: "object",
-// 				properties: {
-// 					id: {
-// 						type: "string",
-// 						description: "user id",
-// 					},
-// 				},
-// 			},
-// 			body: {
-// 				type: "object",
-// 				properties: {
-// 					hello: { type: "string" },
-// 					obj: {
-// 						type: "object",
-// 						properties: {
-// 							some: { type: "string" },
-// 						},
-// 					},
-// 				},
-// 			},
-// 			response: {
-// 				201: {
-// 					description: "Successful response",
-// 					type: "object",
-// 					properties: {
-// 						hello: { type: "string" },
-// 					},
-// 				},
-// 				default: {
-// 					description: "Default response",
-// 					type: "object",
-// 					properties: {
-// 						foo: { type: "string" },
-// 					},
-// 				},
-// 			},
-// 		},
-// 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-// 		// (req, reply) => ({
-// 		// 	hello: "world",
-// 		// }),
-// 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-// 		handler: async (req, res) => {
-// 			await res.send({
-// 				message: "Done",
-// 			})
-// 			// done()
-// 		},
-// 	})
-// })
-
 const start = async () => {
 	try {
+		console.log("before listen")
 		const port = Number(process.env.PORT ?? 3000)
 		await fastify.listen({
 			port,

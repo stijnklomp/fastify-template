@@ -8,7 +8,7 @@ import fs from "fs"
 import { createRequire } from "module"
 
 /**
- * Get"s the file path to a module folder.
+ * Retrieve the file path to a module folder
  * @param {string} moduleEntry
  * @param {string} fromFile
  */
@@ -23,7 +23,9 @@ const getModuleDir = (moduleEntry) => {
     return lookupPaths.find((p) => fs.existsSync(p));
 };
 
-/** esbuild plugin to copy static folder to outdir */
+/**
+ * ESBuild plugin to copy static folder to outdir
+ */
 function esbuildPluginFastifySwaggerUi() {
 	return {
 		name: "@fastify/swagger-ui",
