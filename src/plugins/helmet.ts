@@ -6,11 +6,10 @@ import helmet from "@fastify/helmet"
  *
  * @see https://github.com/fastify/fastify-helmet
  */
-export default fp<object>(async (fastify, _options, done) => {
-	console.log("beginning of helmet plugin")
+export default fp(async (fastify) => {
+	console.log("before helmet")
 	await fastify.register(helmet, {
 		crossOriginResourcePolicy: false,
 	})
-	console.log("end of helmet plugin")
-	done()
+	console.log("after helmet")
 })

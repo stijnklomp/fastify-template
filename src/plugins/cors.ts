@@ -6,9 +6,6 @@ import cors from "@fastify/cors"
  *
  * @see https://github.com/fastify/fastify-cors
  */
-export default fp<object>(async (fastify, _options, done) => {
-	console.log("beginning of cors plugin")
+export default fp(async (fastify) => {
 	await fastify.register(cors)
-	console.log("end of cors plugin")
-	done()
 })

@@ -5,10 +5,16 @@ import { createNoteHandler, getNotesHandler } from "@/controllers/notes"
 // 	getNotesValidationSchema,
 // } from "@/validators/notes"
 
-export default (fastify: FastifyInstance) => {
+// export default (
+// 	fastify: FastifyInstance,
+// 	_options: RegisterOptions,
+// 	done: DoneFuncWithErrOrRes,
+// ) => {
+
+export default async (fastify: FastifyInstance) => {
 	fastify.route({
 		method: "GET",
-		url: "/",
+		url: "/notes",
 		// schema: {
 		// 	querystring: getNotesValidationSchema,
 		// },
@@ -20,7 +26,7 @@ export default (fastify: FastifyInstance) => {
 
 	fastify.route({
 		method: "POST",
-		url: "/",
+		url: "/notes",
 		// schema: {
 		// 	body: createNoteValidationSchema,
 		// },

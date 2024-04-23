@@ -6,9 +6,6 @@ import sensible, { SensibleOptions } from "@fastify/sensible"
  *
  * @see https://github.com/fastify/fastify-sensible
  */
-export default fp<SensibleOptions>(async (fastify, _options, done) => {
-	console.log("beginning of sensible plugin")
+export default fp<SensibleOptions>(async (fastify) => {
 	await fastify.register(sensible)
-	console.log("end of sensible plugin")
-	done()
 })

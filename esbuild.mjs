@@ -4,6 +4,7 @@ import * as esbuild from "esbuild"
 import esbuildPluginPino from "esbuild-plugin-pino"
 import serve from "@es-exec/esbuild-plugin-serve"
 import fs from "fs"
+import { glob } from "glob"
 // import path from "path"
 import { createRequire } from "module"
 
@@ -41,8 +42,10 @@ function esbuildPluginFastifySwaggerUi() {
 }
 
 void (async function () {
+	const tsfiles = await glob("src/**/*.ts")
+
 	const options = {
-		entryPoints: ["src/app.ts"],
+		entryPoints: tsfiles,
 		logLevel: "info",
 		outdir: "dist",
 		bundle: true,
