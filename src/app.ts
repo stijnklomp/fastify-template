@@ -1,4 +1,5 @@
 import Fastify, { FastifyRequest, FastifyReply } from "fastify"
+import { JsonSchemaToTsProvider } from "@fastify/type-provider-json-schema-to-ts"
 import autoLoad from "@fastify/autoload"
 import FastifySwagger from "@fastify/swagger"
 import FastifySwaggerUI from "@fastify/swagger-ui"
@@ -61,7 +62,7 @@ const fastify = Fastify({
 	genReqId: () => {
 		return hyperid({ fixedLength: true, urlSafe: true })()
 	},
-})
+}).withTypeProvider<JsonSchemaToTsProvider>()
 
 void fastify.register(FastifySwagger, {
 	openapi: {
