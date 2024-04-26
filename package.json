@@ -11,6 +11,7 @@
 		"fastify": "^4.26.2",
 		"fastify-plugin": "^4.5.1",
 		"fluent-json-schema": "^4.2.1",
+		"hyperid": "^3.2.0",
 		"redis": "^4.6.13",
 		"winston": "^3.13.0"
 	},
@@ -43,6 +44,7 @@
 		"jest-junit": "^16.0.0",
 		"jsonc-eslint-parser": "^2.4.0",
 		"module": "^1.2.5",
+		"pino-pretty": "^11.0.0",
 		"prettier": "^3.2.5",
 		"prisma": "^5.12.1",
 		"stijnklomp-linting-formatting-config": "^6.8.0",
