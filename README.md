@@ -42,11 +42,11 @@ docker compose --profile=PROFILE up --build
 # Unit tests
 npm run test
 
-# E2e tests
-npm run test:e2e
-
 # Test coverage
 npm run test:coverage
+
+# E2e tests
+npm run test:e2e
 ```
 
 ## License
