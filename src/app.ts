@@ -1,14 +1,68 @@
-import Fastify from "fastify"
+import Fastify, { FastifyRequest, FastifyReply } from "fastify"
+import { JsonSchemaToTsProvider } from "@fastify/type-provider-json-schema-to-ts"
 import autoLoad from "@fastify/autoload"
 import FastifySwagger from "@fastify/swagger"
 import FastifySwaggerUI from "@fastify/swagger-ui"
 import path from "path"
+import hyperid from "hyperid"
+
+const envToLogger = {
+	development: {
+		redact: ["req.headers.authorization"],
+		serializers: {
+			req: (req: FastifyRequest) => ({
+				method: req.method,
+				url: req.url,
+				protocol: req.protocol,
+				path: req.routerPath,
+				ip: req.ip,
+				ips: req.ips,
+				parameters: req.params,
+				headers: req.headers, // Including the headers in the log could be in violation of privacy laws, e.g. GDPR. It could also leak authentication data in the logs. It should not be saved
+			}),
+			res: (rep: FastifyReply) => ({
+				statusCode: rep.statusCode,
+				headers:
+					typeof rep.getHeaders === "function"
+						? rep.getHeaders()
+						: {},
+			}),
+		},
+		transport: {
+			target: "pino-pretty",
+			options: {
+				translateTime: "HH:MM:ss Z",
+				ignore: "pid,hostname",
+			},
+		},
+	},
+	production: {
+		redact: ["req.headers"],
+		serializers: {
+			req: (req: FastifyRequest) => {
+				return {
+					method: req.method,
+					url: req.url,
+					path: req.routerPath,
+					parameters: req.params,
+				}
+			},
+		},
+	},
+	test: false,
+}
+const logsEnvironment =
+	(process.env.LOGS as keyof typeof envToLogger | undefined) ?? "production"
 
 const fastify = Fastify({
 	serializerOpts: {
 		rounding: "trunc", // Same as default but set for clarity
 	},
-})
+	logger: envToLogger[logsEnvironment],
+	genReqId: () => {
+		return hyperid({ fixedLength: true, urlSafe: true })()
+	},
+}).withTypeProvider<JsonSchemaToTsProvider>()
 
 void fastify.register(FastifySwagger, {
 	openapi: {
@@ -64,17 +118,17 @@ void fastify.register(FastifySwaggerUI, {
 		deepLinking: false,
 	},
 	uiHooks: {
-		onRequest: function (request, reply, next) {
+		onRequest: function (req, reply, next) {
 			next()
 		},
-		preHandler: function (request, reply, next) {
+		preHandler: function (req, reply, next) {
 			next()
 		},
 	},
 	staticCSP: true,
 	transformStaticCSP: (header) => header,
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	transformSpecification: (swaggerObject, request, reply) => {
+	transformSpecification: (swaggerObject, req, reply) => {
 		return swaggerObject
 	},
 	transformSpecificationClone: true,
@@ -106,7 +160,7 @@ const start = async () => {
 		// 	})
 		// 	.catch(() => logger.error("Can't Connect to DB"))
 		// logger.info(`Server listening on port ${port}`)
-		console.log(`Server listening on port ${port}`)
+		// fastify.log.info(`Server listening on port ${port}`)
 	} catch (err) {
 		fastify.log.error(err)
 		process.exit(1)

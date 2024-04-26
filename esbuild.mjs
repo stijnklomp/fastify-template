@@ -57,7 +57,7 @@ void (async function () {
 		sourcemap: false,
 		tsconfig: "tsconfig.production.json",
 		plugins: [
-			esbuildPluginPino({ transports: ["pino-pretty"] }),
+			esbuildPluginPino({ transports: ["pino-pretty"] }), // DOES THIS NEED TO BE HERE FOR PRODUCTION? OR IS IT ONLY NECESSARY FOR DEVELOPMENT?
 			esbuildPluginFastifySwaggerUi(),
 		],
 	}

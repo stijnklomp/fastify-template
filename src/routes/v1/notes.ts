@@ -1,4 +1,4 @@
-import { FastifyInstance } from "fastify"
+import { FastifyTypebox } from "@/src/models/types/fastifyModules"
 import { createNoteHandler, getNotesHandler } from "@/controllers/notes"
 // import {
 // 	createNoteValidationSchema,
@@ -11,7 +11,7 @@ import { createNoteHandler, getNotesHandler } from "@/controllers/notes"
 // 	done: DoneFuncWithErrOrRes,
 // ) => {
 
-export default async (fastify: FastifyInstance) => {
+export default async (fastify: FastifyTypebox) => {
 	fastify.route({
 		method: "GET",
 		url: "/notes",
