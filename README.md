@@ -8,32 +8,44 @@
 ## Installation
 
 ```sh
-npm install
+npm ci
 ```
 
 ## Running the app
 
 ```sh
-# development
-npm run dev
-
-# watch mode
+# Watch mode
 npm run dev:watch
 
-# production mode
+# Production mode
 npm run build && npm run start
+```
+
+### With Docker
+
+```sh
+docker build -t fastify-template . && docker run fastify-template
+```
+
+### With Docker Compose
+
+```sh
+# There are multiple profiles that can be run
+# dev -> Mounts the current directory to the container and runs the service in watch mode
+# local -> Builds and runs the application image from the current code
+docker compose --profile=PROFILE up --build
 ```
 
 ## Test
 
 ```sh
-# unit tests
+# Unit tests
 npm run test
 
-# e2e tests
+# E2e tests
 npm run test:e2e
 
-# test coverage
+# Test coverage
 npm run test:coverage
 ```
 

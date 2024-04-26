@@ -10,21 +10,40 @@
 		"incremental": true,
 		"isolatedModules": true,
 		"lib": ["ESNext"],
-		"module": "NodeNext",
-		"moduleResolution": "NodeNext",
+		"listEmittedFiles": false,
+		"listFiles": false,
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
 		"newLine": "lf",
 		"noFallthroughCasesInSwitch": false,
 		"noImplicitAny": false,
+		"noUnusedLocals": false,
+		"noUnusedParameters": false,
+		"paths": {
+			"@/adapters/*": ["src/adapters/*"],
+			"@/controllers/*": ["src/controllers/*"],
+			"@/lib/*": ["src/lib/*"],
+			"@/repositories/*": ["src/repositories/*"],
+			"@/serializers/*": ["src/models/serializers/*"],
+			"@/services/*": ["src/services/*"],
+			"@/src/*": ["src/*"],
+			"@/test/*": ["src/test/*"],
+			"@/types/*": ["src/models/types/*"],
+			"@/utils/*": ["src/utils/*"],
+			"@/validators/*": ["src/models/validators/*"]
+		},
 		"pretty": true,
 		"removeComments": true,
 		"resolveJsonModule": true,
+		// "rootDir": ".",
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"strict": true,
 		"strictBindCallApply": true,
 		"strictNullChecks": true,
-		"target": "ES2022",
+		"target": "ESNext",
 		"traceResolution": false,
+		"types": ["node", "jest"],
 		"outDir": "dist"
 	},
 	// "watchOptions": {
@@ -41,6 +60,11 @@
 	// 	"excludeDirectories": ["**/node_modules", "_build"],
 	// 	"excludeFiles": ["build/fileWhichChangesOften.ts"]
 	// },
-	"include": ["src/**/*.ts"],
+	"include": [
+		"src/**/*.ts",
+		"schemas/**/*.ts",
+		".eslintrc.cjs",
+		"esbuild.ts"
+	],
 	"exclude": ["node_modules", ".husky", "dist", "test", "**/*spec.ts"]
 }

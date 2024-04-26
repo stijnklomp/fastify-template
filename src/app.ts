@@ -1,44 +1,116 @@
-import * as path from "path"
-import AutoLoad, { AutoloadPluginOptions } from "@fastify/autoload"
-import { FastifyPluginAsync } from "fastify"
-import helmet from "@fastify/helmet"
-import { fileURLToPath } from "url"
+import Fastify from "fastify"
+import autoLoad from "@fastify/autoload"
+import FastifySwagger from "@fastify/swagger"
+import FastifySwaggerUI from "@fastify/swagger-ui"
+import path from "path"
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const fastify = Fastify({
+	serializerOpts: {
+		rounding: "trunc", // Same as default but set for clarity
+	},
+})
 
-export type AppOptions = {
-	// Place your custom options for app below here.
-} & Partial<AutoloadPluginOptions>
+void fastify.register(FastifySwagger, {
+	openapi: {
+		openapi: "3.1.0",
+		info: {
+			title: "Test swagger",
+			description: "Testing the Fastify swagger API",
+			version: "0.1.0",
+		},
+		servers: [
+			{
+				url: "http://localhost:3000",
+				description: "Development server",
+			},
+		],
+		tags: [
+			{ name: "user", description: "User related end-points" },
+			{ name: "code", description: "Code related end-points" },
+		],
+		components: {
+			securitySchemes: {
+				apiKey: {
+					type: "apiKey",
+					name: "apiKey",
+					in: "header",
+				},
+			},
+		},
+		externalDocs: {
+			url: "https://swagger.io",
+			description: "Find more info here",
+		},
+	},
+	swagger: {
+		info: {
+			title: "My Title",
+			description: "My Description.",
+			version: "1.0.0",
+		},
+		host: "localhost",
+		schemes: ["http", "https"],
+		consumes: ["application/json"],
+		produces: ["application/json"],
+		tags: [{ name: "Default", description: "Default" }],
+	},
+})
 
-// Pass --options via CLI arguments in command to enable these options.
-const options: AppOptions = {}
+void fastify.register(FastifySwaggerUI, {
+	baseDir: path.resolve("dist/static"),
+	routePrefix: "/docs",
+	uiConfig: {
+		docExpansion: "list",
+		deepLinking: false,
+	},
+	uiHooks: {
+		onRequest: function (request, reply, next) {
+			next()
+		},
+		preHandler: function (request, reply, next) {
+			next()
+		},
+	},
+	staticCSP: true,
+	transformStaticCSP: (header) => header,
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	transformSpecification: (swaggerObject, request, reply) => {
+		return swaggerObject
+	},
+	transformSpecificationClone: true,
+})
 
-const app: FastifyPluginAsync<AppOptions> = async (
-	fastify,
-	opts,
-): Promise<void> => {
-	void fastify.register(helmet)
+void fastify.register(autoLoad, {
+	dir: path.join(__dirname, "/plugins"),
+})
 
-	// Do not touch the following lines
+void fastify.register(autoLoad, {
+	dir: path.join(__dirname, "/routes"),
+	dirNameRoutePrefix: true, // Same as default but set for clarity
+})
 
-	// This loads all plugins defined in plugins
-	// those should be support plugins that are reused
-	// through your application
-	// void fastify.register(AutoLoad, {
-	// 	dir: path.join(__dirname, "plugins"),
-	// 	options: opts,
-	// 	forceESM: true,
-	// })
-
-	// This loads all plugins defined in routes
-	// define your routes in one of these
-	void fastify.register(AutoLoad, {
-		dir: path.join(__dirname, "routes"),
-		options: opts,
-		forceESM: true,
-	})
+const start = async () => {
+	try {
+		const port = Number(process.env.PORT ?? 3000)
+		await fastify.listen({
+			port,
+			host: "0.0.0.0",
+		})
+		// await rabbitMQ.init()
+		// await redis.init()
+		// prisma
+		// 	.$connect()
+		// 	.then(() => {
+		// 		logger.info("Testing DB Connection. OK")
+		// 		prisma.$disconnect()
+		// 	})
+		// 	.catch(() => logger.error("Can't Connect to DB"))
+		// logger.info(`Server listening on port ${port}`)
+		console.log(`Server listening on port ${port}`)
+	} catch (err) {
+		fastify.log.error(err)
+		process.exit(1)
+	}
 }
 
-export default app
-export { app, options }
+void start()
