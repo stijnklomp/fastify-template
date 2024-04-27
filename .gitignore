@@ -42,20 +42,13 @@ profile-*
 # mac files
 .DS_Store
 
-# vim swap files
-*.swp
-
-# webstorm
-.idea
-
-# vscode
-.vscode
-*code-workspace
-
 # clinic
 profile*
 *clinic*
 *flamegraph*
+
+# environment files
+.env
 
 # generated code
 examples/typescript-server.js

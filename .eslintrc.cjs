@@ -10,6 +10,7 @@ module.exports = {
 		"./node_modules/stijnklomp-linting-formatting-config/typescript/typescriptRules.js",
 		"prettier",
 	],
+	ignorePatterns: ["esbuild.mjs"],
 	overrides: [
 		{
 			files: ["*.json", "*.json5", "*.jsonc"],

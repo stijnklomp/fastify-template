@@ -35,7 +35,6 @@
 		"pretty": true,
 		"removeComments": true,
 		"resolveJsonModule": true,
-		// "rootDir": ".",
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"strict": true,
@@ -60,11 +59,6 @@
 	// 	"excludeDirectories": ["**/node_modules", "_build"],
 	// 	"excludeFiles": ["build/fileWhichChangesOften.ts"]
 	// },
-	"include": [
-		"src/**/*.ts",
-		"schemas/**/*.ts",
-		".eslintrc.cjs",
-		"esbuild.ts"
-	],
+	"include": ["src/**/*.ts", "schemas/**/*.ts", ".eslintrc.cjs"],
 	"exclude": ["node_modules", ".husky", "dist", "test", "**/*spec.ts"]
 }
