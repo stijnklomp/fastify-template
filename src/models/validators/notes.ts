@@ -1,13 +1,15 @@
-import S from "fluent-json-schema"
-
-export const createNoteValidationSchema = {
-	body: S.object()
-		.prop("owner", S.string().maxLength(100).required())
-		.prop("note", S.string().maxLength(300).required()),
-}
+import { Type } from "@sinclair/typebox"
 
 export const getNotesValidationSchema = {
-	query: S.object()
-		.prop("page", S.number().required())
-		.prop("perPage", S.number().maximum(100).required()),
+	querystring: Type.Object({
+		page: Type.Number(),
+		perPAge: Type.Number({ maximum: 100 }),
+	}),
+}
+
+export const createNoteValidationSchema = {
+	body: Type.Object({
+		owner: Type.String({ maxLength: 100 }),
+		note: Type.String({ maxLength: 300 }),
+	}),
 }
