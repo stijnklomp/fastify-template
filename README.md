@@ -18,8 +18,8 @@ Create a `.env` file in the root directory if one does not already exist and cop
 ## Running the app
 
 ```sh
-# Watch mode
-npm run dev:watch
+# Development in watch mode
+npm run dev
 
 # Production mode
 npm run build && npm run start
