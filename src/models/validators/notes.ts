@@ -3,7 +3,7 @@ import { Type } from "@sinclair/typebox"
 export const getNotesValidationSchema = {
 	querystring: Type.Object({
 		page: Type.Number(),
-		perPAge: Type.Number({ maximum: 100 }),
+		perPage: Type.Number({ maximum: 100 }),
 	}),
 }
 

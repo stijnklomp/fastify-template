@@ -5,10 +5,10 @@ import {
 } from "@/validators/notes"
 import { logger } from "@/lib/logger"
 import { createNoteService, getNotesService } from "@/services/notes"
-import { RequestSchemaTypes } from "@/types/fastifyModules"
+import { FastifyRequestSchemaTypes } from "@/src/models/types/schemaBuilderTypeExtractor"
 
 export const getNotesHandler = async (
-	req: RequestSchemaTypes<typeof getNotesValidationSchema>,
+	req: FastifyRequestSchemaTypes<typeof getNotesValidationSchema>,
 	res: FastifyReply,
 ) => {
 	try {
@@ -26,7 +26,7 @@ export const getNotesHandler = async (
 }
 
 export const createNoteHandler = async (
-	req: RequestSchemaTypes<typeof createNoteValidationSchema>,
+	req: FastifyRequestSchemaTypes<typeof createNoteValidationSchema>,
 	res: FastifyReply,
 ) => {
 	try {

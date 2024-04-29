@@ -1,13 +1,17 @@
-import { CreateNote, GetNote } from "@/serializers/notes"
+import { StaticRequestSchemaTypes } from "@/types/schemaBuilderTypeExtractor"
+import {
+	getNotesValidationSchema,
+	createNoteValidationSchema,
+} from "@/validators/notes"
 import { getNotesRepository, createNoteRepository } from "@/repositories/notes"
 
-export const getNotesService = async (data: GetNote) =>
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-	await getNotesRepository(data)
+export const getNotesService = async (
+	data: StaticRequestSchemaTypes<typeof getNotesValidationSchema>,
+) => await getNotesRepository(data.querystring)
 
-export const createNoteService = async (data: CreateNote) =>
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-	await createNoteRepository(data)
+export const createNoteService = async (
+	data: StaticRequestSchemaTypes<typeof createNoteValidationSchema>,
+) => await createNoteRepository(data.body)
 
 export default {
 	getNotesService,
