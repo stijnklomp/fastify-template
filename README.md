@@ -11,6 +11,10 @@
 npm ci
 ```
 
+## Prerequisites
+
+Create a `.env` file in the root directory if one does not already exist and copy the contents of the desired environment file over (`.env.development` or `.env.production`)
+
 ## Running the app
 
 ```sh

@@ -1,38 +1,22 @@
-import { FastifyTypebox } from "@/src/models/types/fastifyModules"
 import { createNoteHandler, getNotesHandler } from "@/controllers/notes"
-// import {
-// 	createNoteValidationSchema,
-// 	getNotesValidationSchema,
-// } from "@/validators/notes"
+import {
+	createNoteValidationSchema,
+	getNotesValidationSchema,
+} from "@/validators/notes"
+import { FastifyInstance } from "fastify"
 
-// export default (
-// 	fastify: FastifyInstance,
-// 	_options: RegisterOptions,
-// 	done: DoneFuncWithErrOrRes,
-// ) => {
-
-export default async (fastify: FastifyTypebox) => {
+export default async (fastify: FastifyInstance) => {
 	fastify.route({
 		method: "GET",
 		url: "/notes",
-		// schema: {
-		// 	querystring: getNotesValidationSchema,
-		// },
-		// validatorCompiler: ({ schema }: any) => {
-		// 	return (data) => schema.validate(data)
-		// },
+		schema: getNotesValidationSchema,
 		handler: getNotesHandler,
 	})
 
 	fastify.route({
 		method: "POST",
 		url: "/notes",
-		// schema: {
-		// 	body: createNoteValidationSchema,
-		// },
-		// validatorCompiler: ({ schema }: any) => {
-		// 	return (data) => schema.validate(data)
-		// },
+		schema: createNoteValidationSchema,
 		handler: createNoteHandler,
 	})
 }
