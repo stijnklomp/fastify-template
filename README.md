@@ -13,7 +13,7 @@ npm ci
 
 ## Prerequisites
 
-Create a `.env` file in the root directory if one does not already exist and copy the contents of the desired environment file over (`.env.development` or `.env.production`)
+Create a `.env` file in the root directory if one does not already exist and copy the contents of the desired environment file over. (`.env.development` or `.env.production`)
 
 ## Running the app
 
@@ -40,9 +40,13 @@ docker build -t fastify-template . && docker run fastify-template
 docker compose --profile=PROFILE up --build
 ```
 
-### API endpoints documentation
+#### Database
 
-Once the app is running, documentation will be available by going to `API_URL:PORT/docs`.
+The database can be accessed via a browser by navigating to `API_URL:8080` when running Docker Compose with the `dev` profile.
+
+## Endpoints documentation (API specification)
+
+Once the app is running, documentation will be available at `API_URL:PORT/docs`.
 
 ## Test
 
@@ -53,7 +57,7 @@ npm run test
 # Test coverage
 npm run test:coverage
 
-# E2e tests
+# E2E tests
 npm run test:e2e
 ```
 

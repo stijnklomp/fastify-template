@@ -11,7 +11,6 @@ services:
       LOGS: "development"
     depends_on:
       - db
-      - adminer
     profiles:
       - local
   dev:
@@ -30,10 +29,6 @@ services:
     depends_on:
       - db
       - adminer
-      # db:
-      #   condition: service_started
-      # adminer:
-      #   condition: service_started
     profiles:
       - dev
 
@@ -49,8 +44,11 @@ services:
     #    tmpfs:
     #      size: 134217728 # 128*2^20 bytes = 128Mb
     environment:
-      POSTGRES_USERNAME: main
+      POSTGRES_USER: main
       POSTGRES_PASSWORD: example
+      POSTGRES_DB: main
+    ports:
+      - 5432:5432
 
   adminer:
     image: adminer
