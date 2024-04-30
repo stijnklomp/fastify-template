@@ -44,6 +44,8 @@ docker compose --profile=PROFILE up --build
 
 The database can be accessed via a browser by navigating to `API_URL:8080` when running Docker Compose with the `dev` profile.
 
+Note that you may need to run `npx prisma migrate dev --name init` in your terminal if you haven't initialized the database.
+
 ## Endpoints documentation (API specification)
 
 Once the app is running, documentation will be available at `API_URL:PORT/docs`.
