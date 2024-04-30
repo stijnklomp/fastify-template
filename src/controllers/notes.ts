@@ -12,7 +12,7 @@ export const getNotesHandler = async (
 	res: FastifyReply,
 ) => {
 	try {
-		const notes = await getNotesService(req.query)
+		const notes = await getNotesService({ ...req.query }) // look into why `req.query` returns `OI <[Object: null prototype] {}> { page: 1, perPage: 10 }` instead of `{ page: 1, perPage: 10 }`
 
 		await res.code(201).send({
 			notes,
@@ -30,7 +30,7 @@ export const createNoteHandler = async (
 	res: FastifyReply,
 ) => {
 	try {
-		const note = await createNoteService(req.body)
+		const note = await createNoteService({ ...req.body }) // needs looking at
 
 		await res.code(200).send({
 			message: "Note Created",

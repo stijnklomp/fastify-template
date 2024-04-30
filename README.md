@@ -40,6 +40,10 @@ docker build -t fastify-template . && docker run fastify-template
 docker compose --profile=PROFILE up --build
 ```
 
+### API endpoints documentation
+
+Once the app is running, documentation will be available by going to `API_URL:PORT/docs`.
+
 ## Test
 
 ```sh

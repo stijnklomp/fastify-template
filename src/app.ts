@@ -13,7 +13,7 @@ const envToLogger = {
 				method: req.method,
 				url: req.url,
 				protocol: req.protocol,
-				path: req.routerPath,
+				path: req.routeOptions.url,
 				ip: req.ip,
 				ips: req.ips,
 				parameters: req.params,
