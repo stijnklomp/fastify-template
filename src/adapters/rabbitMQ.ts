@@ -33,7 +33,6 @@ export const init = async () => {
 			undefined,
 		)
 	} catch (err: any) {
-		logger.error("Error Initializing RabbitMQ: ", err)
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 		throw new Error(err)
 	}

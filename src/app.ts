@@ -5,6 +5,10 @@ import FastifySwaggerUI from "@fastify/swagger-ui"
 import path from "path"
 import hyperid from "hyperid"
 
+import { init as initRedis } from "@/adapters/redis"
+import { init as initRabbitMQ } from "@/adapters/rabbitMQ"
+import { prisma } from "@/utils/prisma"
+
 const envToLogger = {
 	development: {
 		redact: ["req.headers.authorization"],
@@ -144,22 +148,21 @@ void fastify.register(autoLoad, {
 
 const start = async () => {
 	try {
-		const port = Number(process.env.PORT ?? 3000)
+		await initRedis()
+		await initRabbitMQ()
+		const port = Number(process.env.API_PORT ?? 3000)
 		await fastify.listen({
 			port,
 			host: "0.0.0.0",
 		})
-		// await rabbitMQ.init()
-		// await redis.init()
-		// prisma
-		// 	.$connect()
-		// 	.then(() => {
-		// 		logger.info("Testing DB Connection. OK")
-		// 		prisma.$disconnect()
-		// 	})
-		// 	.catch(() => logger.error("Can't Connect to DB"))
-		// logger.info(`Server listening on port ${port}`)
-		// fastify.log.info(`Server listening on port ${port}`)
+		await prisma
+			.$connect()
+			.then(async () => {
+				fastify.log.info("Database connection healthy")
+				await prisma.$disconnect()
+			})
+			.catch(() => fastify.log.error("Can't connect to DB"))
+		fastify.log.info(`Server listening on port ${port}`)
 	} catch (err) {
 		fastify.log.error(err)
 		process.exit(1)
