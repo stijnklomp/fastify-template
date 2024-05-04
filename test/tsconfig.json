@@ -2,7 +2,21 @@
 	"extends": "../tsconfig.json",
 	"compilerOptions": {
 		"baseUrl": ".",
-		"noEmit": false
+		"noEmit": false,
+		"paths": {
+			"@/adapters/*": ["../src/adapters/*"],
+			"@/controllers/*": ["../src/controllers/*"],
+			"@/lib/*": ["../src/lib/*"],
+			"@/repositories/*": ["../src/repositories/*"],
+			"@/serializers/*": ["../src/models/serializers/*"],
+			"@/services/*": ["../src/services/*"],
+			"@/src/*": ["../src/*"],
+			"@/test/*": ["../src/test/*"],
+			"@/types/*": ["../src/models/types/*"],
+			"@/utils/*": ["../src/utils/*"],
+			"@/validators/*": ["../src/models/validators/*"]
+		}
 	},
-	"include": ["../src/**/*.ts", "**/*.ts"]
+	"include": ["../src/**/*.ts", "**/*.ts"],
+	"exclude": ["../node_modules", "../.husky", "../dist", "**/*spec.ts"]
 }

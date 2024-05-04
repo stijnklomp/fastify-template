@@ -5,7 +5,6 @@ import {
 	consume,
 	ConsumeCallback,
 } from "@/lib/rabbitMQ"
-import { logger } from "@/lib/logger"
 
 const Exchanges = {
 	event: "x-test-event",

@@ -1,3 +1,43 @@
+const typescriptFileRules = {
+	"@typescript-eslint/naming-convention": [
+		"error",
+		{
+			selector: "variable",
+			format: ["camelCase", "PascalCase", "UPPER_CASE"],
+			leadingUnderscore: "allow",
+		},
+		{
+			selector: "function",
+			format: ["camelCase", "PascalCase"],
+		},
+		{
+			selector: "typeLike",
+			format: ["PascalCase"],
+		},
+	],
+	"no-unused-vars": "off",
+	"@typescript-eslint/no-unused-vars": [
+		"error",
+		{ varsIgnorePattern: "^_", argsIgnorePattern: "^_" },
+	],
+	"prettier/prettier": 2,
+	quotes: ["error", "double"],
+	semi: [
+		"error",
+		"never",
+		{ beforeStatementContinuationChars: "always" },
+	],
+	"@stylistic/no-multiple-empty-lines": [
+		"error",
+		{ max: 1, maxBOF: 0, maxEOF: 0 },
+	],
+	"@typescript-eslint/interface-name-prefix": "off",
+	"@typescript-eslint/explicit-function-return-type": "off",
+	"@typescript-eslint/explicit-module-boundary-types": "off",
+	"@typescript-eslint/no-explicit-any": "off",
+	"@typescript-eslint/require-await": "off",
+}
+
 module.exports = {
 	env: {
 		jest: true,
@@ -15,59 +55,37 @@ module.exports = {
 		{
 			files: ["*.json", "*.json5", "*.jsonc"],
 			parser: "jsonc-eslint-parser",
+			parserOptions: {
+				project: "./tsconfig.json",
+			},
 			rules: {
 				"@typescript-eslint/no-unnecessary-condition": "off",
 			},
 		},
 		{
-			files: ["*.ts"],
+			files: ["src/**/*.ts"],
 			parser: "@typescript-eslint/parser",
 			parserOptions: {
 				project: "./tsconfig.json",
 				sourceType: "module",
 				tsconfigRootDir: __dirname,
 			},
-			rules: {
-				"@typescript-eslint/naming-convention": [
-					"error",
-					{
-						selector: "variable",
-						format: ["camelCase", "PascalCase", "UPPER_CASE"],
-						leadingUnderscore: "allow",
-					},
-					{
-						selector: "function",
-						format: ["camelCase", "PascalCase"],
-					},
-					{
-						selector: "typeLike",
-						format: ["PascalCase"],
-					},
-				],
-				"no-unused-vars": "off",
-				"@typescript-eslint/no-unused-vars": [
-					"error",
-					{ varsIgnorePattern: "^_", argsIgnorePattern: "^_" },
-				],
-				"prettier/prettier": 2,
-				quotes: ["error", "double"],
-				semi: [
-					"error",
-					"never",
-					{ beforeStatementContinuationChars: "always" },
-				],
-				"@stylistic/no-multiple-empty-lines": [
-					"error",
-					{ max: 1, maxBOF: 0, maxEOF: 0 },
-				],
-				"@typescript-eslint/interface-name-prefix": "off",
-				"@typescript-eslint/explicit-function-return-type": "off",
-				"@typescript-eslint/explicit-module-boundary-types": "off",
-				"@typescript-eslint/no-explicit-any": "off",
-				"@typescript-eslint/require-await": "off",
+			rules: typescriptFileRules,
+		},
+		{
+			files: ["test/**/*.ts"],
+			parser: "@typescript-eslint/parser",
+			parserOptions: {
+				project: "./tsconfig.json",
+				sourceType: "module",
+				tsconfigRootDir: `${__dirname}/test`,
 			},
+			rules: typescriptFileRules,
 		},
 	],
+	parserOptions: {
+		project: "./tsconfig.json",
+	},
 	plugins: ["@typescript-eslint", "prettier", "@stylistic"],
 	root: true,
 	settings: {
