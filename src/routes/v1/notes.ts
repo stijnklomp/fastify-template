@@ -1,7 +1,7 @@
 import { createNoteHandler, getNotesHandler } from "@/controllers/notes"
 import {
-	createNoteValidationSchema,
 	getNotesValidationSchema,
+	createNoteValidationSchema,
 } from "@/validators/notes"
 import { FastifyInstance } from "fastify"
 

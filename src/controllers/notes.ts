@@ -1,18 +1,15 @@
 import { FastifyReply } from "fastify"
-import {
-	getNotesValidationSchema,
-	createNoteValidationSchema,
-} from "@/validators/notes"
+import notesValidator from "@/validators/notes"
 import { logger } from "@/lib/logger"
-import { createNoteService, getNotesService } from "@/services/notes"
+import notesService from "@/services/notes"
 import { FastifyRequestSchemaTypes } from "@/src/models/types/schemaBuilderTypeExtractor"
 
 export const getNotesHandler = async (
-	req: FastifyRequestSchemaTypes<typeof getNotesValidationSchema>,
+	req: FastifyRequestSchemaTypes<typeof notesValidator.getNotes>,
 	res: FastifyReply,
 ) => {
 	try {
-		const notes = await getNotesService({ ...req.query }) // look into why `req.query` returns `OI <[Object: null prototype] {}> { page: 1, perPage: 10 }` instead of `{ page: 1, perPage: 10 }`
+		const notes = await notesService.getNotes({ ...req.query })
 
 		await res.code(201).send({
 			notes,
@@ -26,11 +23,11 @@ export const getNotesHandler = async (
 }
 
 export const createNoteHandler = async (
-	req: FastifyRequestSchemaTypes<typeof createNoteValidationSchema>,
+	req: FastifyRequestSchemaTypes<typeof notesValidator.createNote>,
 	res: FastifyReply,
 ) => {
 	try {
-		const note = await createNoteService({ ...req.body }) // needs looking at
+		const note = await notesService.createNote({ ...req.body }) // needs looking at
 
 		await res.code(200).send({
 			message: "Note Created",
@@ -42,9 +39,4 @@ export const createNoteHandler = async (
 			message: "Internal Server Error",
 		})
 	}
-}
-
-export default {
-	getNotesHandler,
-	createNoteHandler,
 }

@@ -1,13 +1,10 @@
 import { prisma } from "@/utils/prisma"
 import { StaticRequestSchemaTypes } from "@/types/schemaBuilderTypeExtractor"
-import {
-	getNotesValidationSchema,
-	createNoteValidationSchema,
-} from "@/validators/notes"
+import notesValidator from "@/validators/notes"
 
-export const getNotesRepository = async (
+export const getNotes = async (
 	data: StaticRequestSchemaTypes<
-		typeof getNotesValidationSchema
+		typeof notesValidator.getNotes
 	>["querystring"],
 ) =>
 	prisma.note.findMany({
@@ -15,14 +12,14 @@ export const getNotesRepository = async (
 		take: data.perPage,
 	})
 
-export const createNoteRepository = async (
-	data: StaticRequestSchemaTypes<typeof createNoteValidationSchema>["body"],
+export const createNote = async (
+	data: StaticRequestSchemaTypes<typeof notesValidator.createNote>["body"],
 ) =>
 	prisma.note.create({
 		data,
 	})
 
 export default {
-	getNotesRepository,
-	createNoteRepository,
+	getNotes,
+	createNote,
 }

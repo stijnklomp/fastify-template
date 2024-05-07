@@ -1,4 +1,7 @@
-{
+const { pathsToModuleNameMapper } = require('ts-jest');
+const { compilerOptions } = require('./tsconfig');
+
+module.exports = {
 	"clearMocks": true,
 	"collectCoverageFrom": ["<rootDir>/src/**/*.{cjs,mjs,js,ts}"],
 	"coverageDirectory": "<rootDir>/test/unit/coverage",
@@ -19,12 +22,8 @@
 	},
 	"moduleDirectories": ["<rootDir>/node_modules"],
 	"moduleFileExtensions": ["ts", "js", "json"],
-	"moduleNameMapper": {
-		"^(\\.{1,2}/.*)\\.js$": "$1",
-		"^(\\.{1,2}/.*)\\.ts$": "$1",
-		"^@/src/(.*)$": "<rootDir>/src/$1",
-		"^@/test/(.*)$": "<rootDir>/test/$1"
-	},
+	"moduleNameMapper": pathsToModuleNameMapper(compilerOptions.paths),
+	"modulePaths": [compilerOptions.baseUrl],
 	"reporters": [
 		"default",
 		[

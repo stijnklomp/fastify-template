@@ -1,18 +1,16 @@
-// require("dotenv").config();
-
-import path from "path"
 import Fastify from "fastify"
 import AutoLoad from "@fastify/autoload"
+import path from "path"
 
 describe("server", () => {
-	const fastify = Fastify()
+	const fastify = Fastify() // USE HELPER INSTEAD
 
 	beforeAll(async () => {
 		await fastify.register(AutoLoad, {
-			dir: path.join(__dirname, "../main/plugins"),
+			dir: path.join(__dirname, "../../src/plugins"),
 		})
 		await fastify.register(AutoLoad, {
-			dir: path.join(__dirname, "../main/routes"),
+			dir: path.join(__dirname, "../../src/routes"),
 		})
 		await fastify.listen({
 			port: Number(process.env.PORT),

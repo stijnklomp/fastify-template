@@ -3,19 +3,19 @@ import {
 	getNotesValidationSchema,
 	createNoteValidationSchema,
 } from "@/validators/notes"
-import { getNotesRepository, createNoteRepository } from "@/repositories/notes"
+import notesRepository from "@/repositories/notes"
 
-export const getNotesService = async (
+export const getNotes = async (
 	data: StaticRequestSchemaTypes<
 		typeof getNotesValidationSchema
 	>["querystring"],
-) => await getNotesRepository(data)
+) => await notesRepository.getNotes(data)
 
-export const createNoteService = async (
+export const createNote = async (
 	data: StaticRequestSchemaTypes<typeof createNoteValidationSchema>["body"],
-) => await createNoteRepository(data)
+) => await notesRepository.createNote(data)
 
 export default {
-	getNotesService,
-	createNoteService,
+	getNotes,
+	createNote,
 }

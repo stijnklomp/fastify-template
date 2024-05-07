@@ -1,5 +1,5 @@
 import Fastify, { FastifyRequest, FastifyReply } from "fastify"
-import autoLoad from "@fastify/autoload"
+import AutoLoad from "@fastify/autoload"
 import FastifySwagger from "@fastify/swagger"
 import FastifySwaggerUI from "@fastify/swagger-ui"
 import path from "path"
@@ -137,11 +137,11 @@ void fastify.register(FastifySwaggerUI, {
 	transformSpecificationClone: true,
 })
 
-void fastify.register(autoLoad, {
+void fastify.register(AutoLoad, {
 	dir: path.join(__dirname, "/plugins"),
 })
 
-void fastify.register(autoLoad, {
+void fastify.register(AutoLoad, {
 	dir: path.join(__dirname, "/routes"),
 	dirNameRoutePrefix: true, // Same as default but set for clarity
 })
