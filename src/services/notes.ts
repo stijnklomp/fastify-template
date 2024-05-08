@@ -1,18 +1,15 @@
 import { StaticRequestSchemaTypes } from "@/types/schemaBuilderTypeExtractor"
-import {
-	getNotesValidationSchema,
-	createNoteValidationSchema,
-} from "@/validators/notes"
+import noteValidator from "@/validators/notes"
 import notesRepository from "@/repositories/notes"
 
 export const getNotes = async (
 	data: StaticRequestSchemaTypes<
-		typeof getNotesValidationSchema
+		typeof noteValidator.getNotes
 	>["querystring"],
 ) => await notesRepository.getNotes(data)
 
 export const createNote = async (
-	data: StaticRequestSchemaTypes<typeof createNoteValidationSchema>["body"],
+	data: StaticRequestSchemaTypes<typeof noteValidator.createNote>["body"],
 ) => await notesRepository.createNote(data)
 
 export default {

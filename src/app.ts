@@ -1,4 +1,8 @@
-import Fastify, { FastifyRequest, FastifyReply } from "fastify"
+import Fastify, {
+	FastifyServerOptions,
+	FastifyRequest,
+	FastifyReply,
+} from "fastify"
 import AutoLoad from "@fastify/autoload"
 import FastifySwagger from "@fastify/swagger"
 import FastifySwaggerUI from "@fastify/swagger-ui"
@@ -8,6 +12,7 @@ import hyperid from "hyperid"
 import { init as initRedis } from "@/adapters/redis"
 import { init as initRabbitMQ } from "@/adapters/rabbitMQ"
 import { prisma } from "@/utils/prisma"
+import { IncomingMessage, ServerResponse } from "http"
 
 const envToLogger = {
 	development: {
@@ -24,6 +29,10 @@ const envToLogger = {
 				headers: req.headers, // Including the headers in the log could be in violation of privacy laws, e.g. GDPR. It could also leak authentication data in the logs. It should not be saved
 			}),
 			res: (rep: FastifyReply) => ({
+				// Todo: This is causing Typescript issues because it is expecting `ServerResponse<IncomingMessage>`
+				// res: (
+				// 	rep: FastifyReply,
+				// ): ServerResponse<IncomingMessage> => ({
 				statusCode: rep.statusCode,
 				headers:
 					typeof rep.getHeaders === "function"
@@ -57,7 +66,7 @@ const envToLogger = {
 const logsEnvironment =
 	(process.env.LOGS as keyof typeof envToLogger | undefined) ?? "production"
 
-const fastify = Fastify({
+export const options: FastifyServerOptions = {
 	serializerOpts: {
 		rounding: "trunc", // Same as default but set for clarity
 	},
@@ -65,7 +74,9 @@ const fastify = Fastify({
 	genReqId: () => {
 		return hyperid({ fixedLength: true, urlSafe: true })()
 	},
-})
+}
+
+const fastify = Fastify(options)
 
 void fastify.register(FastifySwagger, {
 	openapi: {
@@ -169,4 +180,4 @@ const start = async () => {
 	}
 }
 
-void start()
+if (logsEnvironment !== "test") void start()

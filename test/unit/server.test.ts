@@ -1,32 +1,25 @@
-import Fastify from "fastify"
-import AutoLoad from "@fastify/autoload"
-import path from "path"
+import { FastifyInstance } from "fastify"
+
+import { build } from "../helper"
 
 describe("server", () => {
-	const fastify = Fastify() // USE HELPER INSTEAD
+	let app: FastifyInstance
 
 	beforeAll(async () => {
-		await fastify.register(AutoLoad, {
-			dir: path.join(__dirname, "../../src/plugins"),
-		})
-		await fastify.register(AutoLoad, {
-			dir: path.join(__dirname, "../../src/routes"),
-		})
-		await fastify.listen({
-			port: Number(process.env.PORT),
-			host: "0.0.0.0",
-		})
+		app = await build()
 	})
 
 	afterAll(async () => {
-		await fastify.close()
+		await app.close()
 	})
 
 	it("should start the server without errors", async () => {
-		const response = await fastify.inject({
+		const res = await app.inject({
 			method: "GET",
-			url: "/",
+			url: "/health",
 		})
-		expect(response.statusCode).toEqual(404)
+		expect(JSON.parse(res.payload)).toEqual({})
+		// assert.deepStrictEqual(JSON.parse(res.payload), { root: true })
+		expect(res.statusCode).toEqual(200)
 	})
 })
