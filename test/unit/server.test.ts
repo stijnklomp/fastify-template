@@ -2,6 +2,23 @@ import { FastifyInstance } from "fastify"
 
 import { build } from "@/helper"
 
+// jest.mock("@/utils/prisma", jest.fn(() => ({
+// 		prisma: jest.fn(() => ({
+// 			$connect: jest.fn().mockResolvedValue({}),
+// 			$disconnect: jest.fn(),
+// 		}))
+// 	})),
+// )
+jest.mock(
+	"@/utils/prisma",
+	jest.fn().mockReturnValue(() => ({
+		prisma: jest.fn(() => ({
+			$connect: jest.fn().mockResolvedValue({}),
+			$disconnect: jest.fn(),
+		})),
+	})),
+)
+
 describe("server", () => {
 	const initServer = build()
 	let app: FastifyInstance

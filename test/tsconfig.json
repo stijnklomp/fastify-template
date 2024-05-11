@@ -18,6 +18,12 @@
 			"@/validators/*": ["../src/models/validators/*"]
 		}
 	},
-	"include": ["../src/**/*.ts", "**/*.ts", "./helper.ts", "../jest.setup.ts"],
+	"include": [
+		"../src/**/*.ts",
+		"**/*.ts",
+		"../jest.setup.ts",
+		"../.eslintrc.cjs",
+		".eslintrc.cjs"
+	],
 	"exclude": ["../node_modules", "../.husky", "../dist", "**/*spec.ts"]
 }
