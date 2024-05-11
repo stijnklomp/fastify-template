@@ -1,16 +1,13 @@
 import { FastifyInstance } from "fastify"
 
-import { build } from "../helper"
+import { build } from "@/helper"
 
 describe("server", () => {
+	const initServer = build()
 	let app: FastifyInstance
 
-	beforeAll(async () => {
-		app = await build()
-	})
-
-	afterAll(async () => {
-		await app.close()
+	beforeAll(() => {
+		app = initServer()
 	})
 
 	it("should start the server without errors", async () => {
@@ -18,8 +15,8 @@ describe("server", () => {
 			method: "GET",
 			url: "/health",
 		})
+		expect(res.statusCode).toEqual(200)
 		expect(JSON.parse(res.payload)).toEqual({})
 		// assert.deepStrictEqual(JSON.parse(res.payload), { root: true })
-		expect(res.statusCode).toEqual(200)
 	})
 })

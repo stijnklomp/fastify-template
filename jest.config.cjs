@@ -22,7 +22,12 @@ module.exports = {
 	},
 	"moduleDirectories": ["<rootDir>/node_modules"],
 	"moduleFileExtensions": ["ts", "js", "json"],
-	"moduleNameMapper": pathsToModuleNameMapper(compilerOptions.paths),
+	"moduleNameMapper": {
+		...pathsToModuleNameMapper({
+			...compilerOptions.paths
+		}),
+		'^@/helper$': "<rootDir>/test/helper.ts"
+	},
 	"modulePaths": [compilerOptions.baseUrl],
 	"reporters": [
 		"default",
@@ -39,6 +44,11 @@ module.exports = {
 	"testEnvironment": "node",
 	"testMatch": ["**/?(*.)+(spec|test).[jt]s"],
 	"transform": {
-		"^.+\\.(t|j)s$": "ts-jest"
+		"^.+\\.(t|j)s$": [
+			"ts-jest",
+			{
+				tsconfig: "./test/tsconfig.json"
+			}
+		]
 	}
 }

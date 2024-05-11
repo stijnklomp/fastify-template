@@ -6,6 +6,7 @@
 		"paths": {
 			"@/adapters/*": ["../src/adapters/*"],
 			"@/controllers/*": ["../src/controllers/*"],
+			"@/helper": ["./helper.ts"],
 			"@/lib/*": ["../src/lib/*"],
 			"@/repositories/*": ["../src/repositories/*"],
 			"@/serializers/*": ["../src/models/serializers/*"],
@@ -17,6 +18,6 @@
 			"@/validators/*": ["../src/models/validators/*"]
 		}
 	},
-	"include": ["../src/**/*.ts", "**/*.ts"],
+	"include": ["../src/**/*.ts", "**/*.ts", "./helper.ts", "../jest.setup.ts"],
 	"exclude": ["../node_modules", "../.husky", "../dist", "**/*spec.ts"]
 }

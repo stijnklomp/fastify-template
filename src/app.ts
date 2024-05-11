@@ -11,7 +11,6 @@ import hyperid from "hyperid"
 
 import { init as initRedis } from "@/adapters/redis"
 import { init as initRabbitMQ } from "@/adapters/rabbitMQ"
-import { prisma } from "@/utils/prisma"
 import { IncomingMessage, ServerResponse } from "http"
 
 const envToLogger = {
@@ -28,17 +27,17 @@ const envToLogger = {
 				parameters: req.params,
 				headers: req.headers, // Including the headers in the log could be in violation of privacy laws, e.g. GDPR. It could also leak authentication data in the logs. It should not be saved
 			}),
-			res: (rep: FastifyReply) => ({
-				// Todo: This is causing Typescript issues because it is expecting `ServerResponse<IncomingMessage>`
-				// res: (
-				// 	rep: FastifyReply,
-				// ): ServerResponse<IncomingMessage> => ({
-				statusCode: rep.statusCode,
-				headers:
-					typeof rep.getHeaders === "function"
-						? rep.getHeaders()
-						: {},
-			}),
+			// res: (rep: FastifyReply) => ({
+			// 	// Todo: This is causing Typescript issues because it is expecting `ServerResponse<IncomingMessage>`
+			// 	// res: (
+			// 	// 	rep: FastifyReply,
+			// 	// ): ServerResponse<IncomingMessage> => ({
+			// 	statusCode: rep.statusCode,
+			// 	headers:
+			// 		typeof rep.getHeaders === "function"
+			// 			? rep.getHeaders()
+			// 			: {},
+			// }),
 		},
 		transport: {
 			target: "pino-pretty",
@@ -166,13 +165,6 @@ const start = async () => {
 			port,
 			host: "0.0.0.0",
 		})
-		await prisma
-			.$connect()
-			.then(async () => {
-				fastify.log.info("Database connection healthy")
-				await prisma.$disconnect()
-			})
-			.catch(() => fastify.log.error("Can't connect to DB"))
 		fastify.log.info(`Server listening on port ${port}`)
 	} catch (err) {
 		fastify.log.error(err)
