@@ -4,8 +4,6 @@ import { logger } from "@/lib/logger"
 import { prisma } from "@/utils/prisma"
 import { FastifyRequestSchemaTypes } from "@/src/models/types/schemaBuilderTypeExtractor"
 
-console.log(prisma)
-console.log(prisma.$connect)
 const dbConnection = prisma.$connect().then(async () => {
 	logger.info("Database connection healthy")
 	await prisma.$disconnect()
