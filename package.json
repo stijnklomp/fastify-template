@@ -77,6 +77,5 @@
 		"test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/jest/bin/jest --runInBand",
 		"prepare": "husky"
 	},
-	"type": "module",
 	"version": "1.0.0"
 }

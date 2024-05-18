@@ -10,10 +10,7 @@ export const get = async (key: string) => {
 }
 
 export const set = async (key: string, value: string) => {
-	console.log("getPrimary:", getPrimary)
-	console.log("getPrimary():", getPrimary())
 	const redis = getClient()
-	console.log("redis:", redis)
 	const set = await redis.set(key, value)
 
 	type Test = ReturnType<typeof getClient>["set"]
