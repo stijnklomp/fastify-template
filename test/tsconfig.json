@@ -6,6 +6,7 @@
 		"paths": {
 			"@/adapters/*": ["../src/adapters/*"],
 			"@/controllers/*": ["../src/controllers/*"],
+			"@/fixtures/*": ["./fixtures/*"],
 			"@/helper": ["./helper.ts"],
 			"@/lib/*": ["../src/lib/*"],
 			"@/repositories/*": ["../src/repositories/*"],
@@ -22,8 +23,8 @@
 		"../src/**/*.ts",
 		"**/*.ts",
 		"../jest.setup.ts",
-		"../.eslintrc.cjs",
-		".eslintrc.cjs"
+		"../eslint.config.js",
+		"eslint.config.js"
 	],
 	"exclude": ["../node_modules", "../.husky", "../dist", "**/*spec.ts"]
 }

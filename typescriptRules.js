@@ -1,4 +1,4 @@
-module.exports = {
+export default {
 	"@typescript-eslint/naming-convention": [
 		"error",
 		{
@@ -22,15 +22,7 @@ module.exports = {
 	],
 	"prettier/prettier": 2,
 	quotes: ["error", "double"],
-	semi: [
-		"error",
-		"never",
-		{ beforeStatementContinuationChars: "always" },
-	],
-	"@stylistic/no-multiple-empty-lines": [
-		"error",
-		{ max: 1, maxBOF: 0, maxEOF: 0 },
-	],
+	semi: ["error", "never", { beforeStatementContinuationChars: "always" }],
 	"@typescript-eslint/interface-name-prefix": "off",
 	"@typescript-eslint/explicit-function-return-type": "off",
 	"@typescript-eslint/explicit-module-boundary-types": "off",

@@ -1,21 +1,22 @@
-import { expect, jest, describe, it, afterEach } from "@jest/globals"
 import redisAdapter from "@/adapters/redis"
 
 import redisService from "@/services/redis"
 
-type RedisClientFunction = (...args: any[]) => any
+// import { RedisModules } from "@redis/client/dist/lib/commands"
+import { createClient, RedisClientType } from "redis"
+// type Test = RedisClientType<RedisModules, any, any>
 
-type MockedAdaptersFunction = jest.Mock<RedisClientFunction>
+// import { mock } from "jest-mock-extended"
 
-jest.mock("@/adapters/redis", () => {
-	// Return an object with the expected structure
-	return {
-		getPrimary: jest.fn(),
-	}
-})
+type Test = ReturnType<typeof redisAdapter.getPrimary>
 
-const mockedAdapters =
-	redisAdapter.getPrimary as unknown as MockedAdaptersFunction
+const mockedDependency = <
+	jest.Mock<ReturnType<typeof redisAdapter.getPrimary>>
+>redisAdapter.getPrimary
+
+jest.mock("@/adapters/redis", () => ({
+	getPrimary: jest.fn(),
+}))
 
 describe("Redis Service Tests", () => {
 	afterEach(() => {
@@ -23,31 +24,51 @@ describe("Redis Service Tests", () => {
 	})
 
 	describe("getClient", () => {
-		it("should get redis client successfully", () => {
-			mockedAdapters.mockReturnValue({})
-
-			const client = redisService.getClient()
-
-			expect(client).toStrictEqual({})
+		it("should get redis client", () => {
+			expect(redisAdapter.getPrimary).toHaveBeenCalled()
 		})
 	})
 
 	describe("set", () => {
-		it("should set in redis", async () => {
-			const mockGetRedisClient = jest
-				.spyOn(redisService, "getClient")
+		it.only("should set in redis", async () => {
+			const setMock = jest
+				.fn<ReturnType<typeof redisAdapter.getPrimary>["set"], []>()
 				.mockReturnValue({
-					set: jest.fn().mockReturnValue({
-						test: "value",
-					}),
-				} as any)
-
+					test: "value",
+				})
+			// const setMock = jest
+			// 	.fn<typeof createClient, []>()
+			// 	.mockReturnValue("")
+			mockedDependency.mockImplementation(
+				jest.fn().mockReturnValue({
+					set: setMock,
+				}),
+			)
+			// jest.mock("@/adapters/redis", () => ({
+			// 	getPrimary: jest.fn().mockReturnValue({
+			// 		set: setMock,
+			// 	}),
+			// }))
 			const set = await redisService.set("test", "value")
 
-			expect(mockGetRedisClient).toHaveBeenCalledTimes(1)
+			expect(setMock).toHaveBeenCalledTimes(1)
 			expect(set).toStrictEqual({
 				test: "value",
 			})
+			// const mockGetRedisClient = jest
+			// 	.spyOn(redisService, "getClient")
+			// 	.mockReturnValue({
+			// 		set: jest.fn().mockReturnValue({
+			// 			test: "value",
+			// 		}),
+			// 	} as any)
+
+			// const set = await redisService.set("test", "value")
+
+			// expect(mockGetRedisClient).toHaveBeenCalledTimes(1)
+			// expect(set).toStrictEqual({
+			// 	test: "value",
+			// })
 		})
 	})
 

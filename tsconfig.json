@@ -48,7 +48,7 @@
 	"include": [
 		"src/**/*.ts",
 		"schemas/**/*.ts",
-		".eslintrc.cjs",
+		"eslint.config.mjs",
 		"jest.setup.ts"
 	],
 	"exclude": ["node_modules", ".husky", "dist", "test", "**/*spec.ts"]

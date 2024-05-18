@@ -14,13 +14,13 @@ lib-cov
 # Coverage directory used by tools like istanbul
 coverage
 
-# nyc test coverage
+# Nyc test coverage
 .nyc_output
 
 # Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
 
-# node-waf configuration
+# Node-waf configuration
 .lock-wscript
 
 # Compiled binary addons (http://nodejs.org/api/addons.html)
@@ -39,20 +39,23 @@ jspm_packages
 # 0x
 profile-*
 
-# mac files
+# Mac files
 .DS_Store
 
-# clinic
+# Clinic
 profile*
 *clinic*
 *flamegraph*
 
-# environment files
+# Environment files
 .env
 
-# generated code
+# Generated code
 examples/typescript-server.js
 test/types/index.js
 
-# compiled app
+# Compiled app
 dist
+
+# Linting/Formatting
+.eslintcache

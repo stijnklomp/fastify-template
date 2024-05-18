@@ -3,8 +3,7 @@ import { createClient, RedisClientType } from "redis"
 
 import { logger } from "@/lib/logger"
 
-type ClientType = RedisClientType<RedisModules, any, any>
-let redisClient: ClientType | undefined
+let redisClient: RedisClientType<RedisModules, any, any> | undefined
 
 const createClientConnection = async () => {
 	const client = createClient({
