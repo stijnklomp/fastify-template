@@ -1,9 +1,17 @@
-import Fastify, { FastifyRequest, FastifyReply } from "fastify"
-import autoLoad from "@fastify/autoload"
+import Fastify, {
+	FastifyServerOptions,
+	FastifyRequest,
+	FastifyReply,
+} from "fastify"
+import AutoLoad from "@fastify/autoload"
 import FastifySwagger from "@fastify/swagger"
 import FastifySwaggerUI from "@fastify/swagger-ui"
 import path from "path"
 import hyperid from "hyperid"
+
+import { init as initRedis } from "@/adapters/redis"
+import { init as initRabbitMQ } from "@/adapters/rabbitMQ"
+import { IncomingMessage, ServerResponse } from "http"
 
 const envToLogger = {
 	development: {
@@ -13,19 +21,23 @@ const envToLogger = {
 				method: req.method,
 				url: req.url,
 				protocol: req.protocol,
-				path: req.routerPath,
+				path: req.routeOptions.url,
 				ip: req.ip,
 				ips: req.ips,
 				parameters: req.params,
 				headers: req.headers, // Including the headers in the log could be in violation of privacy laws, e.g. GDPR. It could also leak authentication data in the logs. It should not be saved
 			}),
-			res: (rep: FastifyReply) => ({
-				statusCode: rep.statusCode,
-				headers:
-					typeof rep.getHeaders === "function"
-						? rep.getHeaders()
-						: {},
-			}),
+			// res: (rep: FastifyReply) => ({
+			// 	// Todo: This is causing Typescript issues because it is expecting `ServerResponse<IncomingMessage>`
+			// 	// res: (
+			// 	// 	rep: FastifyReply,
+			// 	// ): ServerResponse<IncomingMessage> => ({
+			// 	statusCode: rep.statusCode,
+			// 	headers:
+			// 		typeof rep.getHeaders === "function"
+			// 			? rep.getHeaders()
+			// 			: {},
+			// }),
 		},
 		transport: {
 			target: "pino-pretty",
@@ -53,7 +65,7 @@ const envToLogger = {
 const logsEnvironment =
 	(process.env.LOGS as keyof typeof envToLogger | undefined) ?? "production"
 
-const fastify = Fastify({
+export const options: FastifyServerOptions = {
 	serializerOpts: {
 		rounding: "trunc", // Same as default but set for clarity
 	},
@@ -61,7 +73,9 @@ const fastify = Fastify({
 	genReqId: () => {
 		return hyperid({ fixedLength: true, urlSafe: true })()
 	},
-})
+}
+
+const fastify = Fastify(options)
 
 void fastify.register(FastifySwagger, {
 	openapi: {
@@ -133,37 +147,29 @@ void fastify.register(FastifySwaggerUI, {
 	transformSpecificationClone: true,
 })
 
-void fastify.register(autoLoad, {
+void fastify.register(AutoLoad, {
 	dir: path.join(__dirname, "/plugins"),
 })
 
-void fastify.register(autoLoad, {
+void fastify.register(AutoLoad, {
 	dir: path.join(__dirname, "/routes"),
 	dirNameRoutePrefix: true, // Same as default but set for clarity
 })
 
 const start = async () => {
 	try {
-		const port = Number(process.env.PORT ?? 3000)
+		await initRedis()
+		await initRabbitMQ()
+		const port = Number(process.env.API_PORT ?? 3000)
 		await fastify.listen({
 			port,
 			host: "0.0.0.0",
 		})
-		// await rabbitMQ.init()
-		// await redis.init()
-		// prisma
-		// 	.$connect()
-		// 	.then(() => {
-		// 		logger.info("Testing DB Connection. OK")
-		// 		prisma.$disconnect()
-		// 	})
-		// 	.catch(() => logger.error("Can't Connect to DB"))
-		// logger.info(`Server listening on port ${port}`)
-		// fastify.log.info(`Server listening on port ${port}`)
+		fastify.log.info(`Server listening on port ${port}`)
 	} catch (err) {
 		fastify.log.error(err)
 		process.exit(1)
 	}
 }
 
-void start()
+if (logsEnvironment !== "test") void start()

@@ -1,7 +1,11 @@
 FROM node:20-alpine AS deps
+ARG DATABASE_URL
+ENV DATABASE_URL=${DATABASE_URL}
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci --ignore-scripts
+COPY /prisma ./prisma
+RUN npm ci --ignore-scripts --legacy-peer-deps
+RUN npx prisma generate
 
 FROM node:20-alpine AS builder
 ENV NODE_ENV build
@@ -16,6 +20,7 @@ ENV PORT 3000
 WORKDIR /app
 COPY --from=deps --chown=node:node /app/package.json ./
 COPY --from=builder --chown=node:node /app/dist/ ./dist/
-COPY --from=builder --chown=node:node ./node_modules/@fastify/swagger-ui/static ./dist/static
+COPY --from=builder --chown=node:node /app/node_modules/@fastify/swagger-ui/static ./dist/static
+COPY --from=builder --chown=node:node /app/node_modules/.prisma/client ./.prisma/client
 EXPOSE 3000
 CMD ["npm", "run", "start"]

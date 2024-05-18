@@ -2,27 +2,124 @@ services:
   local:
     build:
       context: .
-    ports:
-      - "3000:3000"
     network_mode: "host"
     tty: true
+    depends_on:
+      - rabbitmq
+      - redis
+      - db
     environment:
       NODE_ENV: "development"
+      API_PORT: "3000"
       LOGS: "development"
+    ports:
+      - 3000:3000
     profiles:
       - local
+
   dev:
     image: node:20-alpine
-    ports:
-      - "3000:3000"
     network_mode: "host"
     volumes:
       - ".:/src"
     working_dir: "/src"
-    command: /bin/sh -c "[ ! -d node_modules ] && npm ci ; apk --no-cache add curl ; npm run dev:watch"
+    command: /bin/sh -c "[ ! -d node_modules ] && npm ci ; apk --no-cache add curl ; sleep 5 ; npm run dev"
     tty: true
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      db:
+        condition: service_started
+      adminer:
+        condition: service_started
     environment:
       NODE_ENV: "development"
+      API_PORT: 3000
       LOGS: "development"
+
+      REDIS_HOST: 0.0.0.0
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: "admin123"
+
+      RABBIT_TRANSPORT: "amqp"
+      RABBIT_HOST: 0.0.0.0
+      # RABBIT_USER: "localhost"
+      # RABBIT_PASS: "admin123"
+      RABBIT_USER: "guest"
+      RABBIT_PASS: "guest"
+      RABBIT_PORT: 5672
+    ports:
+      - 3000:3000
     profiles:
       - dev
+
+  rabbitmq:
+    image: rabbitmq
+    restart: always
+    healthcheck:
+      # test: ["CMD", "curl", "-f", "http://localhost:15672"]
+      test: "exit 0"
+      interval: 5s
+      timeout: 10s
+      retries: 12
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq/data
+      - rabbitmq:/var/log/rabbitmq/log
+    ports:
+      - 5672:5672
+      - 15672:15672
+
+  redis:
+    image: redis
+    restart: always
+    command:
+      [
+        "redis-server",
+        "--save",
+        "--appendonly",
+        "no",
+        "--notify-keyspace-events",
+        "Ex",
+        "--logLevel",
+        "notice",
+        "--requirepass",
+        "admin123",
+      ]
+    volumes:
+      - redis-cache:/data
+    logging:
+      driver: none
+    ports:
+      - 6379:6379
+
+  db:
+    image: postgres
+    restart: always
+    # set shared memory limit when using docker-compose
+    shm_size: 128mb
+    # or set shared memory limit when deploy via swarm stack
+    #volumes:
+    #  - type: tmpfs
+    #    target: /dev/shm
+    #    tmpfs:
+    #      size: 134217728 # 128*2^20 bytes = 128Mb
+    # volumes:
+    #   - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: main
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: main
+    ports:
+      - 5432:5432
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+volumes:
+  rabbitmq:
+  redis-cache:
+  postgres-data:

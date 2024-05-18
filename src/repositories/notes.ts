@@ -1,20 +1,25 @@
-import { CreateNote, GetNote } from "@/serializers/notes"
 import { prisma } from "@/utils/prisma"
+import { StaticRequestSchemaTypes } from "@/types/schemaBuilderTypeExtractor"
+import notesValidator from "@/validators/notes"
 
-export const createNoteRepository = async (data: CreateNote) =>
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-	prisma.note.create({
-		data,
-	}) as Promise<any>
-
-export const getNotesRepository = async (data: GetNote) =>
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+export const getNotes = async (
+	data: StaticRequestSchemaTypes<
+		typeof notesValidator.getNotes
+	>["querystring"],
+) =>
 	prisma.note.findMany({
 		skip: data.page - 1,
 		take: data.perPage,
-	}) as Promise<any>
+	})
+
+export const createNote = async (
+	data: StaticRequestSchemaTypes<typeof notesValidator.createNote>["body"],
+) =>
+	prisma.note.create({
+		data,
+	})
 
 export default {
-	createNoteRepository,
-	getNotesRepository,
+	getNotes,
+	createNote,
 }

@@ -13,13 +13,13 @@ npm ci
 
 ## Prerequisites
 
-Create a `.env` file in the root directory if one does not already exist and copy the contents of the desired environment file over (`.env.development` or `.env.production`)
+Create a `.env` file in the root directory if one does not already exist and copy the contents of the desired environment file over. (`.env.development` or `.env.production`)
 
 ## Running the app
 
 ```sh
-# Watch mode
-npm run dev:watch
+# Development in watch mode
+npm run dev
 
 # Production mode
 npm run build && npm run start
@@ -34,11 +34,21 @@ docker build -t fastify-template . && docker run fastify-template
 ### With Docker Compose
 
 ```sh
-# There are multiple profiles that can be run
+# There are multiple profiles that can be run:
 # dev -> Mounts the current directory to the container and runs the service in watch mode
 # local -> Builds and runs the application image from the current code
 docker compose --profile=PROFILE up --build
 ```
+
+#### Database
+
+The database can be accessed via a browser by navigating to `API_URL:8080` when running Docker Compose with the `dev` profile.
+
+Note that you may need to run `npx prisma migrate dev --name init` in your terminal if you haven't already initialized the database. This only needs to be done the first time the database is created. (Or whenever the database has been recreated)
+
+## Endpoints documentation (API specification)
+
+Once the app is running, documentation will be available at `API_URL:PORT/docs`.
 
 ## Test
 
@@ -49,7 +59,7 @@ npm run test
 # Test coverage
 npm run test:coverage
 
-# E2e tests
+# E2E tests
 npm run test:e2e
 ```
 
