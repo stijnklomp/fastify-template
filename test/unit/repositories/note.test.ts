@@ -1,19 +1,22 @@
-import { prismaMock } from "../context"
+import { prismaMock } from "@/context"
 import { StaticRequestSchemaTypes } from "@/types/schemaBuilderTypeExtractor"
 import notesValidator from "@/validators/notes"
-import { CREATE_NOTE_TYPE, GET_NOTE_TYPE } from "../../main/dto/request/note"
+// import { CREATE_NOTE_TYPE, GET_NOTE_TYPE } from "../../main/dto/request/note"
 import noteRepository from "@/repositories/notes"
 import prisma from "@/utils/prisma"
 import { noteDb } from "@/fixtures/note.fixture"
 
-jest.mock("../../main/utils/prisma", () => ({
-	__esModule: true,
-	default: prismaMock,
-}))
+// jest.mock("../../main/utils/prisma", () => ({
+// 	__esModule: true,
+// 	default: prismaMock,
+// }))
 
-const mockNoteFindMany = prisma.note.findMany as jest.MockedFunction<
-	typeof prisma.note.findMany
->
+type test = typeof prisma.note.findMany
+
+const mockNoteFindMany = prisma.note.findMany as jest.MockedFunction<test>
+// const mockNoteFindMany = prisma.note.findMany as jest.MockedFunction<
+// 	typeof prisma.note.findMany[keyof typeof prisma.note.findMany]
+// >
 
 // const mockNoteCreate = prisma.note.create as jest.MockedFunction<
 // 	typeof prisma.note.create

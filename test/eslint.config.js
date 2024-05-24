@@ -1,7 +1,7 @@
 import tseslint from "typescript-eslint"
 
-import * as mainConfig from "../eslint.config.js"
-import typescriptCustomRules from "../typescriptRules.js"
+import * as mainConfig from "../eslint.config.mjs"
+import typescriptCustomRules from "../typescriptRules.mjs"
 import globals from "globals"
 import { languageOptions } from "eslint-plugin-prettier/recommended"
 
@@ -23,7 +23,7 @@ export default tseslint(
 			},
 		},
 		rules: {
-			// ...typescriptCustomRules,
+			...typescriptCustomRules,
 			"@typescript-eslint/unbound-method": "none",
 		},
 	},
