@@ -1,28 +1,8 @@
 import { prismaMock } from "@/context"
 import { StaticRequestSchemaTypes } from "@/types/schemaBuilderTypeExtractor"
 import notesValidator from "@/validators/notes"
-// import { CREATE_NOTE_TYPE, GET_NOTE_TYPE } from "../../main/dto/request/note"
 import noteRepository from "@/repositories/notes"
-import prisma from "@/utils/prisma"
 import { noteDb } from "@/fixtures/note.fixture"
-
-// jest.mock("../../main/utils/prisma", () => ({
-// 	__esModule: true,
-// 	default: prismaMock,
-// }))
-
-type test = typeof prisma.note.findMany
-
-const mockNoteFindMany = prisma.note.findMany as jest.MockedFunction<test>
-// const mockNoteFindMany = prisma.note.findMany as jest.MockedFunction<
-// 	typeof prisma.note.findMany[keyof typeof prisma.note.findMany]
-// >
-
-// const mockNoteCreate = prisma.note.create as jest.MockedFunction<
-// 	typeof prisma.note.create
-// >
-// const mockNoteCreate = jest.mocked<typeof prisma.note.create>
-const mockNoteCreate = jest.mocked(prisma.note.create)
 
 afterEach(() => {
 	jest.clearAllMocks()
@@ -36,8 +16,8 @@ describe("getNotes", () => {
 		perPage: 10,
 	}
 
-	it("should get notes", async () => {
-		mockNoteFindMany.mockReturnValue([noteDb])
+	it.only("should get notes", async () => {
+		prismaMock.note.findMany.mockResolvedValue([noteDb])
 
 		const notes = await noteRepository.getNotes(data)
 
@@ -54,7 +34,7 @@ describe("createNote", () => {
 	}
 
 	it("should create note", async () => {
-		mockNoteCreate.mockReturnValue(noteDb)
+		prismaMock.note.create.mockResolvedValue(noteDb)
 
 		const note = await noteRepository.createNote(data)
 
