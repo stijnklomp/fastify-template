@@ -28,7 +28,7 @@ npm run build && npm run start
 ### With Docker
 
 ```sh
-docker build -t fastify-template . && docker run fastify-template
+docker build -t fastify-template . && docker run --rm fastify-template
 ```
 
 ### With Docker Compose
