@@ -1,13 +1,7 @@
 import { FastifyInstance } from "fastify"
 
+import { prismaMock } from "@/context"
 import { build } from "@/helper"
-
-jest.mock("@/utils/prisma", () => ({
-	prisma: {
-		$connect: jest.fn().mockResolvedValue({}),
-		$disconnect: jest.fn(),
-	},
-}))
 
 describe("server", () => {
 	const initServer = build()
@@ -18,10 +12,13 @@ describe("server", () => {
 	})
 
 	it("should start the server without errors", async () => {
+		prismaMock.$connect.mockResolvedValue()
+
 		const res = await app.inject({
 			method: "GET",
 			url: "/health",
 		})
+
 		expect(res.statusCode).toEqual(204)
 		expect(res.payload).toBe("")
 	})

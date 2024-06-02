@@ -4,10 +4,6 @@ import notesValidator from "@/validators/notes"
 import noteRepository from "@/repositories/notes"
 import { noteDb } from "@/fixtures/note.fixture"
 
-afterEach(() => {
-	jest.clearAllMocks()
-})
-
 describe("getNotes", () => {
 	const data: StaticRequestSchemaTypes<
 		typeof notesValidator.getNotes
