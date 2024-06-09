@@ -1,9 +1,4 @@
-import tseslint from "typescript-eslint"
-import * as typescriptRules from "stijnklomp-linting-formatting-config/typescript/typescriptRules.js"
 import typescriptEslintParser from "@typescript-eslint/parser"
-
-import typescriptCustomRules from "../typescriptRules.mjs"
-import globals from "globals"
 
 export default {
 	files: ["test/**/*.ts"],
@@ -15,7 +10,7 @@ export default {
 			tsconfigRootDir: ".",
 		},
 	},
-	name: "test",
+	name: "Test",
 	rules: {
 		"@typescript-eslint/unbound-method": "off",
 	},

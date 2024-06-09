@@ -1,14 +1,13 @@
 import type { Config } from "jest"
-import { pathsToModuleNameMapper } from "ts-jest"
 
-import { mainConfig } from "../jest.config"
-import { compilerOptions } from "../../tsconfig.json"
+import { coreConfig, coverageConfig } from "../jest.config"
 
 const config: Config = {
-	...mainConfig,
+	...coreConfig,
+	...coverageConfig,
 	displayName: "unit",
 	moduleNameMapper: {
-		...mainConfig.moduleNameMapper,
+		...coreConfig.moduleNameMapper,
 		"^@/context$": "<rootDir>/test/unit/context.ts",
 	},
 	rootDir: "../../",
@@ -25,21 +24,6 @@ const config: Config = {
 			},
 		],
 	},
-
-	// moduleNameMapper: {
-	// 	...pathsToModuleNameMapper(compilerOptions.paths),
-	// 	"^@/fixtures/(.*)$": "<rootDir>/test/fixtures/$1",
-	// 	"^@/helper$": "<rootDir>/test/helper.ts",
-	// },
-	// testMatch: ["**/?(*.)+(spec|test).[jt]s"],
-	// transform: {
-	// 	"^.+\\.(t|j)s$": [
-	// 		"ts-jest",
-	// 		{
-	// 			tsconfig: "./test/tsconfig.json",
-	// 		},
-	// 	],
-	// },
 }
 
 export default config

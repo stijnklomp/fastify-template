@@ -25,7 +25,7 @@ describe("createNote", () => {
 	const data: StaticRequestSchemaTypes<
 		typeof notesValidator.createNote
 	>["body"] = {
-		owner: "Test User",
+		owner: "Test user",
 		note: "This is a test note",
 	}
 

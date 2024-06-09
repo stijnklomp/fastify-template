@@ -1,23 +1,8 @@
 {
 	"extends": "../tsconfig.json",
 	"compilerOptions": {
-		// "baseUrl": ".",
 		"noEmit": false,
 		"paths": {
-			// "@/adapters/*": ["../../src/adapters/*"],
-			// "@/context": ["./context.ts"],
-			// "@/controllers/*": ["../../src/controllers/*"],
-			// "@/fixtures/*": ["../fixtures/*"],
-			// "@/helper": ["../helper.ts"],
-			// "@/lib/*": ["../../src/lib/*"],
-			// "@/repositories/*": ["../../src/repositories/*"],
-			// "@/serializers/*": ["../../src/models/serializers/*"],
-			// "@/services/*": ["../../src/services/*"],
-			// "@/src/*": ["../../src/*"],
-			// "@/test/*": ["../../src/test/*"],
-			// "@/types/*": ["../../src/models/types/*"],
-			// "@/utils/*": ["../../src/utils/*"],
-			// "@/validators/*": ["../../src/models/validators/*"]
 			"@/adapters/*": ["src/adapters/*"],
 			"@/context": ["test/unit/context.ts"],
 			"@/controllers/*": ["src/controllers/*"],

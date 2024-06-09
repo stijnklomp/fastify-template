@@ -1,10 +1,9 @@
 import type { Config } from "jest"
 import { pathsToModuleNameMapper } from "ts-jest"
-// import jestMockExtended from "jest-mock-extended"
 
 import { compilerOptions } from "../tsconfig.json"
 
-export const mainConfig: Config = {
+export const coreConfig: Config = {
 	clearMocks: true,
 	moduleDirectories: ["<rootDir>/node_modules"],
 	moduleFileExtensions: ["ts", "js", "json"],
@@ -16,19 +15,9 @@ export const mainConfig: Config = {
 	modulePaths: [compilerOptions.baseUrl],
 	setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
 	testEnvironment: "node",
-	// testMatch: ["**/?(*.)+(spec|test).[jt]s"],
-	// transform: {
-	// 	"^.+\\.(t|j)s$": [
-	// 		"ts-jest",
-	// 		{
-	// 			tsconfig: "./test/tsconfig.json",
-	// 		},
-	// 	],
-	// },
 }
 
-const config: Config = {
-	...mainConfig,
+export const coverageConfig: Config = {
 	collectCoverageFrom: ["<rootDir>/src/**/*.{cjs,mjs,js,ts}"],
 	coverageDirectory: "<rootDir>/test/unit/coverage",
 	coveragePathIgnorePatterns: [
@@ -46,7 +35,6 @@ const config: Config = {
 			statements: 100,
 		},
 	},
-	projects: ["<rootDir>/test/unit"],
 	reporters: [
 		"default",
 		[
@@ -57,6 +45,11 @@ const config: Config = {
 			},
 		],
 	],
+}
+
+const config: Config = {
+	...coreConfig,
+	projects: ["<rootDir>/test/unit"],
 	rootDir: "../",
 }
 

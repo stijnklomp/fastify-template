@@ -31,44 +31,25 @@ describe("Redis Service Tests", () => {
 
 	describe("set", () => {
 		it.only("should set in redis", async () => {
-			const setMock = jest
-				.fn<ReturnType<typeof redisAdapter.getPrimary>["set"], []>()
-				.mockReturnValue({
-					test: "value",
-				})
 			// const setMock = jest
-			// 	.fn<typeof createClient, []>()
-			// 	.mockReturnValue("")
+			// 	.fn<ReturnType<typeof redisAdapter.getPrimary>["set"], []>()
+			// 	.mockReturnValue({
+			// 		test: "value",
+			// 	})
+			const setMock = jest.fn().mockReturnValue({
+				test: "value",
+			})
 			mockedDependency.mockImplementation(
 				jest.fn().mockReturnValue({
 					set: setMock,
 				}),
 			)
-			// jest.mock("@/adapters/redis", () => ({
-			// 	getPrimary: jest.fn().mockReturnValue({
-			// 		set: setMock,
-			// 	}),
-			// }))
 			const set = await redisService.set("test", "value")
 
 			expect(setMock).toHaveBeenCalledTimes(1)
 			expect(set).toStrictEqual({
 				test: "value",
 			})
-			// const mockGetRedisClient = jest
-			// 	.spyOn(redisService, "getClient")
-			// 	.mockReturnValue({
-			// 		set: jest.fn().mockReturnValue({
-			// 			test: "value",
-			// 		}),
-			// 	} as any)
-
-			// const set = await redisService.set("test", "value")
-
-			// expect(mockGetRedisClient).toHaveBeenCalledTimes(1)
-			// expect(set).toStrictEqual({
-			// 	test: "value",
-			// })
 		})
 	})
 

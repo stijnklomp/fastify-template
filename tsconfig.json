@@ -45,11 +45,6 @@
 		"types": ["node", "jest"],
 		"outDir": "dist"
 	},
-	"include": [
-		"src/**/*.ts",
-		"schemas/**/*.ts",
-		"eslint.config.mjs",
-		"jest.setup.ts"
-	],
+	"include": ["."],
 	"exclude": ["node_modules", ".husky", "dist", "test", "**/*spec.ts"]
 }
