@@ -20,7 +20,6 @@ export default {
 		"error",
 		{ varsIgnorePattern: "^_", argsIgnorePattern: "^_" },
 	],
-	"prettier/prettier": 2,
 	quotes: ["error", "double"],
 	semi: ["error", "never", { beforeStatementContinuationChars: "always" }],
 	"@typescript-eslint/interface-name-prefix": "off",

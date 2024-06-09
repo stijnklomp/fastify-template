@@ -1,7 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 // @ts-check
 
+import jseslint from "@eslint/js"
 import tseslint from "typescript-eslint"
-import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended"
+// import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended"
 import typescriptEslintParser from "@typescript-eslint/parser"
 import eslintPluginJsonc from "eslint-plugin-jsonc"
 import eslintPluginYml from "eslint-plugin-yml"
@@ -17,6 +21,11 @@ const tsFileExts = ["**/*.ts"]
 const jsTsFileExts = [...jsFileExts, ...tsFileExts]
 
 export default tseslint.config(
+	{
+		files: jsFileExts,
+		rules: jseslint.configs.recommended.rules,
+		...tseslint.configs.disableTypeChecked,
+	},
 	// @ts-expect-error: Imported config will not have all of the correct associated types recognized by tseslint.config
 	...tseslint.configs.recommendedTypeChecked.map((config) => ({
 		...config,
@@ -81,17 +90,12 @@ export default tseslint.config(
 		},
 	},
 	{
-		files: jsFileExts,
-		name: "Javascript",
-		...tseslint.configs.disableTypeChecked,
-	},
-	{
 		ignores: ["./dist/", "./.husky/", "./prisma/", "./rabbitmq/"],
 		name: "ignores",
 	},
-	{
-		...eslintPluginPrettierRecommended,
-		name: "ESLint-Prettier recommended",
-	},
+	// {
+	// 	...eslintPluginPrettierRecommended,
+	// 	name: "ESLint-Prettier recommended",
+	// },
 	testConfig.default,
 )
