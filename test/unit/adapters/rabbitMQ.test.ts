@@ -28,6 +28,7 @@ const exchanges = {
 }
 
 const routingKeys = {
+	// eslint-disable-next-line camelcase
 	x_event: "event",
 }
 
@@ -68,6 +69,7 @@ describe("rabitMQ adapter", () => {
 			} catch (err) {
 				logger.error(err)
 			}
+
 			await mockCreateExchange(
 				exchanges.event,
 				"direct",

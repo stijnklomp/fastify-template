@@ -84,9 +84,10 @@ export default tseslint.config(
 		name: "Typescript",
 		rules: {
 			...eslintRules.default.rules,
-			"@typescript-eslint/unbound-method": "off",
 			...typescriptRules.default.overrides[0].rules,
 			...typescriptCustomRules,
+			"@typescript-eslint/unbound-method": "off",
+			"@typescript-eslint/consistent-type-definitions": ["error", "type"],
 		},
 	},
 	{

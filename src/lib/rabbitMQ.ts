@@ -46,11 +46,7 @@ export const consume = async (q: string, cb: ConsumeCallback) => {
 		q,
 		(payload) => {
 			if (!payload) return
-			cb(
-				channel as Channel,
-				payload,
-				JSON.parse(payload.content.toString()),
-			)
+			cb(channel!, payload, JSON.parse(payload.content.toString()))
 		},
 		{ noAck: false },
 	)
