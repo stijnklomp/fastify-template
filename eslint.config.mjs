@@ -5,7 +5,7 @@
 
 import jseslint from "@eslint/js"
 import tseslint from "typescript-eslint"
-// import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended"
+import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended"
 import typescriptEslintParser from "@typescript-eslint/parser"
 import eslintPluginJsonc from "eslint-plugin-jsonc"
 import eslintPluginYml from "eslint-plugin-yml"
@@ -93,9 +93,9 @@ export default tseslint.config(
 		ignores: ["./dist/", "./.husky/", "./prisma/", "./rabbitmq/"],
 		name: "ignores",
 	},
-	// {
-	// 	...eslintPluginPrettierRecommended,
-	// 	name: "ESLint-Prettier recommended",
-	// },
+	{
+		...eslintPluginPrettierRecommended,
+		name: "ESLint-Prettier recommended",
+	},
 	testConfig.default,
 )
