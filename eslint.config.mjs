@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 // @ts-check
 
 import jseslint from "@eslint/js"
@@ -11,26 +8,61 @@ import eslintPluginJsonc from "eslint-plugin-jsonc"
 import eslintPluginYml from "eslint-plugin-yml"
 import * as eslintRules from "stijnklomp-linting-formatting-config/eslintRules.js"
 import * as typescriptRules from "stijnklomp-linting-formatting-config/typescript/typescriptRules.js"
+import markdown from "eslint-plugin-markdown"
 import globals from "globals"
 
 import typescriptCustomRules from "./typescriptRules.mjs"
 import * as testConfig from "./test/eslint.config.mjs"
 
-const jsFileExts = ["**/*.js", "**/*.mjs", "**/*.cjs", "**/*.ts"]
+const jsFileExts = ["**/*.js", "**/*.mjs", "**/*.cjs"]
 const tsFileExts = ["**/*.ts"]
-const jsTsFileExts = [...jsFileExts, ...tsFileExts]
+// const jsTsFileExts = [...jsFileExts, ...tsFileExts]
+
+const nameMarkdownCodeBlocksConfigs = () => {
+	const combinedNamedConfigs = []
+
+	markdown.configs.recommended.forEach((config) => {
+		combinedNamedConfigs.push({
+			...config,
+			name: "Markdown code blocks",
+		})
+	})
+
+	return combinedNamedConfigs
+}
 
 export default tseslint.config(
-	{
-		files: jsFileExts,
-		rules: jseslint.configs.recommended.rules,
-		...tseslint.configs.disableTypeChecked,
-	},
 	// @ts-expect-error: Imported config will not have all of the correct associated types recognized by tseslint.config
+	...tseslint.configs.recommended.map((config) => ({
+		...config,
+		files: jsFileExts,
+		name: "TSEslint recommended Javascript",
+		languageOptions: {
+			parser: typescriptEslintParser,
+			parserOptions: {
+				project: "./tsconfig.json",
+				sourceType: "module",
+				tsconfigRootDir: import.meta.dirname,
+			},
+		},
+	})),
+	...tseslint.configs.stylistic.map((config) => ({
+		...config,
+		files: jsFileExts,
+		name: "TSEslint stylistic Javascript",
+		languageOptions: {
+			parser: typescriptEslintParser,
+			parserOptions: {
+				project: "./tsconfig.json",
+				sourceType: "module",
+				tsconfigRootDir: import.meta.dirname,
+			},
+		},
+	})),
 	...tseslint.configs.recommendedTypeChecked.map((config) => ({
 		...config,
-		files: jsTsFileExts,
-		name: "TSEslint recommended",
+		files: tsFileExts,
+		name: "TSEslint recommended Typescript",
 		languageOptions: {
 			parser: typescriptEslintParser,
 			parserOptions: {
@@ -42,8 +74,8 @@ export default tseslint.config(
 	})),
 	...tseslint.configs.stylisticTypeChecked.map((config) => ({
 		...config,
-		files: jsTsFileExts,
-		name: "TSEslint stylistic",
+		files: tsFileExts,
+		name: "TSEslint stylistic Typescript",
 		languageOptions: {
 			parser: typescriptEslintParser,
 			parserOptions: {
@@ -87,16 +119,17 @@ export default tseslint.config(
 			...typescriptRules.default.overrides[0].rules,
 			...typescriptCustomRules,
 			"@typescript-eslint/unbound-method": "off",
-			"@typescript-eslint/consistent-type-definitions": ["error", "type"],
+			"@typescript-eslint/consistent-type-definitions": ["warn", "type"],
 		},
 	},
-	{
-		ignores: ["./dist/", "./.husky/", "./prisma/", "./rabbitmq/"],
-		name: "ignores",
-	},
+	...testConfig.default,
+	...nameMarkdownCodeBlocksConfigs(),
 	{
 		...eslintPluginPrettierRecommended,
 		name: "ESLint-Prettier recommended",
 	},
-	testConfig.default,
+	{
+		ignores: ["./dist/", "./.husky/", "./prisma/", "./rabbitmq/"],
+		name: "Ignores",
+	},
 )

@@ -3,16 +3,16 @@ import redisAdapter from "@/adapters/redis"
 import redisService from "@/services/redis"
 
 // import { RedisModules } from "@redis/client/dist/lib/commands"
-import { createClient, RedisClientType } from "redis"
+// import { createClient, RedisClientType } from "redis"
 // type Test = RedisClientType<RedisModules, any, any>
 
 // import { mock } from "jest-mock-extended"
 
-type Test = ReturnType<typeof redisAdapter.getPrimary>
+// type Test = ReturnType<typeof redisAdapter.getPrimary>
 
-const mockedDependency = <
-	jest.Mock<ReturnType<typeof redisAdapter.getPrimary>>
->redisAdapter.getPrimary
+const mockedDependency = redisAdapter.getPrimary as jest.Mock<
+	ReturnType<typeof redisAdapter.getPrimary>
+>
 
 jest.mock("@/adapters/redis", () => ({
 	getPrimary: jest.fn(),
@@ -57,6 +57,7 @@ describe("Redis Service Tests", () => {
 		it("should get from redis", async () => {
 			const mockGetRedisClient = jest
 				.spyOn(redisService, "getClient")
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 				.mockReturnValue({
 					get: jest.fn().mockReturnValue({
 						test: "value",
@@ -76,6 +77,7 @@ describe("Redis Service Tests", () => {
 		it("should delete from redis", async () => {
 			const mockGetRedisClient = jest
 				.spyOn(redisService, "getClient")
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 				.mockReturnValue({
 					del: jest.fn().mockReturnValue({
 						test: "value",
