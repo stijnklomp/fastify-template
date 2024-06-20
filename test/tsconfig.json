@@ -1,11 +1,13 @@
 {
 	"extends": "../tsconfig.json",
-	"include": [
-		"../src/**/*.ts",
-		"**/*.ts",
-		"../jest.setup.ts",
-		"../eslint.config.mjs",
-		"eslint.config.mjs"
-	],
-	"exclude": ["../node_modules", "../.husky", "../dist", "**/*spec.ts"]
+	// "include": [
+	// 	"../src/**/*.ts",
+	// 	"**/*.ts",
+	// 	"../jest.setup.ts",
+	// 	"../eslint.config.mjs"
+	// ],
+	"include": ["**/*.ts", "../", "../.", "../*", "../**/*"],
+	"exclude": ["../node_modules", "../.husky", "../dist"]
+	// "include": ["."],
+	// "exclude": ["node_modules", ".husky", "dist", "test"]
 }

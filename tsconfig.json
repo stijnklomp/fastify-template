@@ -46,5 +46,5 @@
 		"outDir": "dist"
 	},
 	"include": ["."],
-	"exclude": ["node_modules", ".husky", "dist", "test", "**/*spec.ts"]
+	"exclude": ["node_modules", ".husky", "dist", "test"]
 }

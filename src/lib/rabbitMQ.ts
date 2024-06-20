@@ -91,3 +91,12 @@ export const sendToExchange = (
 		},
 	)
 }
+
+export default {
+	init,
+	send,
+	consume,
+	close,
+	createExchange,
+	sendToExchange,
+}

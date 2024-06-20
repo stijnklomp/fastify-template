@@ -1,6 +1,6 @@
 // @ts-check
 
-import jseslint from "@eslint/js"
+// import jseslint from "@eslint/js"
 import tseslint from "typescript-eslint"
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended"
 import typescriptEslintParser from "@typescript-eslint/parser"
@@ -12,7 +12,7 @@ import markdown from "eslint-plugin-markdown"
 import globals from "globals"
 
 import typescriptCustomRules from "./typescriptRules.mjs"
-import * as testConfig from "./test/eslint.config.mjs"
+import * as testConfig from "./test/eslintConfig.mjs"
 
 const jsFileExts = ["**/*.js", "**/*.mjs", "**/*.cjs"]
 const tsFileExts = ["**/*.ts"]
@@ -40,9 +40,8 @@ export default tseslint.config(
 		languageOptions: {
 			parser: typescriptEslintParser,
 			parserOptions: {
-				project: "./tsconfig.json",
+				ecmaVersion: 2022,
 				sourceType: "module",
-				tsconfigRootDir: import.meta.dirname,
 			},
 		},
 	})),
@@ -53,9 +52,8 @@ export default tseslint.config(
 		languageOptions: {
 			parser: typescriptEslintParser,
 			parserOptions: {
-				project: "./tsconfig.json",
+				ecmaVersion: 2022,
 				sourceType: "module",
-				tsconfigRootDir: import.meta.dirname,
 			},
 		},
 	})),
@@ -129,7 +127,15 @@ export default tseslint.config(
 		name: "ESLint-Prettier recommended",
 	},
 	{
-		ignores: ["./dist/", "./.husky/", "./prisma/", "./rabbitmq/"],
+		ignores: [
+			"node_modules/",
+			"dist/",
+			".husky/",
+			"prisma/",
+			"rabbitmq/",
+			"package-lock.json",
+			".dockerignore",
+		],
 		name: "Ignores",
 	},
 )
