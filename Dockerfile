@@ -1,10 +1,10 @@
 FROM node:20-alpine AS deps
-ARG DATABASE_URL
-ENV DATABASE_URL=${DATABASE_URL}
+ARG DATABASE_URI
+ENV DATABASE_URI=${DATABASE_URI}
 WORKDIR /app
 COPY package*.json ./
 COPY /prisma ./prisma
-RUN npm ci --ignore-scripts --legacy-peer-deps
+RUN npm ci --ignore-scripts --force
 RUN npx prisma generate
 
 FROM node:20-alpine AS builder
