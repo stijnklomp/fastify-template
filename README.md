@@ -5,6 +5,16 @@
 <img src="https://img.shields.io/github/license/stijnklomp/fastify-template?style=flat" alt="Package License" />
 </p>
 
+## Features
+
+- Fastify: A fast and low overhead web framework for Node.js.
+- TypeScript: Static typing with TypeScript, enhancing code quality and developer productivity.
+- Prettier & ESLint: Automatic code formatting and linting for consistent code style and adherence to best practices.
+- Jest: Unit testing framework for ensuring code quality and functionality.
+- Playwright: End-to-end testing framework for comprehensive testing of user interactions and browser behavior.
+- Husky: Git hooks for running linting and tests before commits, ensuring code quality standards are met.
+- TypeDoc: Automatic generation of TypeScript documentation for improved code clarity and collaboration.
+
 ## Installation
 
 ```sh
@@ -52,15 +62,25 @@ Once the app is running, documentation will be available at `API_URL:PORT/docs`.
 
 ## Test
 
+### Unit tests
+
 ```sh
-# Unit tests
 npm run test
 
 # Test coverage
 npm run test:coverage
+```
 
-# E2E tests
+### End-to-end tests
+
+```sh
 npm run test:e2e
+```
+
+#### With Docker Compose
+
+```sh
+docker compose --profile=PROFILE up --build -d && docker compose --profile=PROFILE exec -ti dev sh -c "npm run test:e2e"
 ```
 
 ## License

@@ -56,3 +56,6 @@ dist
 
 # Linting/Formatting
 .eslintcache
+
+# Playwright
+/playwright/.cache/

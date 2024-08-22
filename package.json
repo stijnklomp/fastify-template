@@ -23,6 +23,7 @@
 		"@eslint/js": "^9.9.0",
 		"@fastify/autoload": "^5.10.0",
 		"@fastify/swagger": "^8.15.0",
+		"@playwright/test": "^1.46.1",
 		"@types/amqplib": "^0.10.5",
 		"@types/jest": "^29.5.12",
 		"@types/node": "^22.4.1",
@@ -78,6 +79,7 @@
 		"test": "LOGS=test jest --config test/unit/jest.config.ts",
 		"test:coverage": "npm run test -- --coverage",
 		"test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/jest/bin/jest --runInBand",
+		"test:e2e": "playwright test -c test/e2e",
 		"prepare": "husky"
 	},
 	"version": "1.0.0"
