@@ -1,3 +1,26 @@
+x-playwright: &playwright
+  image: mcr.microsoft.com/playwright:v1.46.1-jammy
+  volumes:
+    - ".:/src"
+  working_dir: "/src"
+  tty: true
+  depends_on:
+    rabbitmq:
+      condition: service_healthy
+    redis:
+      condition: service_started
+    db-migration:
+      condition: service_completed_successfully
+    dev:
+      condition: service_healthy # todo: change to "ready" instead of "healthy"
+  # networks:
+  #   - internal
+  #   - external
+  env_file:
+    - path: ./.env
+  ports:
+    - 3001:3001
+
 services:
   local:
     build:
@@ -23,8 +46,13 @@ services:
     volumes:
       - ".:/src"
     working_dir: "/src"
-    command: sh -c "[ ! -d node_modules ] && npm ci --force ; apk --no-cache add curl ; sleep 5 ; npm run dev"
+    command: sh -c "[ ! -d node_modules ] && npm ci --force ; apk --no-cache add curl ; npm run dev"
     tty: true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 5s
+      timeout: 10s
+      retries: 12
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -43,16 +71,18 @@ services:
       - dev
       - test
 
-  # acceptance:
-  #   image: ...
-  #   volumes:
-  #     - ".:/src"
-  #   working_dir: "/src"
-  #   networks:
-  #     - external
-  #   command: sh -c "npm ci && sleep infinity"
-  #   profiles:
-  #     - test
+  e2e:
+    <<: *playwright
+    command: sh -c "[ ! -d node_modules ] && npm ci --force ; apk --no-cache add curl ; sleep infinity"
+    profiles:
+      - local
+      - dev
+
+  e2e-once:
+    <<: *playwright
+    command: sh -c "[ ! -d node_modules ] && npm ci --force ; apk --no-cache add curl ; npm run test:e2e"
+    profiles:
+      - test
 
   rabbitmq:
     image: rabbitmq
@@ -143,6 +173,7 @@ services:
       - path: ./.env
     profiles:
       - dev
+      - test
 
 volumes:
   rabbitmq:
