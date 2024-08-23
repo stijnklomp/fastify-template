@@ -11,7 +11,7 @@
 - TypeScript: Static typing with TypeScript, enhancing code quality and developer productivity.
 - Prettier & ESLint: Automatic code formatting and linting for consistent code style and adherence to best practices.
 - Jest: Unit testing framework for ensuring code quality and functionality.
-- Playwright: End-to-end testing framework for comprehensive testing of user interactions and browser behavior.
+- Playwright: Integration testing framework for comprehensive testing of user interactions and browser behavior.
 - Husky: Git hooks for running linting and tests before commits, ensuring code quality standards are met.
 - TypeDoc: Automatic generation of TypeScript documentation for improved code clarity and collaboration.
 
@@ -71,23 +71,23 @@ npm run test
 npm run test:coverage
 ```
 
-### End-to-end tests
+### Integration tests
 
 ```sh
-npm run test:e2e
+npm run test:integration
 ```
 
 #### With Docker Compose
 
 ```sh
 # Run once and exit
-docker compose --profile=test up --build --attach e2e-once --exit-code-from e2e-once
+docker compose --profile=test up --build --attach integration-once --exit-code-from integration-once
 
 # Run multiple times
-# There are multiple profiles that can be run for the end-to-end tests:
+# There are multiple profiles that can be run for the integration tests:
 # dev
 # local
-docker compose --profile=PROFILE up --build -d && docker compose --profile=PROFILE exec -ti dev sh -c "npm run test:e2e"
+docker compose --profile=PROFILE up --build -d && docker compose --profile=PROFILE exec -ti dev sh -c "npm run test:integration"
 ```
 
 ## License
