@@ -11,8 +11,6 @@ x-playwright: &playwright
       condition: service_started
     db-migration:
       condition: service_completed_successfully
-    dev:
-      condition: service_healthy # todo: change to "ready" instead of "healthy"
   # networks:
   #   - internal
   #   - external
@@ -21,55 +19,51 @@ x-playwright: &playwright
   ports:
     - 3001:3001
 
+x-fastify: &fastify
+  network_mode: "host"
+  tty: true
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+    interval: 5s
+    timeout: 10s
+    retries: 12
+  depends_on:
+    rabbitmq:
+      condition: service_healthy
+    redis:
+      condition: service_started
+    db-migration:
+      condition: service_completed_successfully
+  # networks:
+  #   - internal
+  #   - external
+  env_file:
+    - path: ./.env
+  ports:
+    - ${API_PORT:-3000}:3000
+
 services:
   local:
+    <<: *fastify
+    # extends:
+    #   service: fastify
     build:
       context: .
-    network_mode: "host"
-    tty: true
-    depends_on:
-      - rabbitmq
-      - redis
-      - db
-    # networks:
-    #   - internal
-    env_file:
-      - path: ./.env
-    ports:
-      - ${API_PORT:-3000}:3000
     profiles:
       - local
+      - test
 
   dev:
+    <<: *fastify
+    # extends:
+    #   service: fastify
     image: node:20-alpine
-    network_mode: "host"
     volumes:
       - ".:/src"
     working_dir: "/src"
     command: sh -c "[ ! -d node_modules ] && npm ci --force ; apk --no-cache add curl ; npm run dev"
-    tty: true
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
-      interval: 5s
-      timeout: 10s
-      retries: 12
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      redis:
-        condition: service_started
-      db-migration:
-        condition: service_completed_successfully
-    # networks:
-    #   - internal
-    #   - external
-    env_file:
-      - path: ./.env
-    ports:
-      - ${API_PORT:-3000}:3000
     profiles:
       - dev
-      - test
 
   e2e:
     <<: *playwright
@@ -172,6 +166,7 @@ services:
     env_file:
       - path: ./.env
     profiles:
+      - local
       - dev
       - test
 
