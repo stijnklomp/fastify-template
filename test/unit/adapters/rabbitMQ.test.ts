@@ -7,7 +7,7 @@ import {
 } from "@/adapters/rabbitMQ"
 import { Channel } from "amqplib"
 
-jest.mock("@/lib/RabbitMQ", () => ({
+jest.mock("@/lib/rabbitMQ", () => ({
 	init: jest.fn(),
 	createExchange: jest.fn(),
 	sendToExchange: jest.fn(),

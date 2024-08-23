@@ -5,7 +5,7 @@ import { coreConfig, coverageConfig } from "../jest.config"
 const config: Config = {
 	...coreConfig,
 	...coverageConfig,
-	displayName: "unit",
+	displayName: "feature",
 	moduleNameMapper: {
 		...coreConfig.moduleNameMapper,
 		"^@/context$": "<rootDir>/test/context.ts",
@@ -20,7 +20,7 @@ const config: Config = {
 		"^.+\\.(t|j)s$": [
 			"ts-jest",
 			{
-				tsconfig: "<rootDir>/test/unit/tsconfig.json",
+				tsconfig: "<rootDir>/test/feature/tsconfig.json",
 			},
 		],
 	},

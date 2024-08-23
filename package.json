@@ -79,6 +79,8 @@
 		"test": "LOGS=test jest --config test/unit/jest.config.ts",
 		"test:coverage": "npm run test -- --coverage",
 		"test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/jest/bin/jest --runInBand",
+		"test:feature": "LOGS=test jest --config test/feature/jest.config.ts",
+		"test:unit": "npm run test",
 		"test:integration": "playwright test -c test/integration",
 		"prepare": "husky"
 	},

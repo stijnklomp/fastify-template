@@ -10,7 +10,7 @@
 - Fastify: A fast and low overhead web framework for Node.js.
 - TypeScript: Static typing with TypeScript, enhancing code quality and developer productivity.
 - Prettier & ESLint: Automatic code formatting and linting for consistent code style and adherence to best practices.
-- Jest: Unit testing framework for ensuring code quality and functionality.
+- Jest: Unit & Feature testing framework for ensuring code quality and functionality.
 - Playwright: Integration testing framework for comprehensive testing of user interactions and browser behavior.
 - Husky: Git hooks for running linting and tests before commits, ensuring code quality standards are met.
 - TypeDoc: Automatic generation of TypeScript documentation for improved code clarity and collaboration.
@@ -62,10 +62,14 @@ Once the app is running, documentation will be available at `API_URL:PORT/docs`.
 
 ## Test
 
-### Unit tests
+### Unit & Feature tests
 
 ```sh
+# Unit tests
 npm run test
+
+# Feature tests
+npm run test:feature
 
 # Test coverage
 npm run test:coverage

@@ -5,7 +5,7 @@ import { coreConfig, coverageConfig } from "../jest.config"
 const config: Config = {
 	...coreConfig,
 	...coverageConfig,
-	displayName: "end-2-end",
+	displayName: "integration",
 	moduleNameMapper: {
 		...coreConfig.moduleNameMapper,
 	},
