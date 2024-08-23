@@ -22,11 +22,11 @@ x-playwright: &playwright
 x-fastify: &fastify
   network_mode: "host"
   tty: true
-  healthcheck:
-    test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
-    interval: 5s
-    timeout: 10s
-    retries: 12
+  # healthcheck:
+  #   test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+  #   interval: 30s
+  #   timeout: 10s
+  #   retries: 12
   depends_on:
     rabbitmq:
       condition: service_healthy
@@ -61,7 +61,7 @@ services:
     volumes:
       - ".:/src"
     working_dir: "/src"
-    command: sh -c "[ ! -d node_modules ] && npm ci --force ; apk --no-cache add curl ; npm run dev"
+    command: sh -c "[ ! -d node_modules ] && npm ci --force ; apk --no-cache add curl ; npm run dev" # todo: "apk not found" error
     profiles:
       - dev
 
