@@ -9,14 +9,24 @@ const config: Config = {
 	moduleNameMapper: {
 		...coreConfig.moduleNameMapper,
 	},
+	reporters: [
+		"default",
+		[
+			"jest-junit",
+			{
+				outputDirectory: "<rootDir>/test/integration/reports",
+				outputName: "junit.xml",
+			},
+		],
+	],
 	rootDir: "../../",
 	setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
-	testMatch: ["**/?(*.)+(spec|test).[jt]s"],
+	testMatch: ["<rootDir>/test/integration/**/(*.)+(spec|test).[jt]s"],
 	transform: {
 		"^.+\\.(t|j)s$": [
 			"ts-jest",
 			{
-				tsconfig: "<rootDir>/test/e2e/tsconfig.json",
+				tsconfig: "<rootDir>/test/integration/tsconfig.json",
 			},
 		],
 	},

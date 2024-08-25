@@ -19,7 +19,6 @@ export const coreConfig: Config = {
 
 export const coverageConfig: Config = {
 	collectCoverageFrom: ["<rootDir>/src/**/*.{cjs,mjs,js,ts}"],
-	coverageDirectory: "<rootDir>/test/unit/coverage",
 	coveragePathIgnorePatterns: [
 		"<rootDir>/node_modules/",
 		"<rootDir>/.husky/",
@@ -35,21 +34,15 @@ export const coverageConfig: Config = {
 			statements: 100,
 		},
 	},
-	reporters: [
-		"default",
-		[
-			"jest-junit",
-			{
-				outputDirectory: "<rootDir>/test/unit/reports",
-				outputName: "junit.xml",
-			},
-		],
-	],
 }
 
 const config: Config = {
 	...coreConfig,
-	projects: ["<rootDir>/test/unit"],
+	projects: [
+		"<rootDir>/test/unit",
+		"<rootDir>/feature/unit",
+		"<rootDir>/integration/unit",
+	],
 	rootDir: "../",
 }
 
