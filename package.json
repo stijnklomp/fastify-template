@@ -72,7 +72,7 @@
 	"private": false,
 	"scripts": {
 		"merge-coverage-report-jsons": "istanbul-merge --out test/temp-coverage/temp-coverage-final.json test/unit/coverage/coverage-final.json test/feature/coverage/coverage-final.json",
-		"generate-coverage-all-packages": "nyc report --reporter=html --reporter=text --reporter=lcov --reporter=clover --report-dir=test/coverage --temp-dir=test/temp-coverage",
+		"generate-coverage-all-packages": "nyc report --reporter=html --reporter=text --reporter=lcov --reporter=clover --report-dir=test/combined-coverage --temp-dir=test/temp-coverage",
 		"afterTest": "mkdir test/temp-coverage ; npm run merge-coverage-report-jsons && npm run generate-coverage-all-packages ; rm -rf test/temp-coverage",
 		"build": "rm -rf dist ; node esbuild.mjs",
 		"ci:test:coverage": "npm run test:coverage -- --coverageReporters=cobertura --passWithNoTests",
