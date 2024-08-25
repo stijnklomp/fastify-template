@@ -7,8 +7,8 @@ README.md
 .husky
 .editorconfig
 .editorignore
-eslint.config.js
-test/eslint.config.js
+eslint.config.mjs
+test/eslint.config.mjs
 .eslintignore
 .npmignore
 .prettierrc.cjs

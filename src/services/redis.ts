@@ -13,7 +13,7 @@ export const set = async (key: string, value: string) => {
 	const redis = getClient()
 	const set = await redis.set(key, value)
 
-	type Test = ReturnType<typeof getClient>["set"]
+	// type Test = ReturnType<typeof getClient>["set"]
 
 	return set
 }

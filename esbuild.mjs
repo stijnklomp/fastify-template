@@ -13,15 +13,17 @@ import { createRequire } from "module"
  * @param {string} fromFile
  */
 const getModuleDir = (moduleEntry) => {
-    const packageName = moduleEntry.includes("/")
-        ? moduleEntry.startsWith("@")
-            ? moduleEntry.split("/").slice(0, 2).join("/")
-            : moduleEntry.split("/")[0]
-        : moduleEntry;
-    const require = createRequire(import.meta.url);
-    const lookupPaths = require.resolve.paths(moduleEntry).map((p) => path.join(p, packageName));
-    return lookupPaths.find((p) => fs.existsSync(p));
-};
+	const packageName = moduleEntry.includes("/")
+		? moduleEntry.startsWith("@")
+			? moduleEntry.split("/").slice(0, 2).join("/")
+			: moduleEntry.split("/")[0]
+		: moduleEntry
+	const require = createRequire(import.meta.url)
+	const lookupPaths = require.resolve
+		.paths(moduleEntry)
+		.map((p) => path.join(p, packageName))
+	return lookupPaths.find((p) => fs.existsSync(p))
+}
 
 /**
  * ESBuild plugin to copy static folder to outdir
@@ -31,7 +33,7 @@ function esbuildPluginFastifySwaggerUi() {
 		name: "@fastify/swagger-ui",
 		setup(build) {
 			const { outdir } = build.initialOptions
-			const fastifySwaggerUi = getModuleDir("@fastify/swagger-ui");
+			const fastifySwaggerUi = getModuleDir("@fastify/swagger-ui")
 			const source = path.join(fastifySwaggerUi, "static")
 			const dest = path.join(outdir, "static")
 
@@ -63,19 +65,19 @@ void (async function () {
 	const args = process.argv.slice(2)
 
 	if (args.includes("dev")) {
-		console.log("Running in dev mode");
+		console.log("Running in dev mode")
 		const ctx = await esbuild.context({
 			...options,
 			plugins: [
 				...options.plugins,
 				serve({
-					main: "dist/app.js"
-				})
-			]
+					main: "dist/app.js",
+				}),
+			],
 		})
-		await ctx.watch();
+		await ctx.watch()
 	} else {
-		console.log("Building for production");
+		console.log("Building for production")
 		esbuild.build(options)
 	}
 })()

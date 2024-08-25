@@ -1,74 +1,98 @@
+x-playwright: &playwright
+  image: mcr.microsoft.com/playwright:v1.46.1-jammy
+  volumes:
+    - ".:/src"
+  working_dir: "/src"
+  tty: true
+  depends_on:
+    rabbitmq:
+      condition: service_healthy
+    redis:
+      condition: service_started
+    db-migration:
+      condition: service_completed_successfully
+  # networks:
+  #   - internal
+  #   - external
+  env_file:
+    - path: ./.env
+  ports:
+    - 3001:3001
+
+x-fastify: &fastify
+  network_mode: "host"
+  tty: true
+  # healthcheck:
+  #   test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+  #   interval: 30s
+  #   timeout: 5s
+  #   retries: 4
+  depends_on:
+    rabbitmq:
+      condition: service_healthy
+    redis:
+      condition: service_started
+    db-migration:
+      condition: service_completed_successfully
+  # networks:
+  #   - internal
+  #   - external
+  env_file:
+    - path: ./.env
+  ports:
+    - ${API_PORT:-3000}:3000
+
 services:
   local:
+    <<: *fastify
+    # extends:
+    #   service: fastify
     build:
       context: .
-    network_mode: "host"
-    tty: true
-    depends_on:
-      - rabbitmq
-      - redis
-      - db
-    environment:
-      NODE_ENV: "development"
-      API_PORT: "3000"
-      LOGS: "development"
-    ports:
-      - 3000:3000
     profiles:
       - local
+      - test
 
   dev:
+    <<: *fastify
+    # extends:
+    #   service: fastify
     image: node:20-alpine
-    network_mode: "host"
     volumes:
       - ".:/src"
     working_dir: "/src"
-    command: /bin/sh -c "[ ! -d node_modules ] && npm ci ; apk --no-cache add curl ; sleep 5 ; npm run dev"
-    tty: true
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      redis:
-        condition: service_started
-      db:
-        condition: service_started
-      adminer:
-        condition: service_started
-    environment:
-      NODE_ENV: "development"
-      API_PORT: 3000
-      LOGS: "development"
-
-      REDIS_HOST: 0.0.0.0
-      REDIS_PORT: 6379
-      REDIS_PASSWORD: "admin123"
-
-      RABBIT_TRANSPORT: "amqp"
-      RABBIT_HOST: 0.0.0.0
-      # RABBIT_USER: "localhost"
-      # RABBIT_PASS: "admin123"
-      RABBIT_USER: "guest"
-      RABBIT_PASS: "guest"
-      RABBIT_PORT: 5672
-    ports:
-      - 3000:3000
+    command: sh -c "[ ! -d node_modules ] && npm ci --force ; apk --no-cache add curl ; npm run dev" # todo: "apk not found" error
     profiles:
       - dev
+
+  integration:
+    <<: *playwright
+    command: sh -c "[ ! -d node_modules ] && npm ci --force ; apk --no-cache add curl ; sleep infinity"
+    profiles:
+      - local
+      - dev
+
+  integration-once:
+    <<: *playwright
+    command: sh -c "[ ! -d node_modules ] && npm ci --force ; apk --no-cache add curl ; npm run test:integration"
+    profiles:
+      - test
 
   rabbitmq:
     image: rabbitmq
     restart: always
     healthcheck:
-      # test: ["CMD", "curl", "-f", "http://localhost:15672"]
-      test: "exit 0"
-      interval: 5s
-      timeout: 10s
-      retries: 12
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    # networks:
+    #   - internal
     volumes:
       - rabbitmq:/var/lib/rabbitmq/data
       - rabbitmq:/var/log/rabbitmq/log
     ports:
-      - 5672:5672
+      - ${RABBIT_PORT:-5672}:5672
       - 15672:15672
 
   redis:
@@ -85,14 +109,16 @@ services:
         "--logLevel",
         "notice",
         "--requirepass",
-        "admin123",
+        "$REDIS_PASSWORD",
       ]
+    # networks:
+    #   - internal
     volumes:
       - redis-cache:/data
-    logging:
-      driver: none
+    # logging:
+    #   driver: none
     ports:
-      - 6379:6379
+      - ${REDIS_PORT:-6379}:6379
 
   db:
     image: postgres
@@ -105,21 +131,63 @@ services:
     #    target: /dev/shm
     #    tmpfs:
     #      size: 134217728 # 128*2^20 bytes = 128Mb
-    # volumes:
-    #   - postgres-data:/var/lib/postgresql/data
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    # networks:
+    #   - internal
+    healthcheck:
+      test: pg_isready -d $$POSTGRES_DB -U $$POSTGRES_USER
+      interval: 20s
+      timeout: 5s
+      retries: 6
     environment:
-      POSTGRES_USER: main
-      POSTGRES_PASSWORD: admin123
-      POSTGRES_DB: main
+      POSTGRES_USER: $DATABASE_USERNAME
+      POSTGRES_PASSWORD: $DATABASE_PASSWORD
+      POSTGRES_DB: $DATABASE_DB
+    env_file:
+      - path: ./.env
     ports:
-      - 5432:5432
+      - ${DATABASE_PORT:-5432}:5432
 
-  adminer:
-    image: adminer
-    restart: always
+  db-migration:
+    image: node:20-alpine
+    volumes:
+      - ".:/src"
+    working_dir: "/src"
+    command: sh ./dockerComposeMigrate.sh
+    depends_on:
+      db:
+        condition: service_healthy
+    tty: true
     ports:
-      - 8080:8080
+      - 3001:3001
+    # networks:
+    #   - internal
+    env_file:
+      - path: ./.env
+    profiles:
+      - local
+      - dev
+      - test
+
+  localstack:
+    image: localstack/localstack
+    ports:
+      - "127.0.0.1:4566:4566" # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559" # external services port range
+    environment:
+      # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
+      - DEBUG=${DEBUG:-0}
+    volumes:
+      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
 volumes:
   rabbitmq:
   redis-cache:
   postgres-data:
+# networks:
+#   internal:
+#     driver: bridge
+#   external:
+#     driver: bridge

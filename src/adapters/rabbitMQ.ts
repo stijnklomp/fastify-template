@@ -6,16 +6,16 @@ import {
 	ConsumeCallback,
 } from "@/lib/rabbitMQ"
 
-const Exchanges = {
+const exchanges = {
 	event: "x-test-event",
 }
 
-const RoutingKeys = {
+const routingKeys = {
 	// eslint-disable-next-line camelcase
 	x_event: "event",
 }
 
-const Queues = {
+const queues = {
 	event: "q-event",
 }
 
@@ -23,12 +23,12 @@ export const init = async () => {
 	try {
 		await createConnection()
 
-		// Initiate Exhcanges and Queues To Recieve Event Stream
+		// Initiate exhcanges and queues to receive event stream
 		await createExchange(
-			Exchanges.event,
+			exchanges.event,
 			"direct",
-			Queues.event,
-			RoutingKeys.x_event,
+			queues.event,
+			routingKeys.x_event,
 			undefined,
 		)
 	} catch (err: any) {
@@ -38,18 +38,12 @@ export const init = async () => {
 }
 
 export const sendToEvent = (payload: object) => {
-	const exchange = Exchanges.event
-	const routingKey = RoutingKeys.x_event
+	const exchange = exchanges.event
+	const routingKey = routingKeys.x_event
 
 	sendToExchange(exchange, routingKey, payload)
 }
 
 export const subscribe = async (q: string, listener: ConsumeCallback) => {
 	await consume(q, listener)
-}
-
-export default {
-	init,
-	sendToEvent,
-	subscribe,
 }

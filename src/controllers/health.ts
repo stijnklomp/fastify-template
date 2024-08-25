@@ -4,17 +4,18 @@ import { logger } from "@/lib/logger"
 import { prisma } from "@/utils/prisma"
 import { FastifyRequestSchemaTypes } from "@/src/models/types/schemaBuilderTypeExtractor"
 
-const dbConnection = prisma.$connect().then(async () => {
-	logger.info("Database connection healthy")
-	await prisma.$disconnect()
-})
+const dbConnection = () =>
+	prisma.$connect().then(async () => {
+		logger.info("Database connection healthy")
+		await prisma.$disconnect()
+	})
 
 export const checkHealthyHandler = async (
 	req: FastifyRequestSchemaTypes<typeof notesValidator.getNotes>,
 	res: FastifyReply,
 ) => {
 	try {
-		await dbConnection
+		await dbConnection()
 
 		await res.code(204).send()
 	} catch (err) {
