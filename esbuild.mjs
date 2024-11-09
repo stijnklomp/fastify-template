@@ -22,7 +22,15 @@ const getModuleDir = (moduleEntry) => {
 	const lookupPaths = require.resolve
 		.paths(moduleEntry)
 		.map((p) => path.join(p, packageName))
-	return lookupPaths.find((p) => fs.existsSync(p))
+	for (const path of lookupPaths) {
+		try {
+			require(path)
+
+			return path
+		} catch (e) {}
+	}
+
+	return undefined
 }
 
 /**

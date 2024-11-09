@@ -1,6 +1,7 @@
 import typescriptEslintParser from "@typescript-eslint/parser"
 
 export default [
+	// TODO: Add this for integration & feature?
 	{
 		files: ["test/**/*.ts"],
 		languageOptions: {

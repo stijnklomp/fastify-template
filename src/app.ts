@@ -8,6 +8,10 @@ import FastifySwagger from "@fastify/swagger"
 import FastifySwaggerUI from "@fastify/swagger-ui"
 import path from "path"
 import hyperid from "hyperid"
+import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node"
+import { registerInstrumentations } from "@opentelemetry/instrumentation"
+import { HttpInstrumentation } from "@opentelemetry/instrumentation-http"
+import { FastifyInstrumentation } from "@opentelemetry/instrumentation-fastify"
 
 import { init as initRedis } from "@/adapters/redis"
 import { init as initRabbitMQ } from "@/adapters/rabbitMQ"
@@ -145,6 +149,15 @@ void fastify.register(FastifySwaggerUI, {
 		return swaggerObject
 	},
 	transformSpecificationClone: true,
+})
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+const provider = new NodeTracerProvider()
+// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+provider.register()
+
+registerInstrumentations({
+	instrumentations: [new HttpInstrumentation(), new FastifyInstrumentation()],
 })
 
 void fastify.register(AutoLoad, {
