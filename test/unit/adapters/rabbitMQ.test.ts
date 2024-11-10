@@ -28,7 +28,6 @@ const exchanges = {
 }
 
 const routingKeys = {
-	// eslint-disable-next-line camelcase
 	x_event: "event",
 }
 

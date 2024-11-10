@@ -1,14 +1,14 @@
 import tseslint from "typescript-eslint"
-
 import config from "stijnklomp-linting-formatting-config/dist/index.js"
+
 const finalConfig = config({
 	typescript: true,
 	strict: true,
 	tsconfigRootDir: ".",
 	configs: {
-		markdownCodeBlocks: false,
-		stylistic: false,
-		jest: false,
+		markdownCodeBlocks: true,
+		stylistic: true,
+		jest: true,
 	},
 })
 
@@ -35,9 +35,13 @@ const finalConfig = config({
 // delete finalConfig[finalConfig.length - 21]
 // delete finalConfig[finalConfig.length - 22]
 
+// finalConfig[finalConfig.length - 1] = {
+// 	ignores: [...finalConfig[finalConfig.length - 1].ignores, "test/*"],
+// }
+
 console.log(...finalConfig)
 export default tseslint.config(...finalConfig, {
-	ignores: ["typedoc.config.mjs"],
+	// ignores: ["typedoc.config.mjs"],
 	// rules: {
 	// 	"no-unused-vars": "off",
 	// 	// "@typescript-eslint/no-unused-vars": [

@@ -1,7 +1,7 @@
 import Fastify, {
 	FastifyServerOptions,
 	FastifyRequest,
-	FastifyReply,
+	// FastifyReply,
 } from "fastify"
 import AutoLoad from "@fastify/autoload"
 import FastifySwagger from "@fastify/swagger"
@@ -15,7 +15,7 @@ import { FastifyInstrumentation } from "@opentelemetry/instrumentation-fastify"
 
 import { init as initRedis } from "@/adapters/redis"
 import { init as initRabbitMQ } from "@/adapters/rabbitMQ"
-import { IncomingMessage, ServerResponse } from "http"
+// import { IncomingMessage, ServerResponse } from "http"
 
 const envToLogger = {
 	development: {
@@ -58,6 +58,7 @@ const envToLogger = {
 				return {
 					method: req.method,
 					url: req.url,
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 					path: req.routerPath,
 					parameters: req.params,
 				}
@@ -151,9 +152,8 @@ void fastify.register(FastifySwaggerUI, {
 	transformSpecificationClone: true,
 })
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
 const provider = new NodeTracerProvider()
-// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+
 provider.register()
 
 registerInstrumentations({
