@@ -1,11 +1,11 @@
 import rabbitMQLib from "@/lib/rabbitMQ"
-import { logger } from "@/lib/logger"
+// import { logger } from "@/lib/logger"
 import {
 	init as createConnection,
-	sendToEvent,
-	subscribe,
+	// sendToEvent,
+	// subscribe,
 } from "@/adapters/rabbitMQ"
-import { Channel } from "amqplib"
+// import { Channel } from "amqplib"
 
 jest.mock("@/lib/rabbitMQ", () => ({
 	init: jest.fn(),
@@ -23,17 +23,17 @@ jest.mock("@/lib/rabbitMQ", () => ({
 // >
 // const mockConsume = consume as jest.MockedFunction<typeof consume>
 
-const exchanges = {
-	event: "x-test-event",
-}
+// const exchanges = {
+// 	event: "x-test-event",
+// }
 
-const routingKeys = {
-	x_event: "event",
-}
+// const routingKeys = {
+// 	x_event: "event",
+// }
 
-const queues = {
-	event: "q-event",
-}
+// const queues = {
+// 	event: "q-event",
+// }
 
 describe("rabitMQ adapter", () => {
 	beforeEach(() => {

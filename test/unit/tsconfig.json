@@ -1,5 +1,4 @@
 {
-	"extends": "../tsconfig.json",
 	"compilerOptions": {
 		"noEmit": false,
 		"paths": {
@@ -18,5 +17,6 @@
 			"@/utils/*": ["src/utils/*"],
 			"@/validators/*": ["src/models/validators/*"]
 		}
-	}
+	},
+	"extends": "../tsconfig.json"
 }

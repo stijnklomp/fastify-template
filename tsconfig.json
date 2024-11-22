@@ -19,6 +19,7 @@
 		"noImplicitAny": false,
 		"noUnusedLocals": false,
 		"noUnusedParameters": false,
+		"outDir": "dist",
 		"paths": {
 			"@/adapters/*": ["src/adapters/*"],
 			"@/controllers/*": ["src/controllers/*"],
@@ -42,9 +43,8 @@
 		"strictNullChecks": true,
 		"target": "ESNext",
 		"traceResolution": false,
-		"types": ["node", "jest"],
-		"outDir": "dist"
+		"types": ["node", "jest"]
 	},
-	"include": ["."],
-	"exclude": ["node_modules", ".husky", "dist", "test"]
+	"exclude": ["node_modules", ".husky", "dist", "test"],
+	"include": ["."]
 }
