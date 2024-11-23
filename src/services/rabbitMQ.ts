@@ -5,9 +5,7 @@ import {
 } from "@/adapters/rabbitMQ"
 
 export const sendToEvent = (payload: object) => {
-	const result = sendToEventAdapter(payload)
-
-	return result
+	sendToEventAdapter(payload)
 }
 
 export const subscribeToEvent = (q: string, listener: ConsumeCallback) =>

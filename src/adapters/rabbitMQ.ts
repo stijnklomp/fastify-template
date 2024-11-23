@@ -11,6 +11,7 @@ const exchanges = {
 }
 
 const routingKeys = {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	x_event: "event",
 }
 

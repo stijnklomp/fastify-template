@@ -3,15 +3,16 @@ import { createClient, RedisClientType } from "redis"
 
 import { logger } from "@/lib/logger"
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let redisClient: RedisClientType<RedisModules, any, any> | undefined
 
 const createClientConnection = async () => {
 	const client = createClient({
+		password: process.env.REDIS_PASSWORD,
 		socket: {
 			host: process.env.REDIS_HOST,
 			port: Number(process.env.REDIS_PORT),
 		},
-		password: process.env.REDIS_PASSWORD,
 	})
 
 	client.on("error", (err: Error) => {
@@ -20,7 +21,9 @@ const createClientConnection = async () => {
 	})
 
 	client.on("connect", () =>
-		logger.info(`Redis client connected on port ${process.env.REDIS_PORT}`),
+		logger.info(
+			`Redis client connected on port ${process.env.REDIS_PORT ?? "6379"}`,
+		),
 	)
 
 	await client.connect()
@@ -41,6 +44,6 @@ export const getPrimary = () => {
 }
 
 export default {
-	init,
 	getPrimary,
+	init,
 }

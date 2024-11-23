@@ -1,10 +1,10 @@
 import { checkHealthyHandler } from "@/controllers/health"
 import { FastifyInstance } from "fastify"
 
-export default async (fastify: FastifyInstance) => {
+export default (fastify: FastifyInstance) => {
 	fastify.route({
+		handler: checkHealthyHandler,
 		method: "GET",
 		url: "/health",
-		handler: checkHealthyHandler,
 	})
 }
