@@ -30,7 +30,7 @@ describe("Redis Service Tests", () => {
 	})
 
 	describe("set", () => {
-		it.only("should set in redis", async () => {
+		it("should set in redis", async () => {
 			// const setMock = jest
 			// 	.fn<ReturnType<typeof redisAdapter.getPrimary>["set"], []>()
 			// 	.mockReturnValue({

@@ -12,7 +12,7 @@ describe("getNotes", () => {
 		perPage: 10,
 	}
 
-	it.only("should get notes", async () => {
+	it("should get notes", async () => {
 		prismaMock.note.findMany.mockResolvedValue([noteDb])
 
 		const notes = await noteRepository.getNotes(data)
@@ -25,8 +25,8 @@ describe("createNote", () => {
 	const data: StaticRequestSchemaTypes<
 		typeof notesValidator.createNote
 	>["body"] = {
-		owner: "Test user",
 		note: "This is a test note",
+		owner: "Test user",
 	}
 
 	it("should create note", async () => {

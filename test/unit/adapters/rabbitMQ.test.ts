@@ -8,10 +8,10 @@ import {
 // import { Channel } from "amqplib"
 
 jest.mock("@/lib/rabbitMQ", () => ({
-	init: jest.fn(),
-	createExchange: jest.fn(),
-	sendToExchange: jest.fn(),
 	consume: jest.fn(),
+	createExchange: jest.fn(),
+	init: jest.fn(),
+	sendToExchange: jest.fn(),
 }))
 
 // const mockInitRabbitMQ = init as jest.MockedFunction<typeof init>

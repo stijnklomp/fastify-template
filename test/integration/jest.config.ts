@@ -23,6 +23,7 @@ const config: Config = {
 	setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
 	testMatch: ["<rootDir>/test/integration/**/(*.)+(spec|test).[jt]s"],
 	transform: {
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		"^.+\\.(t|j)s$": [
 			"ts-jest",
 			{

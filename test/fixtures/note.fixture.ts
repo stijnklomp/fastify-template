@@ -1,9 +1,9 @@
 import { Note } from "@prisma/client"
 
 export const noteDb: Note = {
-	id: 1,
-	owner: "Test user",
-	note: "This is a test note",
 	createdAt: new Date(),
+	id: 1,
+	note: "This is a test note",
+	owner: "Test user",
 	updatedAt: new Date(),
 }
