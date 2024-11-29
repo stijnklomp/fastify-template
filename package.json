@@ -19,7 +19,7 @@
 		"merge-coverage-report-jsons": "istanbul-merge --out test/temp-coverage/temp-coverage-final.json test/unit/coverage/coverage-final.json test/feature/coverage/coverage-final.json",
 		"migrate": "npx prisma migrate dev --name init",
 		"prepare": "husky",
-		"sort": "./node_modules/stijnklomp-linting-formatting-config/sortJson.sh 'test/tsconfig.json'",
+		"sort": "./node_modules/stijnklomp-linting-formatting-config/sortJson.sh '.vscode/*' './test/tsconfig.json' 'dagger/sdk'",
 		"start": "node dist/app.js",
 		"test": "npm run test:unit",
 		"test:coverage": "npm run test:unit:coverage ; npm run test:feature:coverage ; npm run afterTest",

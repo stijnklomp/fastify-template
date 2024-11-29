@@ -14,8 +14,15 @@ const finalConfig = config({
 	typescript: true,
 })
 
+finalConfig.push({
+	files: ["dagger/**/*.ts"],
+	rules: {
+		"@typescript-eslint/require-await": "off",
+	},
+})
+
 finalConfig.push(includeIgnoreFile(gitignorePath), {
-	ignores: [".husky/*", "prisma/*", "rabbitmq/*"],
+	ignores: [".husky/*", "prisma/*", "rabbitmq/*", "dagger/sdk/*"],
 })
 
 export default tseslint.config(finalConfig)
