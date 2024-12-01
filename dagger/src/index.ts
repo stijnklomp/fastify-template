@@ -20,18 +20,44 @@ export class FastifyTemplate {
 	/**
 	 * Build project dependencies
 	 */
-	@func()
-	buildDependencies(source: Directory): Container {
+	deps(source: Directory): Container {
 		const nodeCache = dag.cacheVolume("node")
 
 		return dag
 			.container()
 			.from("node:21-slim")
-			.withDirectory("/src", source, {
+			.withWorkdir("/app")
+			.withDirectory("/app", source, {
+				include: ["package.json", "package-lock.json"],
+			})
+			.withMountedCache("/root/.npm", nodeCache)
+			.withExec(["npm", "ci", "--ignore-scripts", "--force"])
+	}
+
+	/**
+	 * Generate the Prisma Client
+	 */
+	prisma(source: Directory): Container {
+		return this.deps(source)
+			.withWorkdir("/app")
+			.withDirectory("/app", source, {
+				include: ["prisma"],
+			})
+			.withExec(["npx", "prisma", "generate"])
+	}
+
+	/**
+	 * Include source code
+	 */
+	build(source: Directory): Container {
+		return this.prisma(source)
+			.withWorkdir("/app")
+			.withDirectory("/app", source, {
 				exclude: [
 					"node_modules",
 					".husky",
 					"dist",
+					"prisma",
 					"dagger",
 					"volume",
 					".dockerignore",
@@ -39,26 +65,25 @@ export class FastifyTemplate {
 					".env.production", // Rename to `.env`?
 					".eslintcache",
 					".gitignore",
+					".lintstagedrc.json",
 					"dagger.json",
 					"docker-compose.yml",
 					"dockerComposeMigrate.sh",
 					"Dockerfile",
 					"LICENSE",
+					"package.json",
+					"package-lock.json",
 					"test",
 				],
 			})
-			.withMountedCache("/root/.npm", nodeCache)
-			.withWorkdir("/src")
-			.withExec(["npm", "ci", "--ignore-scripts", "--force"])
-			.withExec(["npx", "prisma", "generate"])
 	}
 
 	/**
 	 * Build a ready-to-use development environment
 	 */
 	@func()
-	buildDevelopment(source: Directory): Container {
-		return this.buildDependencies(source).withDirectory("/src", source, {
+	buildDev(source: Directory): Container {
+		return this.build(source).withDirectory("/app", source, {
 			include: ["test"],
 		})
 	}
@@ -67,8 +92,8 @@ export class FastifyTemplate {
 	 * Build a finalized production environment
 	 */
 	@func()
-	buildProduction(source: Directory): Container {
-		return this.buildDependencies(source).withExec(["npm", "run", "build"])
+	buildProd(source: Directory): Container {
+		return this.build(source).withExec(["npm", "run", "build"])
 	}
 
 	/**
@@ -76,7 +101,7 @@ export class FastifyTemplate {
 	 */
 	@func()
 	async test(source: Directory): Promise<string> {
-		return this.buildDevelopment(source)
+		return this.buildDev(source)
 			.withExec(["npm", "run", "test:unit"])
 			.stderr()
 	}
