@@ -18,7 +18,7 @@ import { dag, Container, Directory, object, func } from "@dagger.io/dagger"
 @object()
 export class FastifyTemplate {
 	/**
-	 * Build a ready-to-use development environment
+	 * Build project dependencies
 	 */
 	@func()
 	buildDependencies(source: Directory): Container {
@@ -27,11 +27,48 @@ export class FastifyTemplate {
 		return dag
 			.container()
 			.from("node:21-slim")
-			.withDirectory("/src", source)
-			.withDirectory("/test", source)
+			.withDirectory("/src", source, {
+				exclude: [
+					"node_modules",
+					".husky",
+					"dist",
+					"dagger",
+					"volume",
+					".dockerignore",
+					".env",
+					".env.production", // Rename to `.env`?
+					".eslintcache",
+					".gitignore",
+					"dagger.json",
+					"docker-compose.yml",
+					"dockerComposeMigrate.sh",
+					"Dockerfile",
+					"LICENSE",
+					"test",
+				],
+			})
 			.withMountedCache("/root/.npm", nodeCache)
 			.withWorkdir("/src")
-			.withExec(["npm", "ci", "--force"])
+			.withExec(["npm", "ci", "--ignore-scripts", "--force"])
+			.withExec(["npx", "prisma", "generate"])
+	}
+
+	/**
+	 * Build a ready-to-use development environment
+	 */
+	@func()
+	buildDevelopment(source: Directory): Container {
+		return this.buildDependencies(source).withDirectory("/src", source, {
+			include: ["test"],
+		})
+	}
+
+	/**
+	 * Build a finalized production environment
+	 */
+	@func()
+	buildProduction(source: Directory): Container {
+		return this.buildDependencies(source).withExec(["npm", "run", "build"])
 	}
 
 	/**
@@ -39,14 +76,8 @@ export class FastifyTemplate {
 	 */
 	@func()
 	async test(source: Directory): Promise<string> {
-		// get the build environment container
-		// by calling another Dagger Function
-		return (
-			this.buildDependencies(source)
-				// call the test runner
-				.withExec(["npm", "run", "test:unit"])
-				// capture and return the command output
-				.stdout()
-		)
+		return this.buildDevelopment(source)
+			.withExec(["npm", "run", "test:unit"])
+			.stderr()
 	}
 }

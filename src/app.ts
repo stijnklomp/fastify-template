@@ -58,7 +58,7 @@ const envToLogger = {
 				return {
 					method: req.method,
 					parameters: req.params,
-					path: req.routerPath as string | undefined,
+					path: req.routeOptions.url,
 					url: req.url,
 				}
 			},

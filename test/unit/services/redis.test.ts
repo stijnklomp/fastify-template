@@ -10,7 +10,7 @@ import redisService from "@/services/redis"
 
 // type Test = ReturnType<typeof redisAdapter.getPrimary>
 
-const mockedDependency = redisAdapter.getPrimary as jest.Mock<
+const mockedRedisAdapterGetPrimary = redisAdapter.getPrimary as jest.Mock<
 	ReturnType<typeof redisAdapter.getPrimary>
 >
 
@@ -18,78 +18,65 @@ jest.mock("@/adapters/redis", () => ({
 	getPrimary: jest.fn(),
 }))
 
-describe("Redis Service Tests", () => {
+describe("Redis service", () => {
 	afterEach(() => {
 		jest.clearAllMocks()
 	})
 
 	describe("getClient", () => {
 		it("should get redis client", () => {
-			expect(redisAdapter.getPrimary).toHaveBeenCalled()
+			redisService.getClient()
+			expect(mockedRedisAdapterGetPrimary).toHaveBeenCalled()
 		})
 	})
 
+	const mockedValue = {
+		test: "value",
+	}
+	const mock = jest.fn().mockReturnValue(mockedValue)
+
 	describe("set", () => {
 		it("should set in redis", async () => {
-			// const setMock = jest
-			// 	.fn<ReturnType<typeof redisAdapter.getPrimary>["set"], []>()
-			// 	.mockReturnValue({
-			// 		test: "value",
-			// 	})
-			const setMock = jest.fn().mockReturnValue({
-				test: "value",
-			})
-			mockedDependency.mockImplementation(
+			mockedRedisAdapterGetPrimary.mockImplementation(
 				jest.fn().mockReturnValue({
-					set: setMock,
+					set: mock,
 				}),
 			)
-			const set = await redisService.set("test", "value")
+			const result = await redisService.set(
+				Object.keys(mockedValue)[0],
+				Object.values(mockedValue)[0],
+			)
 
-			expect(setMock).toHaveBeenCalledTimes(1)
-			expect(set).toStrictEqual({
-				test: "value",
-			})
+			expect(mock).toHaveBeenCalledTimes(1)
+			expect(result).toStrictEqual(mockedValue)
 		})
 	})
 
 	describe("get", () => {
 		it("should get from redis", async () => {
-			const mockGetRedisClient = jest
-				.spyOn(redisService, "getClient")
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-				.mockReturnValue({
-					get: jest.fn().mockReturnValue({
-						test: "value",
-					}),
-				} as any)
+			mockedRedisAdapterGetPrimary.mockImplementation(
+				jest.fn().mockReturnValue({
+					get: mock,
+				}),
+			)
+			const result = await redisService.get(Object.keys(mockedValue)[0])
 
-			const set = await redisService.get("test")
-
-			expect(mockGetRedisClient).toHaveBeenCalledTimes(1)
-			expect(set).toStrictEqual({
-				test: "value",
-			})
+			expect(mock).toHaveBeenCalledTimes(1)
+			expect(result).toStrictEqual(mockedValue)
 		})
 	})
 
 	describe("del", () => {
 		it("should delete from redis", async () => {
-			const mockGetRedisClient = jest
-				.spyOn(redisService, "getClient")
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-				.mockReturnValue({
-					del: jest.fn().mockReturnValue({
-						test: "value",
-					}),
-				} as any)
+			mockedRedisAdapterGetPrimary.mockImplementation(
+				jest.fn().mockReturnValue({
+					del: mock,
+				}),
+			)
+			const result = await redisService.del(Object.keys(mockedValue)[0])
 
-			const set = await redisService.del("test")
-
-			expect(mockGetRedisClient).toHaveBeenCalledTimes(1)
-			expect(set).toStrictEqual({
-				test: "value",
-			})
+			expect(mock).toHaveBeenCalledTimes(1)
+			expect(result).toStrictEqual(mockedValue)
 		})
 	})
 })

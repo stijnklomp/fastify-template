@@ -20,6 +20,7 @@ ENV PORT 3000
 WORKDIR /app
 COPY --from=deps --chown=node:node /app/package.json ./
 COPY --from=builder --chown=node:node /app/dist/ ./dist/
+# The following line is unnecessary
 COPY --from=builder --chown=node:node /app/node_modules/@fastify/swagger-ui/static ./dist/static
 COPY --from=builder --chown=node:node /app/node_modules/.prisma/client ./.prisma/client
 EXPOSE 3000

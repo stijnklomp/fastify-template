@@ -1,10 +1,8 @@
-import { RedisModules } from "@redis/client/dist/lib/commands"
-import { createClient, RedisClientType } from "redis"
+import { createClient } from "redis"
 
 import { logger } from "@/lib/logger"
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let redisClient: RedisClientType<RedisModules, any, any> | undefined
+let redisClient: ReturnType<typeof createClient> | undefined
 
 const createClientConnection = async () => {
 	const client = createClient({
