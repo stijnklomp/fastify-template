@@ -17,6 +17,7 @@ import { dag, Container, Directory, object, func } from "@dagger.io/dagger"
 
 @object()
 export class FastifyTemplate {
+	// Build stage
 	/**
 	 * Build project dependencies
 	 */
@@ -96,13 +97,34 @@ export class FastifyTemplate {
 		return this.build(source).withExec(["npm", "run", "build"])
 	}
 
+	// Test stage
 	/**
 	 * Return the result of running unit tests
 	 */
 	@func()
-	async test(source: Directory): Promise<string> {
+	async unit(source: Directory): Promise<string> {
 		return this.buildDev(source)
 			.withExec(["npm", "run", "test:unit"])
+			.stderr()
+	}
+
+	/**
+	 * Return the result of running feature tests
+	 */
+	@func()
+	async feature(source: Directory): Promise<string> {
+		return this.buildDev(source)
+			.withExec(["npm", "run", "test:feature"])
+			.stderr()
+	}
+
+	/**
+	 * Return the result of running acceptance tests
+	 */
+	@func()
+	async acceptance(source: Directory): Promise<string> {
+		return this.buildDev(source)
+			.withExec(["npm", "run", "test:acceptance"])
 			.stderr()
 	}
 }

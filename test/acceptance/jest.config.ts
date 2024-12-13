@@ -5,7 +5,7 @@ import { coreConfig, coverageConfig } from "../jest.config"
 const config: Config = {
 	...coreConfig,
 	...coverageConfig,
-	displayName: "integration",
+	displayName: "acceptance",
 	moduleNameMapper: {
 		...coreConfig.moduleNameMapper,
 	},
@@ -14,20 +14,20 @@ const config: Config = {
 		[
 			"jest-junit",
 			{
-				outputDirectory: "<rootDir>/test/integration/reports",
+				outputDirectory: "<rootDir>/test/acceptance/reports",
 				outputName: "junit.xml",
 			},
 		],
 	],
 	rootDir: "../../",
 	setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
-	testMatch: ["<rootDir>/test/integration/**/(*.)+(spec|test).[jt]s"],
+	testMatch: ["<rootDir>/test/acceptance/**/(*.)+(spec|test).[jt]s"],
 	transform: {
 		// eslint-disable-next-line @typescript-eslint/naming-convention
 		"^.+\\.(t|j)s$": [
 			"ts-jest",
 			{
-				tsconfig: "<rootDir>/test/integration/tsconfig.json",
+				tsconfig: "<rootDir>/test/acceptance/tsconfig.json",
 			},
 		],
 	},

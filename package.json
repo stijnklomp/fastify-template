@@ -22,11 +22,11 @@
 		"sort": "./node_modules/stijnklomp-linting-formatting-config/sortJson.sh '.vscode/*' './test/tsconfig.json' 'dagger/sdk'",
 		"start": "node dist/app.js",
 		"test": "npm run test:unit",
+		"test:acceptance": "playwright test -c test/acceptance",
 		"test:coverage": "npm run test:unit:coverage ; npm run test:feature:coverage ; npm run afterTest",
 		"test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/jest/bin/jest --runInBand",
 		"test:feature": "LOGS=test jest --config test/feature/jest.config.ts",
 		"test:feature:coverage": "npm run test:feature -- --coverage",
-		"test:integration": "playwright test -c test/integration",
 		"test:unit": "LOGS=test jest --config test/unit/jest.config.ts",
 		"test:unit:coverage": "npm run test:unit -- --coverage"
 	},

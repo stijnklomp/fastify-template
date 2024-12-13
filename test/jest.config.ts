@@ -42,8 +42,8 @@ const config: Config = {
 	...coreConfig,
 	projects: [
 		"<rootDir>/test/unit",
-		"<rootDir>/feature/unit",
-		"<rootDir>/integration/unit",
+		"<rootDir>/test/feature",
+		"<rootDir>/test/acceptance",
 	],
 	rootDir: "../",
 }
