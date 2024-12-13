@@ -20,6 +20,6 @@ export const createNote = async (
 	})
 
 export default {
-	getNotes,
 	createNote,
+	getNotes,
 }

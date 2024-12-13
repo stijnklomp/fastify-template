@@ -1,0 +1,6 @@
+{
+	"engineVersion": "v0.14.0",
+	"name": "fastify-template",
+	"sdk": "typescript",
+	"source": "dagger"
+}

@@ -4,30 +4,25 @@ export const getClient = () => getPrimary()
 
 export const get = async (key: string) => {
 	const redis = getClient()
-	const set = await redis.get(key)
 
-	return set
+	return await redis.get(key)
 }
 
 export const set = async (key: string, value: string) => {
 	const redis = getClient()
-	const set = await redis.set(key, value)
 
-	// type Test = ReturnType<typeof getClient>["set"]
-
-	return set
+	return await redis.set(key, value)
 }
 
 export const del = async (key: string) => {
 	const redis = getClient()
-	const set = await redis.del(key)
 
-	return set
+	return await redis.del(key)
 }
 
 export default {
-	getClient,
-	get,
-	set,
 	del,
+	get,
+	getClient,
+	set,
 }

@@ -1,17 +1,16 @@
-import { RedisModules } from "@redis/client/dist/lib/commands"
-import { createClient, RedisClientType } from "redis"
+import { createClient } from "redis"
 
 import { logger } from "@/lib/logger"
 
-let redisClient: RedisClientType<RedisModules, any, any> | undefined
+let redisClient: ReturnType<typeof createClient> | undefined
 
 const createClientConnection = async () => {
 	const client = createClient({
+		password: process.env.REDIS_PASSWORD,
 		socket: {
 			host: process.env.REDIS_HOST,
 			port: Number(process.env.REDIS_PORT),
 		},
-		password: process.env.REDIS_PASSWORD,
 	})
 
 	client.on("error", (err: Error) => {
@@ -20,7 +19,9 @@ const createClientConnection = async () => {
 	})
 
 	client.on("connect", () =>
-		logger.info(`Redis client connected on port ${process.env.REDIS_PORT}`),
+		logger.info(
+			`Redis client connected on port ${process.env.REDIS_PORT ?? "6379"}`,
+		),
 	)
 
 	await client.connect()
@@ -41,6 +42,6 @@ export const getPrimary = () => {
 }
 
 export default {
-	init,
 	getPrimary,
+	init,
 }

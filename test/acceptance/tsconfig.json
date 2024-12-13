@@ -3,7 +3,7 @@
 		"noEmit": false,
 		"paths": {
 			"@/adapters/*": ["src/adapters/*"],
-			"@/context": ["test/context.ts"],
+			"@/context": ["test/unit/context.ts"],
 			"@/controllers/*": ["src/controllers/*"],
 			"@/fixtures/*": ["test/fixtures/*"],
 			"@/helper": ["test/helper.ts"],

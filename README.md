@@ -11,9 +11,10 @@
 - TypeScript: Static typing with TypeScript, enhancing code quality and developer productivity.
 - Prettier & ESLint: Automatic code formatting and linting for consistent code style and adherence to best practices.
 - Jest: Unit & Feature testing framework for ensuring code quality and functionality.
-- Playwright: Integration testing framework for comprehensive testing of user interactions and browser behavior.
+- Playwright: Acceptance/Integration testing framework for comprehensive testing of user interactions and browser behavior.
 - Husky: Git hooks for running linting and tests before commits, ensuring code quality standards are met.
 - TypeDoc: Automatic generation of TypeScript documentation for improved code clarity and collaboration.
+- Dagger: Dagger functions are provided to streamline CI/CD pipelines to allow ease of local development and allow for easy platform agnostic CI/CD pipeline integration.
 
 ## Installation
 
@@ -52,9 +53,7 @@ docker compose --profile=PROFILE up --build
 
 #### Database
 
-The database can be accessed via a browser by navigating to `API_URL:8080` when running Docker Compose with the `dev` profile.
-
-Note that you may need to run `npx prisma migrate dev --name init` in your terminal if you haven't already initialized the database. This only needs to be done the first time the database is created. (Or whenever the database has been recreated) This will happen automatically when using any profile in Docker Compose.
+You may need to run `npx prisma migrate dev --name init` in your terminal if you haven't already initialized the database. This only needs to be done the first time the database is created. (Or whenever the database has been recreated) This will happen automatically when using any profile in Docker Compose.
 
 ## Endpoints documentation (API specification)
 
@@ -75,23 +74,23 @@ npm run test:feature
 npm run test:coverage
 ```
 
-### Integration tests
+### Acceptance tests
 
 ```sh
-npm run test:integration
+npm run test:acceptance
 ```
 
 #### With Docker Compose
 
 ```sh
 # Run once and exit
-docker compose --profile=test up --build --attach integration-once --exit-code-from integration-once
+docker compose --profile=test up --build --attach acceptance-once --exit-code-from acceptance-once
 
 # Run multiple times
-# There are multiple profiles that can be run for the integration tests:
+# There are multiple profiles that can be run for the acceptance tests:
 # dev
 # local
-docker compose --profile=PROFILE up --build -d && docker compose --profile=PROFILE exec -ti dev sh -c "npm run test:integration"
+docker compose --profile=PROFILE up --build -d && docker compose --profile=PROFILE exec -ti dev sh -c "npm run test:acceptance"
 ```
 
 ## License

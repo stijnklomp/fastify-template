@@ -1,5 +1,5 @@
-import Fastify, { FastifyServerOptions, FastifyInstance } from "fastify"
-import AutoLoad from "@fastify/autoload"
+import fastifySetup, { FastifyServerOptions, FastifyInstance } from "fastify"
+import autoLoad from "@fastify/autoload"
 import path from "path"
 
 import { options } from "@/src/app"
@@ -8,15 +8,15 @@ export const build = (overrideOptions: Partial<FastifyServerOptions> = {}) => {
 	let fastify: FastifyInstance
 
 	beforeAll(async () => {
-		fastify = Fastify({
+		fastify = fastifySetup({
 			...options,
 			...overrideOptions,
 		})
 
-		await fastify.register(AutoLoad, {
+		await fastify.register(autoLoad, {
 			dir: path.join(__dirname, "../src/plugins"),
 		})
-		await fastify.register(AutoLoad, {
+		await fastify.register(autoLoad, {
 			dir: path.join(__dirname, "../src/routes"),
 		})
 	})

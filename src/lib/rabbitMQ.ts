@@ -6,11 +6,12 @@ const { RABBIT_HOST, RABBIT_USER, RABBIT_PASS, RABBIT_PORT } = process.env
 let channel: Channel | undefined
 
 export const init = async () => {
-	const CONN_URL = `${process.env.RABBIT_TRANSPORT}://${RABBIT_USER}:${RABBIT_PASS}@${RABBIT_HOST}:${RABBIT_PORT}`
+	const rabbitPort = RABBIT_PORT ?? "5671"
+	const CONN_URL = `${process.env.RABBIT_TRANSPORT ?? "ampqp"}://${RABBIT_USER ?? "guest"}:${RABBIT_PASS ?? "guest"}@${RABBIT_HOST ?? "0.0.0.0"}:${rabbitPort}`
 
 	try {
 		const connection = await connect(CONN_URL)
-		logger.info(`RabbitMQ connected on port: ${RABBIT_PORT}`)
+		logger.info(`RabbitMQ connected on port: ${rabbitPort}`)
 		channel = await connection.createChannel()
 
 		return channel
@@ -25,15 +26,15 @@ export const send = async (q: string, payload: Buffer) => {
 
 	await channel.assertQueue(q, { durable: true })
 	channel.sendToQueue(q, payload, {
-		persistent: true,
 		contentType: "application/json",
+		persistent: true,
 	})
 }
 
 export type ConsumeCallback = (
 	channel: Channel,
 	payload: ConsumeMessage,
-	content: any,
+	content: unknown,
 ) => unknown
 
 export const consume = async (q: string, cb: ConsumeCallback) => {
@@ -46,6 +47,7 @@ export const consume = async (q: string, cb: ConsumeCallback) => {
 		q,
 		(payload) => {
 			if (!payload) return
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			cb(channel!, payload, JSON.parse(payload.content.toString()))
 		},
 		{ noAck: false },
@@ -86,17 +88,17 @@ export const sendToExchange = (
 		routingKey,
 		Buffer.from(JSON.stringify(payload)),
 		{
-			persistent: true,
 			contentType: "application/json",
+			persistent: true,
 		},
 	)
 }
 
 export default {
+	close,
+	consume,
+	createExchange,
 	init,
 	send,
-	consume,
-	close,
-	createExchange,
 	sendToExchange,
 }

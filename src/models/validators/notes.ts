@@ -9,12 +9,12 @@ export const getNotes = {
 
 export const createNote = {
 	body: Type.Object({
-		owner: Type.String({ maxLength: 100 }),
 		note: Type.String({ maxLength: 300 }),
+		owner: Type.String({ maxLength: 100 }),
 	}),
 }
 
 export default {
-	getNotes,
 	createNote,
+	getNotes,
 }

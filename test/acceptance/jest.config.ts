@@ -5,35 +5,29 @@ import { coreConfig, coverageConfig } from "../jest.config"
 const config: Config = {
 	...coreConfig,
 	...coverageConfig,
-	coverageDirectory: "<rootDir>/test/feature/coverage",
-	displayName: "feature",
+	displayName: "acceptance",
 	moduleNameMapper: {
 		...coreConfig.moduleNameMapper,
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		"^@/context$": "<rootDir>/test/context.ts",
 	},
 	reporters: [
 		"default",
 		[
 			"jest-junit",
 			{
-				outputDirectory: "<rootDir>/test/feature/reports",
+				outputDirectory: "<rootDir>/test/acceptance/reports",
 				outputName: "junit.xml",
 			},
 		],
 	],
 	rootDir: "../../",
-	setupFilesAfterEnv: [
-		"<rootDir>/jest.setup.ts",
-		"<rootDir>/test/context.ts",
-	],
-	testMatch: ["<rootDir>/test/feature/**/(*.)+(spec|test).[jt]s"],
+	setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
+	testMatch: ["<rootDir>/test/acceptance/**/(*.)+(spec|test).[jt]s"],
 	transform: {
 		// eslint-disable-next-line @typescript-eslint/naming-convention
 		"^.+\\.(t|j)s$": [
 			"ts-jest",
 			{
-				tsconfig: "<rootDir>/test/feature/tsconfig.json",
+				tsconfig: "<rootDir>/test/acceptance/tsconfig.json",
 			},
 		],
 	},

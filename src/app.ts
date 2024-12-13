@@ -1,31 +1,35 @@
-import Fastify, {
+import fastify, {
 	FastifyServerOptions,
 	FastifyRequest,
-	FastifyReply,
+	// FastifyReply,
 } from "fastify"
-import AutoLoad from "@fastify/autoload"
-import FastifySwagger from "@fastify/swagger"
-import FastifySwaggerUI from "@fastify/swagger-ui"
+import autoLoad from "@fastify/autoload"
+import fastifySwagger from "@fastify/swagger"
+import fastifySwaggerUI from "@fastify/swagger-ui"
 import path from "path"
 import hyperid from "hyperid"
+import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node"
+import { registerInstrumentations } from "@opentelemetry/instrumentation"
+import { HttpInstrumentation } from "@opentelemetry/instrumentation-http"
+import { FastifyInstrumentation } from "@opentelemetry/instrumentation-fastify"
 
 import { init as initRedis } from "@/adapters/redis"
 import { init as initRabbitMQ } from "@/adapters/rabbitMQ"
-import { IncomingMessage, ServerResponse } from "http"
+// import { IncomingMessage, ServerResponse } from "http"
 
 const envToLogger = {
 	development: {
 		redact: ["req.headers.authorization"],
 		serializers: {
 			req: (req: FastifyRequest) => ({
-				method: req.method,
-				url: req.url,
-				protocol: req.protocol,
-				path: req.routeOptions.url,
+				headers: req.headers, // Including the headers in the log could be in violation of privacy laws, e.g. GDPR. It could also leak authentication data in the logs. It should not be saved
 				ip: req.ip,
 				ips: req.ips,
+				method: req.method,
 				parameters: req.params,
-				headers: req.headers, // Including the headers in the log could be in violation of privacy laws, e.g. GDPR. It could also leak authentication data in the logs. It should not be saved
+				path: req.routeOptions.url,
+				protocol: req.protocol,
+				url: req.url,
 			}),
 			// res: (rep: FastifyReply) => ({
 			// 	// Todo: This is causing Typescript issues because it is expecting `ServerResponse<IncomingMessage>`
@@ -40,11 +44,11 @@ const envToLogger = {
 			// }),
 		},
 		transport: {
-			target: "pino-pretty",
 			options: {
-				translateTime: "HH:MM:ss Z",
 				ignore: "pid,hostname",
+				translateTime: "HH:MM:ss Z",
 			},
+			target: "pino-pretty",
 		},
 	},
 	production: {
@@ -53,9 +57,9 @@ const envToLogger = {
 			req: (req: FastifyRequest) => {
 				return {
 					method: req.method,
-					url: req.url,
-					path: req.routerPath,
 					parameters: req.params,
+					path: req.routeOptions.url,
+					url: req.url,
 				}
 			},
 		},
@@ -66,92 +70,99 @@ const logsEnvironment =
 	(process.env.LOGS as keyof typeof envToLogger | undefined) ?? "production"
 
 export const options: FastifyServerOptions = {
-	serializerOpts: {
-		rounding: "trunc", // Same as default but set for clarity
-	},
-	logger: envToLogger[logsEnvironment],
 	genReqId: () => {
 		return hyperid({ fixedLength: true, urlSafe: true })()
 	},
+	logger: envToLogger[logsEnvironment],
+	serializerOpts: {
+		rounding: "trunc", // Same as default but set for clarity
+	},
 }
 
-const fastify = Fastify(options)
+const fastifySetup = fastify(options)
 
-void fastify.register(FastifySwagger, {
+void fastifySetup.register(fastifySwagger, {
 	openapi: {
-		openapi: "3.1.0",
-		info: {
-			title: "Test swagger",
-			description: "Testing the Fastify swagger API",
-			version: "0.1.0",
-		},
-		servers: [
-			{
-				url: "http://localhost:3000",
-				description: "Development server",
-			},
-		],
-		tags: [
-			{ name: "user", description: "User related end-points" },
-			{ name: "code", description: "Code related end-points" },
-		],
 		components: {
 			securitySchemes: {
 				apiKey: {
-					type: "apiKey",
-					name: "apiKey",
 					in: "header",
+					name: "apiKey",
+					type: "apiKey",
 				},
 			},
 		},
 		externalDocs: {
-			url: "https://swagger.io",
 			description: "Find more info here",
+			url: "https://swagger.io",
 		},
+		info: {
+			description: "Testing the Fastify swagger API",
+			title: "Test swagger",
+			version: "0.1.0",
+		},
+		openapi: "3.1.0",
+		servers: [
+			{
+				description: "Development server",
+				url: "http://localhost:3000",
+			},
+		],
+		tags: [
+			{ description: "User related end-points", name: "user" },
+			{ description: "Code related end-points", name: "code" },
+		],
 	},
 	swagger: {
+		consumes: ["application/json"],
+		host: "localhost",
 		info: {
-			title: "My Title",
 			description: "My Description.",
+			title: "My Title",
 			version: "1.0.0",
 		},
-		host: "localhost",
-		schemes: ["http", "https"],
-		consumes: ["application/json"],
 		produces: ["application/json"],
-		tags: [{ name: "Default", description: "Default" }],
+		schemes: ["http", "https"],
+		tags: [{ description: "Default", name: "Default" }],
 	},
 })
 
-void fastify.register(FastifySwaggerUI, {
+void fastifySetup.register(fastifySwaggerUI, {
 	baseDir: path.resolve("dist/static"),
 	routePrefix: "/docs",
-	uiConfig: {
-		docExpansion: "list",
-		deepLinking: false,
-	},
-	uiHooks: {
-		onRequest: function (req, reply, next) {
-			next()
-		},
-		preHandler: function (req, reply, next) {
-			next()
-		},
-	},
 	staticCSP: true,
-	transformStaticCSP: (header) => header,
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	transformSpecification: (swaggerObject, req, reply) => {
+	transformSpecification: (swaggerObject) => {
 		return swaggerObject
 	},
 	transformSpecificationClone: true,
+	transformStaticCSP: (header) => header,
+	uiConfig: {
+		deepLinking: false,
+		docExpansion: "list",
+	},
+	uiHooks: {
+		onRequest: function (req, rep, next) {
+			next()
+		},
+		preHandler: function (req, rep, next) {
+			next()
+		},
+	},
 })
 
-void fastify.register(AutoLoad, {
+const provider = new NodeTracerProvider()
+
+provider.register()
+
+registerInstrumentations({
+	instrumentations: [new HttpInstrumentation(), new FastifyInstrumentation()],
+})
+
+void fastifySetup.register(autoLoad, {
 	dir: path.join(__dirname, "/plugins"),
 })
 
-void fastify.register(AutoLoad, {
+void fastifySetup.register(autoLoad, {
 	dir: path.join(__dirname, "/routes"),
 	dirNameRoutePrefix: true, // Same as default but set for clarity
 })
@@ -161,13 +172,13 @@ const start = async () => {
 		await initRedis()
 		await initRabbitMQ()
 		const port = Number(process.env.API_PORT ?? 3000)
-		await fastify.listen({
-			port,
+		await fastifySetup.listen({
 			host: "0.0.0.0",
+			port,
 		})
-		fastify.log.info(`Server listening on port ${port}`)
+		fastifySetup.log.info(`Server listening on port ${port.toString()}`)
 	} catch (err) {
-		fastify.log.error(err)
+		fastifySetup.log.error(err)
 		process.exit(1)
 	}
 }

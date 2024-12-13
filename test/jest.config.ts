@@ -9,7 +9,9 @@ export const coreConfig: Config = {
 	moduleFileExtensions: ["ts", "js", "json"],
 	moduleNameMapper: {
 		...pathsToModuleNameMapper(compilerOptions.paths),
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		"^@/fixtures/(.*)$": "<rootDir>/test/fixtures/$1",
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		"^@/helper$": "<rootDir>/test/helper.ts",
 	},
 	modulePaths: [compilerOptions.baseUrl],
@@ -40,8 +42,8 @@ const config: Config = {
 	...coreConfig,
 	projects: [
 		"<rootDir>/test/unit",
-		"<rootDir>/feature/unit",
-		"<rootDir>/integration/unit",
+		"<rootDir>/test/feature",
+		"<rootDir>/test/acceptance",
 	],
 	rootDir: "../",
 }

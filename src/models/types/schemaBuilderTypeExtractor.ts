@@ -19,8 +19,12 @@ export type StaticRequestSchemaTypes<T extends RequestParams> = {
 
 export type FastifyRequestSchemaTypes<T extends RequestParams> =
 	FastifyRequest<{
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		Body: RequestProperty<T, "body">
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		Querystring: RequestProperty<T, "querystring">
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		Params: RequestProperty<T, "params">
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		Headers: RequestProperty<T, "headers">
 	}>

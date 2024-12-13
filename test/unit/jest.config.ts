@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import type { Config } from "jest"
 
 import { coreConfig, coverageConfig } from "../jest.config"

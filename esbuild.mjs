@@ -22,7 +22,15 @@ const getModuleDir = (moduleEntry) => {
 	const lookupPaths = require.resolve
 		.paths(moduleEntry)
 		.map((p) => path.join(p, packageName))
-	return lookupPaths.find((p) => fs.existsSync(p))
+	for (const path of lookupPaths) {
+		try {
+			require(path)
+
+			return path
+		} catch (e) {}
+	}
+
+	return undefined
 }
 
 /**
@@ -46,25 +54,26 @@ void (async function () {
 	const tsfiles = await glob("src/**/*.ts")
 
 	const options = {
-		entryPoints: tsfiles,
-		logLevel: "info",
-		outdir: "dist",
 		bundle: true,
+		entryPoints: tsfiles,
+		format: "cjs",
+		logLevel: "info",
 		minify: true,
 		minifyIdentifiers: true,
 		minifyWhitespace: true,
+		outdir: "dist",
 		platform: "node",
-		format: "cjs",
-		sourcemap: false,
-		tsconfig: "tsconfig.production.json",
 		plugins: [
 			esbuildPluginPino({ transports: ["pino-pretty"] }), // DOES THIS NEED TO BE HERE FOR PRODUCTION? OR IS IT ONLY NECESSARY FOR DEVELOPMENT?
 			esbuildPluginFastifySwaggerUi(),
 		],
+		sourcemap: false,
+		tsconfig: "tsconfig.production.json",
 	}
 	const args = process.argv.slice(2)
 
 	if (args.includes("dev")) {
+		// eslint-disable-next-line no-console
 		console.log("Running in dev mode")
 		const ctx = await esbuild.context({
 			...options,
@@ -77,6 +86,7 @@ void (async function () {
 		})
 		await ctx.watch()
 	} else {
+		// eslint-disable-next-line no-console
 		console.log("Building for production")
 		esbuild.build(options)
 	}

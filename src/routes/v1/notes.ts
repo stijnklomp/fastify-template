@@ -2,18 +2,18 @@ import { createNoteHandler, getNotesHandler } from "@/controllers/notes"
 import { getNotes, createNote } from "@/validators/notes"
 import { FastifyInstance } from "fastify"
 
-export default async (fastify: FastifyInstance) => {
+export default (fastify: FastifyInstance) => {
 	fastify.route({
-		method: "GET",
-		url: "/notes",
-		schema: getNotes,
 		handler: getNotesHandler,
+		method: "GET",
+		schema: getNotes,
+		url: "/notes",
 	})
 
 	fastify.route({
-		method: "POST",
-		url: "/notes",
-		schema: createNote,
 		handler: createNoteHandler,
+		method: "POST",
+		schema: createNote,
+		url: "/notes",
 	})
 }

@@ -13,6 +13,6 @@ export const createNote = async (
 ) => await notesRepository.createNote(data)
 
 export default {
-	getNotes,
 	createNote,
+	getNotes,
 }
