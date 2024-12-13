@@ -99,6 +99,14 @@ export class FastifyTemplate {
 
 	// Test stage
 	/**
+	 * Return the result of running the linter
+	 */
+	@func()
+	async lint(source: Directory): Promise<string> {
+		return this.buildDev(source).withExec(["npm", "run", "lint"]).stderr()
+	}
+
+	/**
 	 * Return the result of running unit tests
 	 */
 	@func()
@@ -126,5 +134,21 @@ export class FastifyTemplate {
 		return this.buildDev(source)
 			.withExec(["npm", "run", "test:acceptance"])
 			.stderr()
+	}
+
+	// Publish stage
+	/**
+	 * Publish the application container
+	 */
+	@func()
+	async publish(
+		source: Directory,
+		registry = "ttl.sh",
+		name = "fastify-template",
+		suffix = Math.floor(Math.random() * 10000000).toString(),
+	): Promise<string> {
+		return await this.buildProd(source).publish(
+			`${registry}/${name}${suffix}`,
+		)
 	}
 }
