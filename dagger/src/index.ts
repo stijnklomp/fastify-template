@@ -1,3 +1,5 @@
+// TODO: add eslint exceptions for the dagger directory to prevent it from autoformatting the code
+
 /**
  * A generated module for FastifyTemplate functions
  *
@@ -69,7 +71,7 @@ export class FastifyTemplate {
 					".lintstagedrc.json",
 					"dagger.json",
 					"docker-compose.yml",
-					"dockerComposeMigrate.sh",
+					"scripts",
 					"Dockerfile",
 					"LICENSE",
 					"package.json",
