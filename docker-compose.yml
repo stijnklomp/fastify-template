@@ -1,5 +1,5 @@
 x-playwright: &playwright
-  image: mcr.microsoft.com/playwright:v1.46.1-jammy
+  image: mcr.microsoft.com/playwright:v1.49.1-jammy
   volumes:
     - ".:/src"
   working_dir: "/src"

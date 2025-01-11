@@ -64,7 +64,7 @@ void (async function () {
 		outdir: "dist",
 		platform: "node",
 		plugins: [
-			esbuildPluginPino({ transports: ["pino-pretty"] }), // DOES THIS NEED TO BE HERE FOR PRODUCTION? OR IS IT ONLY NECESSARY FOR DEVELOPMENT?
+			// esbuildPluginPino({ transports: ["pino-pretty"] }), // DOES THIS NEED TO BE HERE FOR PRODUCTION? OR IS IT ONLY NECESSARY FOR DEVELOPMENT?
 			esbuildPluginFastifySwaggerUi(),
 		],
 		sourcemap: false,

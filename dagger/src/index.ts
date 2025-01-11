@@ -65,7 +65,7 @@ export class FastifyTemplate {
 					"volume",
 					".dockerignore",
 					".env",
-					".env.production", // Rename to `.env`?
+					".env.production",
 					".eslintcache",
 					".gitignore",
 					".lintstagedrc.json",
