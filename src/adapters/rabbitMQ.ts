@@ -31,9 +31,12 @@ export const init = async () => {
 			routingKeys.x_event,
 			undefined,
 		)
-	} catch (err: any) {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-		throw new Error(err)
+	} catch (err: unknown) {
+		if (err instanceof Error) {
+			throw new Error(err.message)
+		}
+
+		throw new Error("An unknown error occurred")
 	}
 }
 

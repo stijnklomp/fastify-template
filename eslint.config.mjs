@@ -14,15 +14,7 @@ const finalConfig = config({
 	typescript: true,
 })
 
-const addedConfigs = [
-	{
-		files: ["dagger/**/*.ts"],
-		rules: {
-			"@typescript-eslint/no-unsafe-call": "off",
-			// "@typescript-eslint/require-await": "off",
-		},
-	},
-]
+const addedConfigs = []
 
 finalConfig.push(...addedConfigs)
 
