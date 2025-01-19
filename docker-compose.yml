@@ -11,6 +11,8 @@ x-playwright: &playwright
       condition: service_started
     db-migration:
       condition: service_completed_successfully
+    localstack:
+      condition: service_started
   # networks:
   #   - internal
   #   - external
@@ -33,9 +35,16 @@ x-fastify: &fastify # network_mode: "host"
       condition: service_started
     db-migration:
       condition: service_completed_successfully
+    localstack:
+      condition: service_started
+    # otel-collector:
+    #   condition: service_healthy
   # networks:
   #   - internal
   #   - external
+  networks:
+    - default
+    - elastic
   env_file:
     - path: ./.env
   ports:
@@ -56,7 +65,7 @@ services:
     <<: *fastify
     # extends:
     #   service: fastify
-    image: node:20-alpine
+    image: node:23-alpine
     volumes:
       - ".:/src"
     working_dir: "/src"
@@ -184,12 +193,35 @@ services:
     volumes:
       - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
+    profiles:
+      - local
+      - dev
+      - test
+
+  # otel-collector:
+  #   image: otel/opentelemetry-collector-contrib
+  #   volumes:
+  #     - ./otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
+  #   ports:
+  #     - 1888:1888 # pprof extension
+  #     - 8888:8888 # Prometheus metrics exposed by the Collector
+  #     - 8889:8889 # Prometheus exporter metrics
+  #     - 13133:13133 # health_check extension
+  #     - 4317:4317 # OTLP gRPC receiver
+  #     - 4318:4318 # OTLP http receiver
+  #     - 55679:55679 # zpages extension
+  #   profiles:
+  #     - local
+  #     - dev
 
 volumes:
   rabbitmq:
   redis-cache:
   postgres-data:
-# networks:
+
+networks:
+  elastic:
+    external: true
 #   internal:
 #     driver: bridge
 #   external:

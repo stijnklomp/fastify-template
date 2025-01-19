@@ -26,6 +26,7 @@ finalConfig.push(includeIgnoreFile(gitignorePath), {
 		"dagger/sdk/*",
 		"test/acceptance/reports/*",
 		"test/combined-coverage/*",
+		"secrets/*",
 	],
 })
 
