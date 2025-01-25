@@ -5,7 +5,7 @@ import { compilerOptions } from "../tsconfig.json"
 
 export const coreConfig: Config = {
 	clearMocks: true,
-	moduleDirectories: ["<rootDir>/node_modules"],
+	moduleDirectories: ["node_modules"],
 	moduleFileExtensions: ["ts", "js", "json"],
 	moduleNameMapper: {
 		...pathsToModuleNameMapper(compilerOptions.paths),
