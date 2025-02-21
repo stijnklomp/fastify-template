@@ -1,6 +1,6 @@
 import { createClient } from "redis"
 
-import { logger } from "@/lib/logger"
+import { logger } from "@/src/common/logger"
 
 let redisClient: ReturnType<typeof createClient> | undefined
 

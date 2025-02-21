@@ -1,7 +1,7 @@
 import { FastifyReply } from "fastify"
-import notesValidator from "@/validators/notes"
-import { logger } from "@/lib/logger"
-import { prisma } from "@/utils/prisma"
+import notesValidator from "@/src/models/validators/notes"
+import { logger } from "@/src/common/logger"
+import { prisma } from "@/src/common/prisma"
 import { FastifyRequestSchemaTypes } from "@/src/models/types/schemaBuilderTypeExtractor"
 
 const dbConnection = () =>

@@ -1,6 +1,6 @@
 import { FastifyReply } from "fastify"
-import notesValidator from "@/validators/notes"
-import { logger } from "@/lib/logger"
+import notesValidator from "@/src/models/validators/notes"
+import { logger } from "@/src/common/logger"
 import notesService from "@/services/notes"
 import { FastifyRequestSchemaTypes } from "@/src/models/types/schemaBuilderTypeExtractor"
 
@@ -27,7 +27,7 @@ export const createNoteHandler = async (
 	res: FastifyReply,
 ) => {
 	try {
-		const note = await notesService.createNote({ ...req.body }) // needs looking at
+		const note = await notesService.createNote({ ...req.body })
 
 		await res.code(200).send({
 			message: "Note Created",

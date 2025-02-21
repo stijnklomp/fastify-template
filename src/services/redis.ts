@@ -1,4 +1,4 @@
-import { getPrimary } from "@/adapters/redis"
+import { getPrimary } from "@/src/common/redis"
 
 export const getClient = () => getPrimary()
 

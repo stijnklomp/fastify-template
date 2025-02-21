@@ -10,7 +10,7 @@ import path from "path"
 import hyperid from "hyperid"
 import elasticAPM from "elastic-apm-node"
 
-import { init as initRedis } from "@/adapters/redis"
+import { init as initRedis } from "@/src/common/redis"
 import { init as initRabbitMQ } from "@/adapters/rabbitMQ"
 // import { IncomingMessage, ServerResponse } from "http"
 
@@ -160,7 +160,11 @@ void fastifySetup.register(fastifySwaggerUI, {
 })
 
 void fastifySetup.register(autoLoad, {
-	dir: path.join(__dirname, "/plugins"),
+	dir: path.join(__dirname, "/config"),
+})
+
+void fastifySetup.register(autoLoad, {
+	dir: path.join(__dirname, "/middleware"),
 })
 
 void fastifySetup.register(autoLoad, {

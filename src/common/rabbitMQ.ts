@@ -1,5 +1,5 @@
 import { Channel, connect, Options, ConsumeMessage } from "amqplib"
-import { logger } from "@/lib/logger"
+import { logger } from "@/src/common/logger"
 
 const { RABBIT_HOST, RABBIT_USER, RABBIT_PASS, RABBIT_PORT } = process.env
 

@@ -8,7 +8,7 @@ import { glob } from "glob"
 import { createRequire } from "module"
 
 /**
- * Retrieve the file path to a module folder
+ * Retrieve the file path to a module directory
  * @param {string} moduleEntry
  * @param {string} fromFile
  */
@@ -34,7 +34,7 @@ const getModuleDir = (moduleEntry) => {
 }
 
 /**
- * ESBuild plugin to copy static folder to outdir
+ * ESBuild plugin to copy static directory to outdir
  */
 function esbuildPluginFastifySwaggerUi() {
 	return {

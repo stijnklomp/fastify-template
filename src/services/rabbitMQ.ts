@@ -1,4 +1,4 @@
-import { ConsumeCallback } from "@/lib/rabbitMQ"
+import { ConsumeCallback } from "@/src/common/rabbitMQ"
 import {
 	sendToEvent as sendToEventAdapter,
 	subscribe,
