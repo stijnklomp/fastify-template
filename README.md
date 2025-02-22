@@ -68,6 +68,14 @@ Eslint is used as a linter and uses Prettier to format code.
 ```sh
 # ESLint
 npm run lint
+
+# ESLint and fix (also sorts JSON files)
+# Prefix with `EXCLUDE_PATHS="<file_1> <file_2>"` to exclude files/directories (using GLOB pattern)
+npm run lint:fix
+
+# Sort a specific JSON file and/or directory
+# Important: Don't run this command without a specified file/directory (using GLOB pattern)
+npx jsonsort "<file_1> <file_2>"
 ```
 
 ### Unit & Feature tests
