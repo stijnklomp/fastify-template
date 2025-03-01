@@ -136,7 +136,6 @@ void fastifySetup.register(fastifySwagger, {
 })
 
 void fastifySetup.register(fastifySwaggerUI, {
-	// baseDir: path.resolve("dist/static"),
 	baseDir: path.resolve(__dirname, "dist/static"),
 	routePrefix: "/docs",
 	staticCSP: true,

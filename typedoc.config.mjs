@@ -3,4 +3,5 @@ import { typedocSettings } from "stijnklomp-linting-formatting-config/dist/setti
 export default {
 	...typedocSettings,
 	entryPoints: ["src"],
+	exclude: "dagger/**/*",
 }
