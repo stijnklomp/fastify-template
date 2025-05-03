@@ -11,7 +11,7 @@ import hyperid from "hyperid"
 import elasticAPM from "elastic-apm-node"
 
 import { init as initRedis } from "@/src/common/redis"
-import { init as initRabbitMQ } from "@/adapters/rabbitMQ"
+import { init as initRabbitMQ } from "@/common/rabbitMQ"
 // import { IncomingMessage, ServerResponse } from "http"
 
 const logsEnvironment =

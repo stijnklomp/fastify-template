@@ -1,4 +1,4 @@
-import redisAdapter from "@/adapters/redis"
+import redisAdapter from "@/common/redis"
 
 import redisService from "@/services/redis"
 
@@ -14,7 +14,7 @@ const mockedRedisAdapterGetPrimary = redisAdapter.getPrimary as jest.Mock<
 	ReturnType<typeof redisAdapter.getPrimary>
 >
 
-jest.mock("@/adapters/redis", () => ({
+jest.mock("@/common/redis", () => ({
 	getPrimary: jest.fn(),
 }))
 

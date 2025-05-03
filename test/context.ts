@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client"
 import { mockDeep, mockReset, DeepMockProxy } from "jest-mock-extended"
-import { prisma } from "@/utils/prisma"
+import { prisma } from "@/common/prisma"
 
-jest.mock("@/utils/prisma", () => ({
+jest.mock("@/common/prisma", () => ({
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	__esModule: true,
 	prisma: mockDeep<PrismaClient>(),

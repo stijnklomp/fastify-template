@@ -24,16 +24,10 @@ const createClientConnection = async () => {
 		),
 	)
 
-	await client.connect()
-
-	return client
+	return client.connect()
 }
 
-export const init = async () => {
-	redisClient = await createClientConnection()
-
-	return redisClient
-}
+export const init = async () => createClientConnection()
 
 export const getPrimary = () => {
 	if (!redisClient) throw new Error("Redis client not initialized")
