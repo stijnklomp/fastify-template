@@ -1,13 +1,13 @@
-import rabbitMQLib from "@/lib/rabbitMQ"
-// import { logger } from "@/lib/logger"
+import rabbitMQLib from "@/common/rabbitMQ"
+// import { logger } from "@/common/logger"
 import {
 	init as createConnection,
 	// sendToEvent,
 	// subscribe,
-} from "@/common/rabbitMQ"
+} from "@/services/rabbitMQ"
 // import { Channel } from "amqplib"
 
-jest.mock("@/lib/rabbitMQ", () => ({
+jest.mock("@/services/rabbitMQ", () => ({
 	consume: jest.fn(),
 	createExchange: jest.fn(),
 	init: jest.fn(),

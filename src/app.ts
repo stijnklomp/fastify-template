@@ -10,8 +10,8 @@ import path from "path"
 import hyperid from "hyperid"
 import elasticAPM from "elastic-apm-node"
 
-import { init as initCache } from "@/src/common/cache"
-import { init as initRabbitMQ } from "@/common/rabbitMQ"
+import { init as initCache } from "@/services/cache"
+// import { init as initRabbitMQ } from "@/services/rabbitMQ"
 // import { IncomingMessage, ServerResponse } from "http"
 
 const logsEnvironment =
@@ -174,7 +174,7 @@ void fastifySetup.register(autoLoad, {
 const start = async () => {
 	try {
 		await initCache()
-		await initRabbitMQ()
+		// await initRabbitMQ()
 		const port = Number(process.env.API_PORT ?? 3000)
 		await fastifySetup.listen({
 			host: "0.0.0.0",

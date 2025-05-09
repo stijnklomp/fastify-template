@@ -14,7 +14,15 @@ const finalConfig = config({
 	typescript: true,
 })
 
-const addedConfigs = []
+const addedConfigs = [
+	{
+		files: ["test/unit/**/*.ts"],
+		name: "Typescript -> Unit tests",
+		rules: {
+			"@typescript-eslint/unbound-method": "off",
+		},
+	},
+]
 
 finalConfig.push(...addedConfigs)
 

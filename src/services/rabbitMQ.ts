@@ -5,7 +5,7 @@ const fallbackExchangeForNonRoutedMessages = "nonRouted"
 const deadLetterExchange = "deadLetter"
 const { RABBIT_HOST, RABBIT_USER, RABBIT_PASS, RABBIT_PORT } = process.env
 
-let connection: amqplib.Connection | undefined
+let connection: amqplib.ChannelModel | undefined
 const channels = new Map<string, amqplib.Channel>()
 
 /**
@@ -16,7 +16,7 @@ export const close = async () => {
 	try {
 		if (connection) {
 			await connection.close()
-			logger.info("RabbitMQ connection closed.")
+			logger.info("RabbitMQ connection closed")
 		}
 	} catch (error) {
 		logger.error("Error closing RabbitMQ connection:", error)
@@ -31,9 +31,25 @@ export const close = async () => {
  * Cleanup RabbitMQ connection on application exit/abort.
  */
 const cleanupOnExit = () => {
-	process.on("exit", () => close)
-	process.on("SIGINT", () => close)
-	process.on("SIGTERM", () => close)
+	process.on("SIGINT", () => {
+		close()
+			.then(() => {
+				process.exit(0)
+			})
+			.catch(() => {
+				process.exit(1)
+			})
+	})
+
+	process.on("SIGTERM", () => {
+		close()
+			.then(() => {
+				process.exit(0)
+			})
+			.catch(() => {
+				process.exit(1)
+			})
+	})
 }
 
 /**
@@ -72,7 +88,7 @@ export const declareChannel = async (channel: string) => {
 	try {
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		channels[channel] = await connection!.createChannel()
-		logger.info("RabbitMQ channel successfully created.")
+		logger.info("RabbitMQ channel successfully created")
 	} catch (error) {
 		logger.error("Failed to create RabbitMQ channel:", error)
 

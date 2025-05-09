@@ -26,6 +26,7 @@ export const coverageConfig: Config = {
 		"<rootDir>/.husky/",
 		"<rootDir>/dist/",
 		"<rootDir>/doc/",
+		"<rootDir>/dagger/",
 	],
 	coverageReporters: ["text", "json"],
 	coverageThreshold: {
