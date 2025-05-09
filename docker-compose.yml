@@ -7,7 +7,7 @@ x-playwright: &playwright
   depends_on:
     rabbitmq:
       condition: service_healthy
-    redis:
+    cache:
       condition: service_started
     db-migration:
       condition: service_completed_successfully
@@ -31,7 +31,7 @@ x-fastify: &fastify # network_mode: "host"
   depends_on:
     rabbitmq:
       condition: service_healthy
-    redis:
+    cache:
       condition: service_started
     db-migration:
       condition: service_completed_successfully
@@ -72,7 +72,7 @@ services:
     command: sh -c "[ ! -d node_modules ] && npm ci --force ; npm run dev"
     environment:
       - DATABASE_HOST=db
-      - REDIS_HOST=redis
+      - CACHE_HOST=cache
       - RABBIT_HOST=rabbitmq
     profiles:
       - dev
@@ -107,12 +107,12 @@ services:
       - ${RABBIT_PORT:-5672}:5672
       - 15672:15672
 
-  redis:
-    image: redis
+  cache:
+    image: cache
     restart: always
     command:
       [
-        "redis-server",
+        "cache-server",
         "--save",
         "--appendonly",
         "no",
@@ -121,16 +121,16 @@ services:
         "--logLevel",
         "notice",
         "--requirepass",
-        "$REDIS_PASSWORD",
+        "$CACHE_PASSWORD",
       ]
     # networks:
     #   - internal
     volumes:
-      - redis-cache:/data
+      - cache:/data
     # logging:
     #   driver: none
     ports:
-      - ${REDIS_PORT:-6379}:6379
+      - ${CACHE_PORT:-6379}:6379
 
   db:
     image: postgres
@@ -216,7 +216,7 @@ services:
 
 volumes:
   rabbitmq:
-  redis-cache:
+  cache:
   postgres-data:
 
 networks:
