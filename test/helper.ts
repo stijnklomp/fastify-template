@@ -28,4 +28,7 @@ export const build = (overrideOptions: Partial<FastifyServerOptions> = {}) => {
 	return () => fastify
 }
 
-export const printMessage = () => "Hello world"
+/**
+ * Give any asynchronous handlers a tick to run.
+ */
+export const runAsyncHandlers = async () => new Promise((r) => setImmediate(r))

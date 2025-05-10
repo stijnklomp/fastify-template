@@ -1,5 +1,6 @@
 import { createClient, RedisClientType } from "redis"
 
+import { runAsyncHandlers } from "@/helper"
 import cacheService from "@/src/services/cache"
 import { logger } from "@/src/common/logger"
 
@@ -12,22 +13,23 @@ const mockedCreateClient = createClient as jest.Mock<RedisClientType>
 describe("Cache service", () => {
 	afterEach(() => {
 		jest.clearAllMocks()
+		jest.restoreAllMocks()
 	})
 
 	describe("init", () => {
+		const mockConnect = jest.fn().mockResolvedValue("connected-client")
+		const mockOn = jest.fn()
 		const mockClient = {
-			connect: jest.fn().mockResolvedValue("connected-client"),
-			on: jest.fn(),
+			connect: mockConnect,
+			on: mockOn,
 		} as unknown as RedisClientType
 
 		beforeEach(() => {
-			jest.clearAllMocks()
-
 			mockedCreateClient.mockImplementation(() => mockClient)
 			// (createClient as jest.Mock).mockReturnValue(mockClient)
 		})
 
-		it("should initialize and connect the redis client", async () => {
+		it("should initialize and connect the cache client", async () => {
 			const client = await cacheService.init()
 
 			expect(createClient).toHaveBeenCalledWith({
@@ -50,47 +52,42 @@ describe("Cache service", () => {
 			expect(client).toBe("connected-client")
 		})
 
-		it("should log and exit on connection error", () => {
-			const mockExit = jest
-				.spyOn(process, "exit")
-				.mockImplementation(() => {
-					throw new Error("process.exit called")
-				})
-
-			let errorHandler: (err: Error) => void = () => {}
-
-			mockClient.on.mockImplementation((event, cb) => {
-				if (event === "error") errorHandler = cb
-			})
-
-			// eslint-disable-next-line @typescript-eslint/no-floating-promises
-			cacheService.init()
-			const testError = new Error("Connection failed")
-			expect(() => {
-				errorHandler(testError)
-			}).toThrow("process.exit called")
-
-			expect(logger.error).toHaveBeenCalledWith(
-				"Cache client error",
-				testError,
-			)
-			expect(mockExit).toHaveBeenCalledWith(1)
-			mockExit.mockRestore()
-		})
-
 		it("should log info on successful connect", async () => {
-			let connectHandler: () => void = () => {}
+			type ConnectCallback = () => void
+			let connectHandler: ConnectCallback | undefined
 
-			mockClient.on.mockImplementation((event, cb) => {
+			mockOn.mockImplementation((event, cb: ConnectCallback) => {
 				if (event === "connect") connectHandler = cb
 			})
 
 			await cacheService.init()
-			connectHandler()
+			connectHandler?.()
 
 			expect(logger.info).toHaveBeenCalledWith(
 				expect.stringContaining("Cache client connected on port"),
 			)
+		})
+
+		it("should log and exit on connection error", () => {
+			type ErrorCallback = (err: Error) => void
+			let errorHandler: ErrorCallback | undefined
+
+			mockOn.mockImplementation((event, cb: ErrorCallback) => {
+				if (event === "error") errorHandler = cb
+			})
+			jest.spyOn(process, "exit").mockImplementation(
+				() => undefined as never,
+			)
+
+			void cacheService.init()
+
+			errorHandler?.(new Error("Connection failed"))
+
+			expect(logger.error).toHaveBeenCalledWith(
+				"Cache client error",
+				expect.any(Error),
+			)
+			expect(process.exit).toHaveBeenCalledWith(1)
 		})
 	})
 

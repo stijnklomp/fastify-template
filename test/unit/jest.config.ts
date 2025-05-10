@@ -24,8 +24,9 @@ const config: Config = {
 	],
 	rootDir: "../../",
 	setupFilesAfterEnv: [
-		"<rootDir>/jest.setup.ts",
+		...(coreConfig.setupFilesAfterEnv ?? []),
 		"<rootDir>/test/context.ts",
+		"<rootDir>/test/unit/jest.setup.ts",
 	],
 	testMatch: ["<rootDir>/test/unit/**/(*.)+(spec|test).[jt]s"],
 	transform: {
