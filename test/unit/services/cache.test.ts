@@ -1,7 +1,6 @@
 import { createClient, RedisClientType } from "redis"
 
-import { runAsyncHandlers } from "@/helper"
-import cacheService from "@/src/services/cache"
+import cache from "@/src/services/cache"
 import { logger } from "@/src/common/logger"
 
 jest.mock("redis", () => ({
@@ -17,127 +16,185 @@ describe("Cache service", () => {
 	})
 
 	describe("init", () => {
-		const mockConnect = jest.fn().mockResolvedValue("connected-client")
 		const mockOn = jest.fn()
 		const mockClient = {
-			connect: mockConnect,
+			connect: jest.fn(),
 			on: mockOn,
 		} as unknown as RedisClientType
 
 		beforeEach(() => {
 			mockedCreateClient.mockImplementation(() => mockClient)
-			// (createClient as jest.Mock).mockReturnValue(mockClient)
 		})
 
 		it("should initialize and connect the cache client", async () => {
-			const client = await cacheService.init()
+			await jest.isolateModulesAsync(async () => {
+				const isolatedCache = await import("@/src/services/cache")
+				await isolatedCache.init()
 
-			expect(createClient).toHaveBeenCalledWith({
-				password: process.env.CACHE_PASSWORD ?? "",
-				socket: {
-					host: process.env.CACHE_HOST ?? "localhost",
-					port: Number(process.env.CACHE_PORT ?? "6379"),
-				},
+				expect(mockedCreateClient).toHaveBeenCalledWith({
+					password: process.env.CACHE_PASSWORD ?? "",
+					socket: {
+						host: process.env.CACHE_HOST ?? "localhost",
+						port: Number(process.env.CACHE_PORT ?? "6379"),
+					},
+				})
+				expect(mockClient.on).toHaveBeenCalledWith(
+					"error",
+					expect.any(Function),
+				)
+				expect(mockClient.on).toHaveBeenCalledWith(
+					"connect",
+					expect.any(Function),
+				)
+				expect(mockClient.connect).toHaveBeenCalled()
 			})
+		})
 
-			expect(mockClient.on).toHaveBeenCalledWith(
-				"error",
-				expect.any(Function),
-			)
-			expect(mockClient.on).toHaveBeenCalledWith(
-				"connect",
-				expect.any(Function),
-			)
-			expect(mockClient.connect).toHaveBeenCalled()
-			expect(client).toBe("connected-client")
+		it("should not create new client if already initialized", async () => {
+			await jest.isolateModulesAsync(async () => {
+				const isolatedCache = await import("@/src/services/cache")
+
+				await isolatedCache.init()
+				await isolatedCache.init()
+
+				expect(mockedCreateClient).toHaveBeenCalledOnce()
+			})
 		})
 
 		it("should log info on successful connect", async () => {
-			type ConnectCallback = () => void
-			let connectHandler: ConnectCallback | undefined
+			await jest.isolateModulesAsync(async () => {
+				const isolatedCache = await import("@/src/services/cache")
+				type ConnectCallback = () => void
+				let connectHandler: ConnectCallback | undefined
 
-			mockOn.mockImplementation((event, cb: ConnectCallback) => {
-				if (event === "connect") connectHandler = cb
+				mockOn.mockImplementation((event, cb: ConnectCallback) => {
+					if (event === "connect") connectHandler = cb
+				})
+
+				await isolatedCache.init()
+				connectHandler?.()
+
+				expect(logger.info).toHaveBeenCalledWith(
+					expect.stringContaining("Cache client connected on port"),
+				)
 			})
-
-			await cacheService.init()
-			connectHandler?.()
-
-			expect(logger.info).toHaveBeenCalledWith(
-				expect.stringContaining("Cache client connected on port"),
-			)
 		})
 
-		it("should log and exit on connection error", () => {
-			type ErrorCallback = (err: Error) => void
-			let errorHandler: ErrorCallback | undefined
+		it("should log and exit on connection error", async () => {
+			await jest.isolateModulesAsync(async () => {
+				const isolatedCache = await import("@/src/services/cache")
+				type ErrorCallback = (err: Error) => void
+				let errorHandler: ErrorCallback | undefined
 
-			mockOn.mockImplementation((event, cb: ErrorCallback) => {
-				if (event === "error") errorHandler = cb
+				mockOn.mockImplementation((event, cb: ErrorCallback) => {
+					if (event === "error") errorHandler = cb
+				})
+				jest.spyOn(process, "exit").mockImplementation(
+					() => undefined as never,
+				)
+
+				void isolatedCache.init()
+
+				errorHandler?.(new Error("Connection failed"))
+
+				expect(logger.error).toHaveBeenCalledWith(
+					"Cache client error",
+					expect.any(Error),
+				)
+				expect(process.exit).toHaveBeenCalledWith(1)
 			})
-			jest.spyOn(process, "exit").mockImplementation(
-				() => undefined as never,
-			)
+		})
 
-			void cacheService.init()
+		it.each([
+			["get", () => cache.get("")],
+			["set", () => cache.set("", "")],
+			["del", () => cache.del("")],
+		])(
+			`should not allow '%s' method without an initialized client`,
+			async (_, fn) => {
+				await expect(fn).rejects.toThrow(Error)
+			},
+		)
+	})
 
-			errorHandler?.(new Error("Connection failed"))
+	const mockedValue = {
+		test: "value",
+	}
+	const mock = jest.fn().mockReturnValue(mockedValue)
 
-			expect(logger.error).toHaveBeenCalledWith(
-				"Cache client error",
-				expect.any(Error),
-			)
-			expect(process.exit).toHaveBeenCalledWith(1)
+	describe("set", () => {
+		it("should set in cache", async () => {
+			await jest.isolateModulesAsync(async () => {
+				const isolatedCache = await import("@/src/services/cache")
+				const mockConnect = {
+					set: jest.fn(),
+				}
+				const mockClient = {
+					connect: () => mockConnect,
+					on: jest.fn(),
+					set: mock,
+				} as unknown as RedisClientType
+				mockedCreateClient.mockImplementation(() => mockClient)
+
+				await isolatedCache.init()
+				const result = await isolatedCache.set(
+					Object.keys(mockedValue)[0],
+					Object.values(mockedValue)[0],
+				)
+
+				expect(mock).toHaveBeenCalledTimes(1)
+				expect(result).toStrictEqual(mockedValue)
+			})
 		})
 	})
 
-	// const mockedValue = {
-	// 	test: "value",
-	// }
-	// const mock = jest.fn().mockReturnValue(mockedValue)
+	describe("get", () => {
+		it("should get from cache", async () => {
+			await jest.isolateModulesAsync(async () => {
+				const isolatedCache = await import("@/src/services/cache")
+				const mockConnect = {
+					get: jest.fn(),
+				}
+				const mockClient = {
+					connect: () => mockConnect,
+					get: mock,
+					on: jest.fn(),
+				} as unknown as RedisClientType
+				mockedCreateClient.mockImplementation(() => mockClient)
 
-	// describe("set", () => {
-	// 	it("should set in cache", async () => {
-	// 		mockedCacheAdapterGetPrimary.mockImplementation(
-	// 			jest.fn().mockReturnValue({
-	// 				set: mock,
-	// 			}),
-	// 		)
-	// 		const result = await cacheService.set(
-	// 			Object.keys(mockedValue)[0],
-	// 			Object.values(mockedValue)[0],
-	// 		)
+				await isolatedCache.init()
+				const result = await isolatedCache.get(
+					Object.keys(mockedValue)[0],
+				)
 
-	// 		expect(mock).toHaveBeenCalledTimes(1)
-	// 		expect(result).toStrictEqual(mockedValue)
-	// 	})
-	// })
+				expect(mock).toHaveBeenCalledTimes(1)
+				expect(result).toStrictEqual(mockedValue)
+			})
+		})
+	})
 
-	// describe("get", () => {
-	// 	it("should get from cache", async () => {
-	// 		mockedCacheAdapterGetPrimary.mockImplementation(
-	// 			jest.fn().mockReturnValue({
-	// 				get: mock,
-	// 			}),
-	// 		)
-	// 		const result = await cacheService.get(Object.keys(mockedValue)[0])
+	describe("del", () => {
+		it("should delete from cache", async () => {
+			await jest.isolateModulesAsync(async () => {
+				const isolatedCache = await import("@/src/services/cache")
+				const mockConnect = {
+					del: jest.fn(),
+				}
+				const mockClient = {
+					connect: () => mockConnect,
+					del: mock,
+					on: jest.fn(),
+				} as unknown as RedisClientType
+				mockedCreateClient.mockImplementation(() => mockClient)
 
-	// 		expect(mock).toHaveBeenCalledTimes(1)
-	// 		expect(result).toStrictEqual(mockedValue)
-	// 	})
-	// })
+				await isolatedCache.init()
+				const result = await isolatedCache.del(
+					Object.keys(mockedValue)[0],
+				)
 
-	// describe("del", () => {
-	// 	it("should delete from cache", async () => {
-	// 		mockedCacheAdapterGetPrimary.mockImplementation(
-	// 			jest.fn().mockReturnValue({
-	// 				del: mock,
-	// 			}),
-	// 		)
-	// 		const result = await cacheService.del(Object.keys(mockedValue)[0])
-
-	// 		expect(mock).toHaveBeenCalledTimes(1)
-	// 		expect(result).toStrictEqual(mockedValue)
-	// 	})
-	// })
+				expect(mock).toHaveBeenCalledTimes(1)
+				expect(result).toStrictEqual(mockedValue)
+			})
+		})
+	})
 })

@@ -11,6 +11,8 @@ const CACHE_PASSWORD = process.env.CACHE_PASSWORD ?? ""
  * @remarks exits the process on connection failure.
  */
 export const init = async () => {
+	if (client !== undefined) return
+
 	const createdClient = createClient({
 		password: CACHE_PASSWORD,
 		socket: {
@@ -28,9 +30,9 @@ export const init = async () => {
 		logger.info(`Cache client connected on port ${CACHE_PORT}`),
 	)
 
-	client = await createdClient.connect()
+	await createdClient.connect()
 
-	return client
+	client = createdClient
 }
 
 /**

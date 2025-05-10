@@ -4,6 +4,7 @@ import { pathsToModuleNameMapper } from "ts-jest"
 import { compilerOptions } from "../tsconfig.json"
 
 export const coreConfig: Config = {
+	// automock: false,
 	clearMocks: true,
 	moduleDirectories: ["node_modules"],
 	moduleFileExtensions: ["ts", "js", "json"],
