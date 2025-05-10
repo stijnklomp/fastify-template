@@ -17,15 +17,17 @@ import { init as initCache } from "@/services/cache"
 const logsEnvironment =
 	(process.env.LOGS as keyof typeof envToLogger | undefined) ?? "production"
 
-elasticAPM.start({
-	// apiKey: "./secrets/certs/apm-server/apm-server.key",
-	captureBody: logsEnvironment != "production" ? "all" : "off",
-	// secretToken: "./secrets/certs/apm-server/apm-server.crt",
-	secretToken: "secrettokengoeshere",
-	// serverCaCertFile: "./secrets/certs/apm-server/apm-server.crt",
-	serverUrl: "https://apm-server:8200",
-	verifyServerCert: false,
-})
+if (logsEnvironment !== "test") {
+	elasticAPM.start({
+		// apiKey: "./secrets/certs/apm-server/apm-server.key",
+		captureBody: logsEnvironment != "production" ? "all" : "off",
+		// secretToken: "./secrets/certs/apm-server/apm-server.crt",
+		secretToken: "secrettokengoeshere",
+		// serverCaCertFile: "./secrets/certs/apm-server/apm-server.crt",
+		serverUrl: "https://apm-server:8200",
+		verifyServerCert: false,
+	})
+}
 
 const envToLogger = {
 	development: {

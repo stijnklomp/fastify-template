@@ -22,6 +22,7 @@ export const coreConfig: Config = {
 export const coverageConfig: Config = {
 	collectCoverageFrom: ["<rootDir>/src/**/*.{cjs,mjs,js,ts}"],
 	coveragePathIgnorePatterns: [
+		"<rootDir>/src/app.ts",
 		"<rootDir>/node_modules/",
 		"<rootDir>/.husky/",
 		"<rootDir>/dist/",
