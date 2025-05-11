@@ -1,6 +1,6 @@
 import { createClient } from "redis"
 
-import { logger } from "@/src/common/logger"
+import { logger } from "@/common/logger"
 
 let client: ReturnType<typeof createClient> | undefined
 const CACHE_PORT = process.env.CACHE_PORT ?? "6379"
@@ -8,7 +8,7 @@ const CACHE_HOST = process.env.CACHE_HOST ?? "localhost"
 const CACHE_PASSWORD = process.env.CACHE_PASSWORD ?? ""
 
 /**
- * @remarks exits the process on connection failure.
+ * @remarks Exits the process on connection failure.
  */
 export const init = async () => {
 	if (client !== undefined) return
@@ -22,12 +22,12 @@ export const init = async () => {
 	})
 
 	createdClient.on("error", (err: Error) => {
-		logger.error("Cache client error", err)
+		logger.error("Error initializing cache client:", err)
 		process.exit(1)
 	})
 
 	createdClient.on("connect", () =>
-		logger.info(`Cache client connected on port ${CACHE_PORT}`),
+		logger.info(`Cache client connected on port '${CACHE_PORT}'`),
 	)
 
 	await createdClient.connect()
@@ -36,7 +36,7 @@ export const init = async () => {
 }
 
 /**
- * @remarks throws if the cache client is not initialized.
+ * @remarks Throws if the cache client is not initialized.
  */
 const getClient = () => {
 	if (!client) throw new Error("Cache client not initialized")

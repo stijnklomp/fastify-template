@@ -1,8 +1,8 @@
 import { FastifyReply } from "fastify"
-import notesValidator from "@/src/models/validators/notes"
-import { logger } from "@/src/common/logger"
-import { prisma } from "@/src/common/prisma"
-import { FastifyRequestSchemaTypes } from "@/src/models/types/schemaBuilderTypeExtractor"
+import notesValidator from "@/models/validators/notes"
+import { logger } from "@/common/logger"
+import { prisma } from "@/common/prisma"
+import { FastifyRequestSchemaTypes } from "@/models/types/schemaBuilderTypeExtractor"
 
 const dbConnection = () =>
 	prisma.$connect().then(async () => {

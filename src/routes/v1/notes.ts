@@ -1,5 +1,5 @@
 import { createNoteHandler, getNotesHandler } from "@/controllers/notes"
-import { getNotes, createNote } from "@/src/models/validators/notes"
+import { getNotes, createNote } from "@/models/validators/notes"
 import { FastifyInstance } from "fastify"
 
 export default (fastify: FastifyInstance) => {

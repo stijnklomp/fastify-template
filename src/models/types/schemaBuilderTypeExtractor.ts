@@ -19,7 +19,7 @@ export type StaticRequestSchemaTypes<T extends RequestParams> = {
 
 export type FastifyRequestSchemaTypes<T extends RequestParams> =
 	FastifyRequest<{
-		// Disable naming convention rule because `@sinclair/typebox` uses Pascal case
+		// TODO: Disable global naming convention rule for this directory because `@sinclair/typebox` uses Pascal case
 		// eslint-disable-next-line @typescript-eslint/naming-convention
 		Body: RequestProperty<T, "body">
 		// eslint-disable-next-line @typescript-eslint/naming-convention

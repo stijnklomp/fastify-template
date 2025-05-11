@@ -32,3 +32,17 @@ export const build = (overrideOptions: Partial<FastifyServerOptions> = {}) => {
  * Give any asynchronous handlers a tick to run.
  */
 export const runAsyncHandlers = async () => new Promise((r) => setImmediate(r))
+
+let originalProcessExit: typeof process.exit
+
+export const mockProcessExit = () => {
+	originalProcessExit = process.exit.bind(process)
+	process.exit = jest.fn() as never
+}
+
+/**
+ * @remarks Called after `mockProcessExit`.
+ */
+export const restoreProcessExit = () => {
+	process.exit = originalProcessExit
+}

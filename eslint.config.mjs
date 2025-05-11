@@ -19,6 +19,7 @@ const addedConfigs = [
 		files: ["test/unit/**/*.ts"],
 		name: "Typescript -> Unit tests",
 		rules: {
+			"@typescript-eslint/no-unsafe-assignment": "off", // Disabled for tests to avoid verbose type casting when using Jest mocks
 			"@typescript-eslint/unbound-method": "off",
 		},
 	},

@@ -1,30 +1,28 @@
 import amqplib, { Channel } from "amqplib"
-import { logger } from "@/src/common/logger"
+
+import { logger } from "@/common/logger"
 
 const fallbackExchangeForNonRoutedMessages = "nonRouted"
 const deadLetterExchange = "deadLetter"
-const { RABBIT_HOST, RABBIT_USER, RABBIT_PASS, RABBIT_PORT } = process.env
 
 let connection: amqplib.ChannelModel | undefined
 const channels = new Map<string, amqplib.Channel>()
 
 /**
  * Close RabbitMQ connection.
- * @returns connection closed.
+ * @remarks Throws if the cache client is not initialized.
  */
 export const close = async () => {
+	if (typeof connection === "undefined") return
+
 	try {
-		if (connection) {
-			await connection.close()
-			logger.info("RabbitMQ connection closed")
-		}
-	} catch (error) {
-		logger.error("Error closing RabbitMQ connection:", error)
+		await connection.close()
+		logger.info("RabbitMQ connection closed")
+	} catch (err) {
+		logger.error("Error closing RabbitMQ connection:", err)
 
-		return false
+		throw err
 	}
-
-	return true
 }
 
 /**
@@ -52,16 +50,21 @@ const cleanupOnExit = () => {
 	})
 }
 
+const { RABBIT_HOST, RABBIT_USER, RABBIT_PASS, RABBIT_PORT, RABBIT_TRANSPORT } =
+	process.env
+
 /**
- * @remarks exits the process on connection failure.
+ * @remarks Exits the process on connection failure.
  */
-const init = async () => {
+export const init = async () => {
+	if (connection !== undefined) return
+
 	const rabbitPort = RABBIT_PORT ?? "5671"
-	const connectionUrl = `${process.env.RABBIT_TRANSPORT ?? "amqp"}://${RABBIT_USER ?? "guest"}:${RABBIT_PASS ?? "guest"}@${RABBIT_HOST ?? "0.0.0.0"}:${rabbitPort}`
+	const connectionUrl = `${RABBIT_TRANSPORT ?? "amqp"}://${RABBIT_USER ?? "guest"}:${RABBIT_PASS ?? "guest"}@${RABBIT_HOST ?? "0.0.0.0"}:${rabbitPort}`
 
 	try {
 		connection = await amqplib.connect(connectionUrl)
-		logger.info(`RabbitMQ connected on port: ${rabbitPort}`)
+		logger.info(`RabbitMQ connected on port '${rabbitPort}'`)
 	} catch (err) {
 		logger.error("Error initializing RabbitMQ:", err)
 		process.exit(1)
@@ -75,22 +78,23 @@ const init = async () => {
  *
  * *If the RabbitMQ connection is not initialized, it will be initialized first.*
  *
- * @param channel key of the channel.
- * @returns channel declared.
+ * @remarks Will return `true` if a channel key already exists without overriding.
+ * @param channel Key of the channel.
+ * @returns Channel declared.
  */
 export const declareChannel = async (channel: string) => {
-	if (channels.has(channel)) return true
-
 	if (typeof connection === "undefined") {
 		await init()
 	}
+
+	if (channel in channels) return true
 
 	try {
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		channels[channel] = await connection!.createChannel()
 		logger.info("RabbitMQ channel successfully created")
-	} catch (error) {
-		logger.error("Failed to create RabbitMQ channel:", error)
+	} catch (err) {
+		logger.error("Failed to create RabbitMQ channel:", err)
 
 		return false
 	}
@@ -99,8 +103,8 @@ export const declareChannel = async (channel: string) => {
 }
 
 /**
- * @param channel key of the channel to use.
- * @returns exchange declared.
+ * @param channel Key of the channel to use.
+ * @returns Exchange declared.
  */
 const declareExchange = async (channel: string, exchange = "main") => {
 	if (!(await declareChannel(channel))) return false
@@ -116,8 +120,8 @@ const declareExchange = async (channel: string, exchange = "main") => {
 			durable: true,
 			internal: false,
 		})
-	} catch (error) {
-		logger.error(`Failed to assert exchange'${exchange}':`, error)
+	} catch (err) {
+		logger.error(`Failed to assert exchange'${exchange}':`, err)
 
 		return false
 	}
@@ -128,8 +132,8 @@ const declareExchange = async (channel: string, exchange = "main") => {
 export type Bindings = Record<string, string>
 
 /**
- * @param channel key of the channel to use.
- * @param bindings exchanges with binding keys.
+ * @param channel Key of the channel to use.
+ * @param bindings Exchanges with binding keys.
  *
  * The keys of the object represent the exchange names
  * and the values represent the corresponding binding keys.
@@ -141,7 +145,7 @@ export type Bindings = Record<string, string>
  *   'exchangeB': 'routing.key.b'
  * }
  * ```
- * @returns queue declared.
+ * @returns Queue declared.
  */
 const declareQueue = async (
 	channel: string,
@@ -158,8 +162,8 @@ const declareQueue = async (
 			exclusive: false,
 			messageTtl: 3600000, // 1 hour
 		})
-	} catch (error) {
-		logger.error(`Failed to assert queue '${queue}':`, error)
+	} catch (err) {
+		logger.error(`Failed to assert queue '${queue}':`, err)
 
 		return false
 	}
@@ -185,8 +189,8 @@ const declareQueue = async (
 /**
  * Publish message.
  *
- * @param channel key of the channel to use.
- * @returns publish succeeded.
+ * @param channel Key of the channel to use.
+ * @returns Publish succeeded.
  */
 export const publish = async (
 	channel: string,
@@ -210,18 +214,18 @@ export const publish = async (
 
 			return false
 		}
-	} catch (error) {
+	} catch (err) {
 		logger.error(
 			`Error publishing RabbitMQ message on channel ${channel}:`,
-			error,
+			err,
 		)
 
 		// Close the channel and possibly the connection in case of error
 		channels
 			.get(channel)
 			?.close()
-			.catch((closeError: unknown) => {
-				console.error(`Error closing channel ${channel}:`, closeError)
+			.catch((closeErr: unknown) => {
+				console.error(`Error closing channel ${channel}:`, closeErr)
 			})
 
 		channels.delete(channel)
@@ -237,8 +241,8 @@ export type ConsumeCallback = Parameters<Channel["consume"]>[1]
 /**
  * Consume messages.
  *
- * @param channel key of the channel to use.
- * @param bindings exchanges with binding keys.
+ * @param channel Key of the channel to use.
+ * @param bindings Exchanges with binding keys.
  *
  * The keys of the object represent the exchange names
  * and the values represent the corresponding binding keys.
@@ -251,8 +255,8 @@ export type ConsumeCallback = Parameters<Channel["consume"]>[1]
  * }
  * ```
  *
- * @param callback callback that gets invoked for each published message. *(Requires acknowledgement)*
- * @returns successfully consuming.
+ * @param callback Callback that gets invoked for each published message. *(Requires acknowledgement)*
+ * @returns Successfully consuming.
  */
 export const consume = async (
 	channel: string,
@@ -266,11 +270,21 @@ export const consume = async (
 
 	try {
 		await channels.get(channel)?.consume(queue, callback, { noAck: false })
-	} catch (error) {
-		logger.error(`Failed to start consumer on queue '${queue}':`, error)
+	} catch (err) {
+		logger.error(`Failed to start consumer on queue '${queue}':`, err)
 
 		return false
 	}
 
 	return true
+}
+
+export default {
+	close,
+	consume,
+	declareChannel,
+	declareExchange,
+	declareQueue,
+	init,
+	publish,
 }

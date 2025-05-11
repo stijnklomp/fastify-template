@@ -1,8 +1,8 @@
 import { FastifyReply } from "fastify"
-import notesValidator from "@/src/models/validators/notes"
-import { logger } from "@/src/common/logger"
+import notesValidator from "@/models/validators/notes"
+import { logger } from "@/common/logger"
 import notesService from "@/services/notes"
-import { FastifyRequestSchemaTypes } from "@/src/models/types/schemaBuilderTypeExtractor"
+import { FastifyRequestSchemaTypes } from "@/models/types/schemaBuilderTypeExtractor"
 
 export const getNotesHandler = async (
 	req: FastifyRequestSchemaTypes<typeof notesValidator.getNotes>,
