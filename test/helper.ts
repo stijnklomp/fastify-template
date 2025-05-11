@@ -46,3 +46,7 @@ export const mockProcessExit = () => {
 export const restoreProcessExit = () => {
 	process.exit = originalProcessExit
 }
+
+const originalEnv = { ...process.env }
+
+export const restoreEnvVars = () => (process.env = originalEnv)

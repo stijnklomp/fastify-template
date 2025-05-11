@@ -30,7 +30,7 @@ export const coverageConfig: Config = {
 		"<rootDir>/doc/",
 		"<rootDir>/dagger/",
 	],
-	coverageReporters: ["text", "json"],
+	coverageReporters: ["html", "text", "json"],
 	coverageThreshold: {
 		global: {
 			branches: 100,

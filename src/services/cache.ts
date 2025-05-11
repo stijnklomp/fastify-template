@@ -1,6 +1,6 @@
 import { createClient } from "redis"
 
-import { logger } from "@/common/logger"
+import { logger, formatError } from "@/common/logger"
 
 let client: ReturnType<typeof createClient> | undefined
 const CACHE_PORT = process.env.CACHE_PORT ?? "6379"
@@ -22,7 +22,7 @@ export const init = async () => {
 	})
 
 	createdClient.on("error", (err: Error) => {
-		logger.error("Error initializing cache client:", err)
+		logger.error("Error initializing cache client:", formatError(err))
 		process.exit(1)
 	})
 

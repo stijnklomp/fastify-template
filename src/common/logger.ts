@@ -19,3 +19,6 @@ export const logger = winston.createLogger({
 	level: logLevel,
 	transports: [new winston.transports.Console()],
 })
+
+export const formatError = (err: unknown) =>
+	err instanceof Error ? err.message : String(err)
