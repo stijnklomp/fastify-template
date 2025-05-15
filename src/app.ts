@@ -11,7 +11,7 @@ import hyperid from "hyperid"
 import elasticAPM from "elastic-apm-node"
 
 import { init as initCache } from "@/services/cache"
-// import { init as initRabbitMQ } from "@/services/rabbitMQ"
+import { init as initRabbitMQ } from "@/services/rabbitMQ"
 // import { IncomingMessage, ServerResponse } from "http"
 
 const logsEnvironment =
@@ -80,6 +80,13 @@ const envToLogger = {
 }
 
 export const options: FastifyServerOptions = {
+	ajv: {
+		customOptions: {
+			// coerceTypes: true,
+			removeAdditional: "all",
+			useDefaults: true,
+		},
+	},
 	genReqId: () => {
 		return hyperid({ fixedLength: true, urlSafe: true })()
 	},
@@ -160,9 +167,9 @@ void fastifySetup.register(fastifySwaggerUI, {
 	},
 })
 
-void fastifySetup.register(autoLoad, {
-	dir: path.join(__dirname, "/config"),
-})
+// void fastifySetup.register(autoLoad, {
+// 	dir: path.join(__dirname, "/config"),
+// })
 
 void fastifySetup.register(autoLoad, {
 	dir: path.join(__dirname, "/middleware"),
@@ -176,7 +183,7 @@ void fastifySetup.register(autoLoad, {
 const start = async () => {
 	try {
 		await initCache()
-		// await initRabbitMQ()
+		await initRabbitMQ()
 		const port = Number(process.env.API_PORT ?? 3000)
 		await fastifySetup.listen({
 			host: "0.0.0.0",

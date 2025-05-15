@@ -11,7 +11,7 @@ const CACHE_PASSWORD = process.env.CACHE_PASSWORD ?? ""
  * @remarks Exits the process on connection failure.
  */
 export const init = async () => {
-	if (client !== undefined) return
+	if (typeof client !== "undefined") return
 
 	const createdClient = createClient({
 		password: CACHE_PASSWORD,
@@ -39,7 +39,8 @@ export const init = async () => {
  * @remarks Throws if the cache client is not initialized.
  */
 const getClient = () => {
-	if (!client) throw new Error("Cache client not initialized")
+	if (typeof client === "undefined")
+		throw new Error("Cache client not initialized")
 
 	return client
 }

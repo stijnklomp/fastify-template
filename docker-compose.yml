@@ -108,27 +108,15 @@ services:
       - 15672:15672
 
   cache:
-    image: cache
+    image: valkey/valkey
     restart: always
-    command:
-      [
-        "cache-server",
-        "--save",
-        "--appendonly",
-        "no",
-        "--notify-keyspace-events",
-        "Ex",
-        "--logLevel",
-        "notice",
-        "--requirepass",
-        "$CACHE_PASSWORD",
-      ]
-    # networks:
-    #   - internal
+    command: >
+      valkey-server --save "" --appendonly no
+      --notify-keyspace-events Ex
+      --loglevel notice
+      --requirepass ${CACHE_PASSWORD}
     volumes:
       - cache:/data
-    # logging:
-    #   driver: none
     ports:
       - ${CACHE_PORT:-6379}:6379
 
@@ -220,8 +208,9 @@ volumes:
   postgres-data:
 
 networks:
+  cache:
   elastic:
-    external: true
+    #external: true
 #   internal:
 #     driver: bridge
 #   external:
