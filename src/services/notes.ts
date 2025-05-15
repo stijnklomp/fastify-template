@@ -1,5 +1,5 @@
 import { StaticRequestSchemaTypes } from "@/types/schemaBuilderTypeExtractor"
-import noteValidator from "@/validators/notes"
+import noteValidator from "@/models/validators/notes"
 import notesRepository from "@/repositories/notes"
 
 export const getNotes = async (

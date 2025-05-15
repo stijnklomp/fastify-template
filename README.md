@@ -61,6 +61,23 @@ Once the app is running, documentation will be available at `API_URL:PORT/docs`.
 
 ## Test
 
+### Lint
+
+Eslint is used as a linter and uses Prettier to format code.
+
+```sh
+# ESLint
+npm run lint
+
+# ESLint and fix (also sorts JSON files)
+# Prefix with `EXCLUDE_PATHS="<file_1> <file_2>"` to exclude files/directories (using GLOB pattern)
+npm run lint:fix
+
+# Sort a specific JSON file and/or directory
+# Important: Don't run this command without a specified file/directory (using GLOB pattern)
+npx jsonsort "<file_1> <file_2>"
+```
+
 ### Unit & Feature tests
 
 ```sh
@@ -91,6 +108,14 @@ docker compose --profile=test up --build --attach acceptance-once --exit-code-fr
 # dev
 # local
 docker compose --profile=PROFILE up --build -d && docker compose --profile=PROFILE exec -ti dev sh -c "npm run test:acceptance"
+```
+
+### Integrity
+
+Run this after an npm install to verify that everything still works.
+
+```sh
+npm run integrity
 ```
 
 ## License

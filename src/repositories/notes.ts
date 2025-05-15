@@ -1,6 +1,6 @@
-import { prisma } from "@/utils/prisma"
+import { prisma } from "@/common/prisma"
 import { StaticRequestSchemaTypes } from "@/types/schemaBuilderTypeExtractor"
-import notesValidator from "@/validators/notes"
+import notesValidator from "@/models/validators/notes"
 
 export const getNotes = async (
 	data: StaticRequestSchemaTypes<

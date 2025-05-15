@@ -8,14 +8,26 @@ import fastifySwagger from "@fastify/swagger"
 import fastifySwaggerUI from "@fastify/swagger-ui"
 import path from "path"
 import hyperid from "hyperid"
-import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node"
-import { registerInstrumentations } from "@opentelemetry/instrumentation"
-import { HttpInstrumentation } from "@opentelemetry/instrumentation-http"
-import { FastifyInstrumentation } from "@opentelemetry/instrumentation-fastify"
+import elasticAPM from "elastic-apm-node"
 
-import { init as initRedis } from "@/adapters/redis"
-import { init as initRabbitMQ } from "@/adapters/rabbitMQ"
+import { init as initCache } from "@/services/cache"
+import { init as initRabbitMQ } from "@/services/rabbitMQ"
 // import { IncomingMessage, ServerResponse } from "http"
+
+const logsEnvironment =
+	(process.env.LOGS as keyof typeof envToLogger | undefined) ?? "production"
+
+if (logsEnvironment !== "test") {
+	elasticAPM.start({
+		// apiKey: "./secrets/certs/apm-server/apm-server.key",
+		captureBody: logsEnvironment != "production" ? "all" : "off",
+		// secretToken: "./secrets/certs/apm-server/apm-server.crt",
+		secretToken: "secrettokengoeshere",
+		// serverCaCertFile: "./secrets/certs/apm-server/apm-server.crt",
+		serverUrl: "https://apm-server:8200",
+		verifyServerCert: false,
+	})
+}
 
 const envToLogger = {
 	development: {
@@ -66,10 +78,15 @@ const envToLogger = {
 	},
 	test: false,
 }
-const logsEnvironment =
-	(process.env.LOGS as keyof typeof envToLogger | undefined) ?? "production"
 
 export const options: FastifyServerOptions = {
+	ajv: {
+		customOptions: {
+			// coerceTypes: true,
+			removeAdditional: "all",
+			useDefaults: true,
+		},
+	},
 	genReqId: () => {
 		return hyperid({ fixedLength: true, urlSafe: true })()
 	},
@@ -128,7 +145,7 @@ void fastifySetup.register(fastifySwagger, {
 })
 
 void fastifySetup.register(fastifySwaggerUI, {
-	baseDir: path.resolve("dist/static"),
+	baseDir: path.resolve(__dirname, "dist/static"),
 	routePrefix: "/docs",
 	staticCSP: true,
 	transformSpecification: (swaggerObject) => {
@@ -150,16 +167,12 @@ void fastifySetup.register(fastifySwaggerUI, {
 	},
 })
 
-const provider = new NodeTracerProvider()
-
-provider.register()
-
-registerInstrumentations({
-	instrumentations: [new HttpInstrumentation(), new FastifyInstrumentation()],
-})
+// void fastifySetup.register(autoLoad, {
+// 	dir: path.join(__dirname, "/config"),
+// })
 
 void fastifySetup.register(autoLoad, {
-	dir: path.join(__dirname, "/plugins"),
+	dir: path.join(__dirname, "/middleware"),
 })
 
 void fastifySetup.register(autoLoad, {
@@ -169,7 +182,7 @@ void fastifySetup.register(autoLoad, {
 
 const start = async () => {
 	try {
-		await initRedis()
+		await initCache()
 		await initRabbitMQ()
 		const port = Number(process.env.API_PORT ?? 3000)
 		await fastifySetup.listen({

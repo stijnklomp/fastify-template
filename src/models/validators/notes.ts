@@ -2,7 +2,7 @@ import { Type } from "@sinclair/typebox"
 
 export const getNotes = {
 	querystring: Type.Object({
-		page: Type.Number(),
+		page: Type.Number({ minimum: 1 }),
 		perPage: Type.Number({ maximum: 100 }),
 	}),
 }

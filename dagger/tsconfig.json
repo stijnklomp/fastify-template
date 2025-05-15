@@ -6,8 +6,7 @@
 			"@dagger.io/dagger": ["./sdk"],
 			"@dagger.io/dagger/telemetry": ["./sdk/telemetry"]
 		},
-		"target": "ES2022",
 		"strictNullChecks": true,
-		"strict": true
+		"target": "ES2022"
 	}
 }

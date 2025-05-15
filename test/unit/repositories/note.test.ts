@@ -13,7 +13,7 @@ describe("getNotes", () => {
 	}
 
 	it("should get notes", async () => {
-		prismaMock.note.findMany.mockResolvedValue([noteDb])
+		jest.spyOn(prismaMock.note, "findMany").mockResolvedValue([noteDb])
 
 		const notes = await noteRepository.getNotes(data)
 
@@ -30,7 +30,7 @@ describe("createNote", () => {
 	}
 
 	it("should create note", async () => {
-		prismaMock.note.create.mockResolvedValue(noteDb)
+		jest.spyOn(prismaMock.note, "create").mockResolvedValue(noteDb)
 
 		const note = await noteRepository.createNote(data)
 

@@ -14,15 +14,29 @@ const finalConfig = config({
 	typescript: true,
 })
 
-finalConfig.push({
-	files: ["dagger/**/*.ts"],
-	rules: {
-		"@typescript-eslint/require-await": "off",
+const addedConfigs = [
+	{
+		files: ["test/unit/**/*.ts"],
+		name: "Typescript -> Unit tests",
+		rules: {
+			"@typescript-eslint/no-unsafe-assignment": "off", // Disabled for tests to avoid verbose type casting when using Jest mocks
+			"@typescript-eslint/unbound-method": "off",
+		},
 	},
-})
+]
+
+finalConfig.push(...addedConfigs)
 
 finalConfig.push(includeIgnoreFile(gitignorePath), {
-	ignores: [".husky/*", "prisma/*", "rabbitmq/*", "dagger/sdk/*"],
+	ignores: [
+		".husky/*",
+		"prisma/*",
+		"rabbitmq/*",
+		"dagger/sdk/*",
+		"test/acceptance/reports/*",
+		"test/combined-coverage/*",
+		"secrets/*",
+	],
 })
 
 export default tseslint.config(finalConfig)

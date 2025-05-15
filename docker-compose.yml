@@ -1,5 +1,5 @@
 x-playwright: &playwright
-  image: mcr.microsoft.com/playwright:v1.46.1-jammy
+  image: mcr.microsoft.com/playwright:v1.49.1-jammy
   volumes:
     - ".:/src"
   working_dir: "/src"
@@ -7,10 +7,12 @@ x-playwright: &playwright
   depends_on:
     rabbitmq:
       condition: service_healthy
-    redis:
+    cache:
       condition: service_started
     db-migration:
       condition: service_completed_successfully
+    localstack:
+      condition: service_started
   # networks:
   #   - internal
   #   - external
@@ -29,13 +31,20 @@ x-fastify: &fastify # network_mode: "host"
   depends_on:
     rabbitmq:
       condition: service_healthy
-    redis:
+    cache:
       condition: service_started
     db-migration:
       condition: service_completed_successfully
+    localstack:
+      condition: service_started
+    # otel-collector:
+    #   condition: service_healthy
   # networks:
   #   - internal
   #   - external
+  networks:
+    - default
+    - elastic
   env_file:
     - path: ./.env
   ports:
@@ -56,14 +65,14 @@ services:
     <<: *fastify
     # extends:
     #   service: fastify
-    image: node:20-alpine
+    image: node:23-alpine
     volumes:
       - ".:/src"
     working_dir: "/src"
-    command: sh -c "[ ! -d node_modules ] && npm ci --force ; apk --no-cache add curl ; npm run dev" # todo: "apk not found" error
+    command: sh -c "[ ! -d node_modules ] && npm ci --force ; npm run dev"
     environment:
       - DATABASE_HOST=db
-      - REDIS_HOST=redis
+      - CACHE_HOST=cache
       - RABBIT_HOST=rabbitmq
     profiles:
       - dev
@@ -98,30 +107,18 @@ services:
       - ${RABBIT_PORT:-5672}:5672
       - 15672:15672
 
-  redis:
-    image: redis
+  cache:
+    image: valkey/valkey
     restart: always
-    command:
-      [
-        "redis-server",
-        "--save",
-        "--appendonly",
-        "no",
-        "--notify-keyspace-events",
-        "Ex",
-        "--logLevel",
-        "notice",
-        "--requirepass",
-        "$REDIS_PASSWORD",
-      ]
-    # networks:
-    #   - internal
+    command: >
+      valkey-server --save "" --appendonly no
+      --notify-keyspace-events Ex
+      --loglevel notice
+      --requirepass ${CACHE_PASSWORD}
     volumes:
-      - redis-cache:/data
-    # logging:
-    #   driver: none
+      - cache:/data
     ports:
-      - ${REDIS_PORT:-6379}:6379
+      - ${CACHE_PORT:-6379}:6379
 
   db:
     image: postgres
@@ -157,7 +154,7 @@ services:
     volumes:
       - ".:/src"
     working_dir: "/src"
-    command: sh ./dockerComposeMigrate.sh
+    command: sh ./scripts/dockerComposeMigrate.sh
     depends_on:
       db:
         condition: service_healthy
@@ -184,12 +181,36 @@ services:
     volumes:
       - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
+    profiles:
+      - local
+      - dev
+      - test
+
+  # otel-collector:
+  #   image: otel/opentelemetry-collector-contrib
+  #   volumes:
+  #     - ./otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
+  #   ports:
+  #     - 1888:1888 # pprof extension
+  #     - 8888:8888 # Prometheus metrics exposed by the Collector
+  #     - 8889:8889 # Prometheus exporter metrics
+  #     - 13133:13133 # health_check extension
+  #     - 4317:4317 # OTLP gRPC receiver
+  #     - 4318:4318 # OTLP http receiver
+  #     - 55679:55679 # zpages extension
+  #   profiles:
+  #     - local
+  #     - dev
 
 volumes:
   rabbitmq:
-  redis-cache:
+  cache:
   postgres-data:
-# networks:
+
+networks:
+  cache:
+  elastic:
+    #external: true
 #   internal:
 #     driver: bridge
 #   external:

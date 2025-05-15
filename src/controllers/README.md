@@ -1,3 +1,3 @@
-# Controllers folder
+# Controllers directory
 
-Controllers define the REST interface. They call on **services** for the business logic and get called by **routes**.
+Controllers handle HTTP requests and responses. They call on **services** for the business logic and get called by **routes**.

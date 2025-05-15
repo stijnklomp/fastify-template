@@ -4,8 +4,9 @@ import { pathsToModuleNameMapper } from "ts-jest"
 import { compilerOptions } from "../tsconfig.json"
 
 export const coreConfig: Config = {
+	// automock: false,
 	clearMocks: true,
-	moduleDirectories: ["<rootDir>/node_modules"],
+	moduleDirectories: ["node_modules"],
 	moduleFileExtensions: ["ts", "js", "json"],
 	moduleNameMapper: {
 		...pathsToModuleNameMapper(compilerOptions.paths),
@@ -22,12 +23,14 @@ export const coreConfig: Config = {
 export const coverageConfig: Config = {
 	collectCoverageFrom: ["<rootDir>/src/**/*.{cjs,mjs,js,ts}"],
 	coveragePathIgnorePatterns: [
+		"<rootDir>/src/app.ts",
 		"<rootDir>/node_modules/",
 		"<rootDir>/.husky/",
 		"<rootDir>/dist/",
 		"<rootDir>/doc/",
+		"<rootDir>/dagger/",
 	],
-	coverageReporters: ["text", "json"],
+	coverageReporters: ["html", "text", "json"],
 	coverageThreshold: {
 		global: {
 			branches: 100,

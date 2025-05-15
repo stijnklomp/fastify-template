@@ -1,13 +1,26 @@
 {
+	"compilerOptions": {
+		"noEmit": false,
+		"paths": {
+			"@/src/*": ["src/*"],
+			"@/common/*": ["src/common/*"],
+			"@/config/*": ["src/config/*"],
+			"@/controllers/*": ["src/controllers/*"],
+			"@/middleware/*": ["src/middleware/*"],
+			"@/serializers/*": ["src/models/serializers/*"],
+			"@/types/*": ["src/models/types/*"],
+			"@/validators/*": ["src/models/validators/*"],
+			"@/models/*": ["src/models/*"],
+			"@/repositories/*": ["src/repositories/*"],
+			"@/routes/*": ["src/routes/*"],
+			"@/services/*": ["src/services/*"],
+
+			"@/fixtures/*": ["test/fixtures/*"],
+			"@/context": ["test/context.ts"],
+			"@/helper": ["test/helper.ts"]
+		}
+	},
 	"extends": "../tsconfig.json",
-	// "include": [
-	// 	"../src/**/*.ts",
-	// 	"**/*.ts",
-	// 	"../jest.setup.ts",
-	// 	"../eslint.config.mjs"
-	// ],
 	"include": ["**/*.ts", "../", "../.", "../*", "../**/*"],
 	"exclude": ["../node_modules", "../.husky", "../dist"]
-	// "include": ["."],
-	// "exclude": ["node_modules", ".husky", "dist", "test"]
 }

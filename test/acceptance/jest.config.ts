@@ -20,7 +20,7 @@ const config: Config = {
 		],
 	],
 	rootDir: "../../",
-	setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
+	setupFilesAfterEnv: [...(coreConfig.setupFilesAfterEnv ?? [])],
 	testMatch: ["<rootDir>/test/acceptance/**/(*.)+(spec|test).[jt]s"],
 	transform: {
 		// eslint-disable-next-line @typescript-eslint/naming-convention
