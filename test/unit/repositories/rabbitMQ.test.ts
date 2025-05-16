@@ -92,7 +92,7 @@ describe("RabbitMQ service", () => {
 
 		it("should initialize and connect RabbitMQ client", async () => {
 			await jest.isolateModulesAsync(async () => {
-				const isolatedRabbitMQ = await import("@/services/rabbitMQ")
+				const isolatedRabbitMQ = await import("@/repositories/rabbitMQ")
 
 				onSpy = jest.spyOn(process, "on")
 
@@ -126,7 +126,7 @@ describe("RabbitMQ service", () => {
 				process.env.RABBIT_PASS = password
 				process.env.RABBIT_PORT = port
 
-				const isolatedRabbitMQ = await import("@/services/rabbitMQ")
+				const isolatedRabbitMQ = await import("@/repositories/rabbitMQ")
 
 				await isolatedRabbitMQ.init()
 
@@ -140,7 +140,7 @@ describe("RabbitMQ service", () => {
 
 		it("should not create new connection when already initialized", async () => {
 			await jest.isolateModulesAsync(async () => {
-				const isolatedRabbitMQ = await import("@/services/rabbitMQ")
+				const isolatedRabbitMQ = await import("@/repositories/rabbitMQ")
 
 				await isolatedRabbitMQ.init()
 				await isolatedRabbitMQ.init()
@@ -151,7 +151,7 @@ describe("RabbitMQ service", () => {
 
 		it("should exit on connection error", async () => {
 			await jest.isolateModulesAsync(async () => {
-				const isolatedRabbitMQ = await import("@/services/rabbitMQ")
+				const isolatedRabbitMQ = await import("@/repositories/rabbitMQ")
 
 				mockProcessExit()
 
@@ -172,7 +172,7 @@ describe("RabbitMQ service", () => {
 
 		it("should initialize connection for 'publish' method", async () => {
 			await jest.isolateModulesAsync(async () => {
-				const isolatedRabbitMQ = await import("@/services/rabbitMQ")
+				const isolatedRabbitMQ = await import("@/repositories/rabbitMQ")
 
 				await expect(
 					isolatedRabbitMQ.publish(
@@ -189,7 +189,7 @@ describe("RabbitMQ service", () => {
 
 		it("should initialize connection for 'consume' method", async () => {
 			await jest.isolateModulesAsync(async () => {
-				const isolatedRabbitMQ = await import("@/services/rabbitMQ")
+				const isolatedRabbitMQ = await import("@/repositories/rabbitMQ")
 
 				await expect(
 					isolatedRabbitMQ.consume(
@@ -206,7 +206,7 @@ describe("RabbitMQ service", () => {
 
 		it("should initialize connection for 'declareChannel' method", async () => {
 			await jest.isolateModulesAsync(async () => {
-				const isolatedRabbitMQ = await import("@/services/rabbitMQ")
+				const isolatedRabbitMQ = await import("@/repositories/rabbitMQ")
 
 				await expect(
 					isolatedRabbitMQ.declareChannel("channel"),
@@ -243,7 +243,7 @@ describe("RabbitMQ service", () => {
 				async (signal) => {
 					await jest.isolateModulesAsync(async () => {
 						const isolatedRabbitMQ = await import(
-							"@/services/rabbitMQ"
+							"@/repositories/rabbitMQ"
 						)
 
 						await isolatedRabbitMQ.init()
@@ -267,7 +267,7 @@ describe("RabbitMQ service", () => {
 				async (signal) => {
 					await jest.isolateModulesAsync(async () => {
 						const isolatedRabbitMQ = await import(
-							"@/services/rabbitMQ"
+							"@/repositories/rabbitMQ"
 						)
 
 						const errorMessage = "Unable to close connection"
@@ -295,7 +295,7 @@ describe("RabbitMQ service", () => {
 	describe("declare channel", () => {
 		it("should create new channel", async () => {
 			await jest.isolateModulesAsync(async () => {
-				const isolatedRabbitMQ = await import("@/services/rabbitMQ")
+				const isolatedRabbitMQ = await import("@/repositories/rabbitMQ")
 
 				const response =
 					await isolatedRabbitMQ.declareChannel("channelA")
@@ -307,7 +307,7 @@ describe("RabbitMQ service", () => {
 
 		it("should not overwrite/add channel when provided with existing key", async () => {
 			await jest.isolateModulesAsync(async () => {
-				const isolatedRabbitMQ = await import("@/services/rabbitMQ")
+				const isolatedRabbitMQ = await import("@/repositories/rabbitMQ")
 
 				await isolatedRabbitMQ.declareChannel("channelA")
 				const response =
@@ -320,7 +320,7 @@ describe("RabbitMQ service", () => {
 
 		it("should return false when createChannel throws", async () => {
 			await jest.isolateModulesAsync(async () => {
-				const isolatedRabbitMQ = await import("@/services/rabbitMQ")
+				const isolatedRabbitMQ = await import("@/repositories/rabbitMQ")
 
 				mockCreateChannel.mockRejectedValueOnce(new Error("Failed"))
 
@@ -336,7 +336,9 @@ describe("RabbitMQ service", () => {
 		describe("declareExchange", () => {
 			it("should create exchange", async () => {
 				await jest.isolateModulesAsync(async () => {
-					const isolatedRabbitMQ = await import("@/services/rabbitMQ")
+					const isolatedRabbitMQ = await import(
+						"@/repositories/rabbitMQ"
+					)
 
 					const response = await isolatedRabbitMQ.publish(
 						channel,
@@ -361,7 +363,9 @@ describe("RabbitMQ service", () => {
 
 			it("should not create exchange when channel failed to create", async () => {
 				await jest.isolateModulesAsync(async () => {
-					const isolatedRabbitMQ = await import("@/services/rabbitMQ")
+					const isolatedRabbitMQ = await import(
+						"@/repositories/rabbitMQ"
+					)
 
 					const errorMessage = "Unable to create channel"
 					mockCreateChannel.mockRejectedValue(new Error(errorMessage))
@@ -385,7 +389,9 @@ describe("RabbitMQ service", () => {
 
 			it("should return when unable to create exchange", async () => {
 				await jest.isolateModulesAsync(async () => {
-					const isolatedRabbitMQ = await import("@/services/rabbitMQ")
+					const isolatedRabbitMQ = await import(
+						"@/repositories/rabbitMQ"
+					)
 
 					const errorMessage = "Unable to assert exchange"
 					mockChannelAssertExchange.mockRejectedValue(
@@ -412,7 +418,7 @@ describe("RabbitMQ service", () => {
 
 		it("should publish message", async () => {
 			await jest.isolateModulesAsync(async () => {
-				const isolatedRabbitMQ = await import("@/services/rabbitMQ")
+				const isolatedRabbitMQ = await import("@/repositories/rabbitMQ")
 
 				const response = await isolatedRabbitMQ.publish(
 					channel,
@@ -435,7 +441,7 @@ describe("RabbitMQ service", () => {
 
 		it("should drain channel when publish is unsuccessful", async () => {
 			await jest.isolateModulesAsync(async () => {
-				const isolatedRabbitMQ = await import("@/services/rabbitMQ")
+				const isolatedRabbitMQ = await import("@/repositories/rabbitMQ")
 
 				mockChannelPublish.mockReturnValue(false)
 
@@ -460,7 +466,7 @@ describe("RabbitMQ service", () => {
 
 		it("should close channel when publish failed", async () => {
 			await jest.isolateModulesAsync(async () => {
-				const isolatedRabbitMQ = await import("@/services/rabbitMQ")
+				const isolatedRabbitMQ = await import("@/repositories/rabbitMQ")
 
 				const errorMessage = "Unable to assert exchange"
 				mockChannelPublish.mockImplementation(() => {
@@ -489,7 +495,7 @@ describe("RabbitMQ service", () => {
 
 		it("should log debug message when channel failed to close", async () => {
 			await jest.isolateModulesAsync(async () => {
-				const isolatedRabbitMQ = await import("@/services/rabbitMQ")
+				const isolatedRabbitMQ = await import("@/repositories/rabbitMQ")
 
 				const publishErrorMessage = "Unable to assert exchange"
 				mockChannelPublish.mockImplementation(() => {
@@ -524,7 +530,9 @@ describe("RabbitMQ service", () => {
 		describe("declare queue", () => {
 			it("should create queue", async () => {
 				await jest.isolateModulesAsync(async () => {
-					const isolatedRabbitMQ = await import("@/services/rabbitMQ")
+					const isolatedRabbitMQ = await import(
+						"@/repositories/rabbitMQ"
+					)
 
 					const response = await isolatedRabbitMQ.consume(
 						channel,
@@ -562,7 +570,9 @@ describe("RabbitMQ service", () => {
 
 			it("should not create queue when channel failed to create", async () => {
 				await jest.isolateModulesAsync(async () => {
-					const isolatedRabbitMQ = await import("@/services/rabbitMQ")
+					const isolatedRabbitMQ = await import(
+						"@/repositories/rabbitMQ"
+					)
 
 					const errorMessage = "Unable to create channel"
 					mockCreateChannel.mockRejectedValue(new Error(errorMessage))
@@ -587,7 +597,9 @@ describe("RabbitMQ service", () => {
 
 			it("should return when unable to create queue", async () => {
 				await jest.isolateModulesAsync(async () => {
-					const isolatedRabbitMQ = await import("@/services/rabbitMQ")
+					const isolatedRabbitMQ = await import(
+						"@/repositories/rabbitMQ"
+					)
 
 					const errorMessage = "Unable to create queue"
 					mockChannelAssertQueue.mockRejectedValue(
@@ -614,7 +626,9 @@ describe("RabbitMQ service", () => {
 
 			it("should log error message when unable to bind to queue", async () => {
 				await jest.isolateModulesAsync(async () => {
-					const isolatedRabbitMQ = await import("@/services/rabbitMQ")
+					const isolatedRabbitMQ = await import(
+						"@/repositories/rabbitMQ"
+					)
 
 					const errorMessage = "Unable to create queue"
 					mockChannelBindQueue
@@ -643,7 +657,7 @@ describe("RabbitMQ service", () => {
 
 		it("should consume messages", async () => {
 			await jest.isolateModulesAsync(async () => {
-				const isolatedRabbitMQ = await import("@/services/rabbitMQ")
+				const isolatedRabbitMQ = await import("@/repositories/rabbitMQ")
 
 				const response = await isolatedRabbitMQ.consume(
 					channel,
@@ -661,7 +675,7 @@ describe("RabbitMQ service", () => {
 
 		it("should log error message message when unable to consume", async () => {
 			await jest.isolateModulesAsync(async () => {
-				const isolatedRabbitMQ = await import("@/services/rabbitMQ")
+				const isolatedRabbitMQ = await import("@/repositories/rabbitMQ")
 
 				const errorMessage = "Unable to create queue"
 				mockChannelConsume.mockRejectedValue(new Error(errorMessage))

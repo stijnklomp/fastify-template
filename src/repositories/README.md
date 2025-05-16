@@ -1,3 +1,3 @@
 # Repositories directory
 
-Repositories define retrieval and storage of data (from the database). They get called by **services**.
+Repositories define retrieval and storage of data. They get called by **services**.

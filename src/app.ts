@@ -10,8 +10,8 @@ import path from "path"
 import hyperid from "hyperid"
 import elasticAPM from "elastic-apm-node"
 
-import { init as initCache } from "@/services/cache"
-import { init as initRabbitMQ } from "@/services/rabbitMQ"
+import { init as initCache } from "@/repositories/cache"
+import { init as initRabbitMQ } from "@/repositories/rabbitMQ"
 // import { IncomingMessage, ServerResponse } from "http"
 
 const logsEnvironment =

@@ -28,7 +28,7 @@ describe("Cache service", () => {
 
 		it("should initialize and connect cache client", async () => {
 			await jest.isolateModulesAsync(async () => {
-				const isolatedCache = await import("@/services/cache")
+				const isolatedCache = await import("@/repositories/cache")
 
 				await isolatedCache.init()
 
@@ -64,7 +64,7 @@ describe("Cache service", () => {
 				process.env.RABBIT_PASS = password
 				process.env.RABBIT_PORT = port
 
-				const isolatedCache = await import("@/services/cache")
+				const isolatedCache = await import("@/repositories/cache")
 
 				await isolatedCache.init()
 
@@ -76,7 +76,7 @@ describe("Cache service", () => {
 
 		it("should not create new client when already initialized", async () => {
 			await jest.isolateModulesAsync(async () => {
-				const isolatedCache = await import("@/services/cache")
+				const isolatedCache = await import("@/repositories/cache")
 
 				await isolatedCache.init()
 				await isolatedCache.init()
@@ -87,7 +87,7 @@ describe("Cache service", () => {
 
 		it("should log info on successful connect", async () => {
 			await jest.isolateModulesAsync(async () => {
-				const isolatedCache = await import("@/services/cache")
+				const isolatedCache = await import("@/repositories/cache")
 
 				type ConnectCallback = () => void
 				let connectHandler: ConnectCallback | undefined
@@ -113,7 +113,7 @@ describe("Cache service", () => {
 
 		it("should exit on connection error", async () => {
 			await jest.isolateModulesAsync(async () => {
-				const isolatedCache = await import("@/services/cache")
+				const isolatedCache = await import("@/repositories/cache")
 
 				type ErrorCallback = (err: Error) => void
 				let errorHandler: ErrorCallback | undefined
@@ -142,7 +142,7 @@ describe("Cache service", () => {
 			`should not allow '%s' method without an initialized client`,
 			async (method) => {
 				await jest.isolateModulesAsync(async () => {
-					const isolatedCache = await import("@/services/cache")
+					const isolatedCache = await import("@/repositories/cache")
 
 					await expect(() =>
 						(
@@ -165,7 +165,7 @@ describe("Cache service", () => {
 	describe("set", () => {
 		it("should set in cache", async () => {
 			await jest.isolateModulesAsync(async () => {
-				const isolatedCache = await import("@/services/cache")
+				const isolatedCache = await import("@/repositories/cache")
 
 				const mockConnect = {
 					set: jest.fn(),
@@ -192,7 +192,7 @@ describe("Cache service", () => {
 	describe("get", () => {
 		it("should get from cache", async () => {
 			await jest.isolateModulesAsync(async () => {
-				const isolatedCache = await import("@/services/cache")
+				const isolatedCache = await import("@/repositories/cache")
 
 				const mockConnect = {
 					get: jest.fn(),
@@ -218,7 +218,7 @@ describe("Cache service", () => {
 	describe("del", () => {
 		it("should delete from cache", async () => {
 			await jest.isolateModulesAsync(async () => {
-				const isolatedCache = await import("@/services/cache")
+				const isolatedCache = await import("@/repositories/cache")
 
 				const mockConnect = {
 					del: jest.fn(),
