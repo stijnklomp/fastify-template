@@ -25,6 +25,7 @@
 			"@/common/*": ["src/common/*"],
 			"@/config/*": ["src/config/*"],
 			"@/controllers/*": ["src/controllers/*"],
+			"@/infrastructure/*": ["src/infrastructure/*"],
 			"@/middleware/*": ["src/middleware/*"],
 			"@/serializers/*": ["src/models/serializers/*"],
 			"@/types/*": ["src/models/types/*"],

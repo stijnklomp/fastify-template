@@ -1,24 +1,55 @@
-import winston from "winston"
+import { FastifyServerOptions, FastifyRequest } from "fastify"
+import pino, { LevelWithSilentOrString } from "pino"
 
-const colorizer = winston.format.colorize()
+type LoggerEnv = "development" | "production" | "test"
 
-const logLevel = "debug"
+const loggerEnvConfig: Record<LoggerEnv, FastifyServerOptions["logger"]> = {
+	development: {
+		redact: ["req.headers.authorization"],
+		serializers: {
+			req: (req: FastifyRequest) => ({
+				headers: req.headers, // Including the headers in the log could be in violation of privacy laws, e.g. GDPR. It could also leak authentication data in the logs. It should not be saved
+				ip: req.ip,
+				ips: req.ips,
+				method: req.method,
+				parameters: req.params,
+				path: req.routeOptions.url,
+				protocol: req.protocol,
+				url: req.url,
+			}),
+		},
+		transport: {
+			options: {
+				ignore: "pid,hostname",
+				translateTime: "HH:MM:ss Z",
+			},
+			target: "pino-pretty",
+		},
+	},
+	production: {
+		redact: ["req.headers"],
+		serializers: {
+			req: (req: FastifyRequest) => ({
+				method: req.method,
+				parameters: req.params,
+				path: req.routeOptions.url,
+				url: req.url,
+			}),
+		},
+	},
+	test: false,
+}
 
-export const logger = winston.createLogger({
-	format: winston.format.combine(
-		winston.format.timestamp(),
-		winston.format.simple(),
-		winston.format.printf((msg) =>
-			colorizer.colorize(
-				msg.level,
-				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-				`${msg.timestamp} - ${msg.level}: ${msg.message}`,
-			),
-		),
-	),
-	level: logLevel,
-	transports: [new winston.transports.Console()],
-})
+export const loggerEnv =
+	(process.env.ENV as keyof typeof loggerEnvConfig | undefined) ??
+	"production"
+
+export const loggerConfig = loggerEnvConfig[loggerEnv]
+
+const logLvl =
+	(process.env.LOG_LEVEL as LevelWithSilentOrString | undefined) ?? "info"
+
+export const logger = pino({ level: logLvl })
 
 export const formatError = (err: unknown) =>
 	err instanceof Error ? err.message : String(err)

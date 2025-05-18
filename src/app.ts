@@ -1,82 +1,26 @@
-import fastify, {
-	FastifyServerOptions,
-	FastifyRequest,
-	// FastifyReply,
-} from "fastify"
+import fastify, { FastifyServerOptions } from "fastify"
 import autoLoad from "@fastify/autoload"
 import fastifySwagger from "@fastify/swagger"
-import fastifySwaggerUI from "@fastify/swagger-ui"
 import path from "path"
 import hyperid from "hyperid"
 import elasticAPM from "elastic-apm-node"
 
-import { init as initCache } from "@/repositories/cache"
-import { init as initRabbitMQ } from "@/repositories/rabbitMQ"
-// import { IncomingMessage, ServerResponse } from "http"
+import { loggerEnv, loggerConfig } from "@/common/logger"
+import { init as initCache } from "@/infrastructure/cache"
+import { init as initRabbitMQ } from "@/infrastructure/rabbitMQ"
 
-const logsEnvironment =
-	(process.env.LOGS as keyof typeof envToLogger | undefined) ?? "production"
+const useElasticAPM = process.env.USE_ELASTIC_APM ?? "true"
 
-if (logsEnvironment !== "test") {
+if (loggerEnv !== "test" && useElasticAPM == "true") {
 	elasticAPM.start({
 		// apiKey: "./secrets/certs/apm-server/apm-server.key",
-		captureBody: logsEnvironment != "production" ? "all" : "off",
+		captureBody: loggerEnv != "production" ? "all" : "off",
 		// secretToken: "./secrets/certs/apm-server/apm-server.crt",
 		secretToken: "secrettokengoeshere",
 		// serverCaCertFile: "./secrets/certs/apm-server/apm-server.crt",
 		serverUrl: "https://apm-server:8200",
 		verifyServerCert: false,
 	})
-}
-
-const envToLogger = {
-	development: {
-		redact: ["req.headers.authorization"],
-		serializers: {
-			req: (req: FastifyRequest) => ({
-				headers: req.headers, // Including the headers in the log could be in violation of privacy laws, e.g. GDPR. It could also leak authentication data in the logs. It should not be saved
-				ip: req.ip,
-				ips: req.ips,
-				method: req.method,
-				parameters: req.params,
-				path: req.routeOptions.url,
-				protocol: req.protocol,
-				url: req.url,
-			}),
-			// res: (rep: FastifyReply) => ({
-			// 	// Todo: This is causing Typescript issues because it is expecting `ServerResponse<IncomingMessage>`
-			// 	// res: (
-			// 	// 	rep: FastifyReply,
-			// 	// ): ServerResponse<IncomingMessage> => ({
-			// 	statusCode: rep.statusCode,
-			// 	headers:
-			// 		typeof rep.getHeaders === "function"
-			// 			? rep.getHeaders()
-			// 			: {},
-			// }),
-		},
-		transport: {
-			options: {
-				ignore: "pid,hostname",
-				translateTime: "HH:MM:ss Z",
-			},
-			target: "pino-pretty",
-		},
-	},
-	production: {
-		redact: ["req.headers"],
-		serializers: {
-			req: (req: FastifyRequest) => {
-				return {
-					method: req.method,
-					parameters: req.params,
-					path: req.routeOptions.url,
-					url: req.url,
-				}
-			},
-		},
-	},
-	test: false,
 }
 
 export const options: FastifyServerOptions = {
@@ -90,14 +34,15 @@ export const options: FastifyServerOptions = {
 	genReqId: () => {
 		return hyperid({ fixedLength: true, urlSafe: true })()
 	},
-	logger: envToLogger[logsEnvironment],
+	logger: loggerConfig,
 	serializerOpts: {
-		rounding: "trunc", // Same as default but set for clarity
+		rounding: "trunc",
 	},
 }
 
 const fastifySetup = fastify(options)
 
+// Automatically generate Swagger & OpenAPI docs from route schemas
 void fastifySetup.register(fastifySwagger, {
 	openapi: {
 		components: {
@@ -144,29 +89,6 @@ void fastifySetup.register(fastifySwagger, {
 	},
 })
 
-void fastifySetup.register(fastifySwaggerUI, {
-	baseDir: path.resolve(__dirname, "dist/static"),
-	routePrefix: "/docs",
-	staticCSP: true,
-	transformSpecification: (swaggerObject) => {
-		return swaggerObject
-	},
-	transformSpecificationClone: true,
-	transformStaticCSP: (header) => header,
-	uiConfig: {
-		deepLinking: false,
-		docExpansion: "list",
-	},
-	uiHooks: {
-		onRequest: function (req, rep, next) {
-			next()
-		},
-		preHandler: function (req, rep, next) {
-			next()
-		},
-	},
-})
-
 // void fastifySetup.register(autoLoad, {
 // 	dir: path.join(__dirname, "/config"),
 // })
@@ -177,10 +99,10 @@ void fastifySetup.register(autoLoad, {
 
 void fastifySetup.register(autoLoad, {
 	dir: path.join(__dirname, "/routes"),
-	dirNameRoutePrefix: true, // Same as default but set for clarity
+	dirNameRoutePrefix: true,
 })
 
-const start = async () => {
+export const start = async () => {
 	try {
 		await initCache()
 		await initRabbitMQ()
@@ -190,10 +112,12 @@ const start = async () => {
 			port,
 		})
 		fastifySetup.log.info(`Server listening on port ${port.toString()}`)
+
+		return await fastifySetup
 	} catch (err) {
 		fastifySetup.log.error(err)
 		process.exit(1)
 	}
 }
 
-if (logsEnvironment !== "test") void start()
+if (loggerEnv !== "test") void start()

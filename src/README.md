@@ -19,7 +19,6 @@ Use `common/` for shared utilities, helper functions, and reusable logic that ca
 #### Middleware
 Use `middleware/` for logic that directly interacts with the request/response lifecycle before reaching the controllers. This includes:
 - Authentication & authorization
-- Logging (if applied globally to requests)
 - Request modification (e.g., adding headers)
 - Global Fastify hooks (e.g., `onRequest`, `onResponse`)
 

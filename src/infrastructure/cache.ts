@@ -26,9 +26,9 @@ export const init = async () => {
 		process.exit(1)
 	})
 
-	createdClient.on("connect", () =>
-		logger.info(`Cache client connected on port '${CACHE_PORT}'`),
-	)
+	createdClient.on("connect", () => {
+		logger.info(`Cache client connected on port '${CACHE_PORT}'`)
+	})
 
 	await createdClient.connect()
 

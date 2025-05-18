@@ -27,16 +27,15 @@
 		"test:acceptance": "playwright test -c test/acceptance",
 		"test:coverage": "npm run test:unit:coverage ; npm run test:feature:coverage ; npm run afterTest",
 		"test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/jest/bin/jest --runInBand",
-		"test:feature": "LOGS=test jest --config test/feature/jest.config.ts",
+		"test:feature": "ENV=test LOGS=test jest --config test/feature/jest.config.ts",
 		"test:feature:coverage": "npm run test:feature -- --coverage",
-		"test:unit": "LOGS=test jest --config test/unit/jest.config.ts",
+		"test:unit": "ENV=test LOGS=test USE_ELASTIC_APM=false jest --config test/unit/jest.config.ts",
 		"test:unit:coverage": "npm run test:unit -- --coverage"
 	},
 	"dependencies": {
 		"@fastify/cors": "^11.0.1",
 		"@fastify/helmet": "^13.0.1",
 		"@fastify/sensible": "^6.0.3",
-		"@fastify/swagger-ui": "^5.2.2",
 		"@opentelemetry/api": "^1.9.0",
 		"@prisma/client": "^6.7.0",
 		"@sinclair/typebox": "^0.34.33",
@@ -54,8 +53,7 @@
 		"nyc": "^17.1.0",
 		"readable-stream": "^4.7.0",
 		"redis": "^5.0.1",
-		"stijnklomp-linting-formatting-config": "^7.0.3",
-		"winston": "^3.17.0"
+		"stijnklomp-linting-formatting-config": "^7.0.3"
 	},
 	"devDependencies": {
 		"@es-exec/esbuild-plugin-serve": "^0.0.5",
