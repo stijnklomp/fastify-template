@@ -1,5 +1,21 @@
-import { FastifyServerOptions, FastifyRequest } from "fastify"
-import pino, { LevelWithSilentOrString } from "pino"
+import { FastifyServerOptions, FastifyRequest, FastifyError } from "fastify"
+import pino, { LevelWithSilentOrString, LoggerOptions } from "pino"
+
+const sharedLoggerConfig: Pick<LoggerOptions, "serializers"> = {
+	serializers: {
+		err: (err: FastifyError & { validation?: unknown }) => {
+			const baseError = {
+				message: err.message,
+				statusCode: err.statusCode,
+				type: err.name,
+			}
+
+			return err.validation
+				? { ...baseError, validation: err.validation }
+				: baseError
+		},
+	},
+}
 
 type LoggerEnv = "development" | "production" | "test"
 
@@ -17,6 +33,7 @@ const loggerEnvConfig: Record<LoggerEnv, FastifyServerOptions["logger"]> = {
 				protocol: req.protocol,
 				url: req.url,
 			}),
+			...sharedLoggerConfig.serializers,
 		},
 		transport: {
 			options: {
@@ -35,6 +52,7 @@ const loggerEnvConfig: Record<LoggerEnv, FastifyServerOptions["logger"]> = {
 				path: req.routeOptions.url,
 				url: req.url,
 			}),
+			...sharedLoggerConfig.serializers,
 		},
 	},
 	test: false,

@@ -1,5 +1,4 @@
 import * as esbuild from "esbuild"
-import esbuildPluginPino from "esbuild-plugin-pino"
 import serve from "@es-exec/esbuild-plugin-serve"
 import { glob } from "glob"
 
@@ -28,10 +27,6 @@ void (async function () {
 		const ctx = await esbuild.context({
 			...options,
 			plugins: [
-				esbuildPluginPino({
-					formatters: true,
-					transports: ["pino-pretty"],
-				}),
 				serve({
 					main: "dist/app.js",
 				}),
@@ -43,12 +38,6 @@ void (async function () {
 		console.log("Building for production")
 		esbuild.build({
 			...options,
-			plugins: [
-				esbuildPluginPino({
-					formatters: true,
-					transports: [],
-				}),
-			],
 		})
 	}
 })()
