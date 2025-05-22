@@ -139,17 +139,17 @@ const declareExchange = async (channel: string, exchange = "main") => {
 export const publish = async (
 	channel: string,
 	exchange: string,
-	bindingKey: string,
+	routingKey: string,
 	message: string,
 ) => {
 	if (!(await declareExchange(channel, exchange))) return false
 
-	const locationMessage = `to exchange '${exchange}' with bindingKey '${bindingKey}'`
+	const locationMessage = `to exchange '${exchange}' with routingKey '${routingKey}'`
 
 	try {
 		const success = channels
 			.get(channel)
-			?.publish(exchange, bindingKey, Buffer.from(message))
+			?.publish(exchange, routingKey, Buffer.from(message))
 
 		if (!success) {
 			channels.get(channel)?.once("drain", () => {
@@ -201,8 +201,8 @@ export type Bindings = Record<string, string>
  * @example
  * ```ts
  * {
- *   'exchangeA': 'routing.key.a',
- *   'exchangeB': 'routing.key.b'
+ *   'exchangeA': 'binding.key.a',
+ *   'exchangeB': 'binding.key.b'
  * }
  * ```
  * @returns Queue declared.

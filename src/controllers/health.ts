@@ -1,4 +1,5 @@
 import { FastifyReply } from "fastify"
+
 import notesValidator from "@/models/validators/notes"
 import { logger } from "@/common/logger"
 import { prisma } from "@/common/prisma"
