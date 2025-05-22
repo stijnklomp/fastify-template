@@ -39,11 +39,11 @@ describe("RabbitMQ service", () => {
 
 	const channel = "channelA"
 	const exchange = "exchangeA"
-	const bindingKey = "fastifyTemplate.unitTest.A"
+	const routingKey = "fastifyTemplate.unitTest.A"
 	const message = "Message A published"
 	const queue = "queueA"
 	const bindings = {
-		[exchange]: bindingKey,
+		[exchange]: routingKey,
 		exchangeB: "fastifyTemplate.unitTest.B",
 	}
 
@@ -188,7 +188,7 @@ describe("RabbitMQ service", () => {
 					isolatedRabbitMQ.publish(
 						channel,
 						exchange,
-						bindingKey,
+						routingKey,
 						message,
 					),
 				).resolves.not.toThrow()
@@ -363,7 +363,7 @@ describe("RabbitMQ service", () => {
 					const response = await isolatedRabbitMQ.publish(
 						channel,
 						exchange,
-						bindingKey,
+						routingKey,
 						message,
 					)
 
@@ -393,7 +393,7 @@ describe("RabbitMQ service", () => {
 					const response = await isolatedRabbitMQ.publish(
 						channel,
 						exchange,
-						bindingKey,
+						routingKey,
 						message,
 					)
 
@@ -421,7 +421,7 @@ describe("RabbitMQ service", () => {
 					const response = await isolatedRabbitMQ.publish(
 						channel,
 						exchange,
-						bindingKey,
+						routingKey,
 						message,
 					)
 
@@ -445,18 +445,18 @@ describe("RabbitMQ service", () => {
 				const response = await isolatedRabbitMQ.publish(
 					channel,
 					exchange,
-					bindingKey,
+					routingKey,
 					message,
 				)
 
 				expect(response).toBe(true)
 				expect(mockChannelPublish).toHaveBeenCalledWith(
 					exchange,
-					bindingKey,
+					routingKey,
 					Buffer.from(message),
 				)
 				expect(logger.info).toHaveBeenCalledWith(
-					`Successfully published RabbitMQ message to exchange '${exchange}' with bindingKey '${bindingKey}'`,
+					`Successfully published RabbitMQ message to exchange '${exchange}' with routingKey '${routingKey}'`,
 				)
 			})
 		})
@@ -472,7 +472,7 @@ describe("RabbitMQ service", () => {
 				const response = await isolatedRabbitMQ.publish(
 					channel,
 					exchange,
-					bindingKey,
+					routingKey,
 					message,
 				)
 
@@ -483,7 +483,7 @@ describe("RabbitMQ service", () => {
 					expect.any(Function),
 				)
 				expect(logger.error).toHaveBeenCalledWith(
-					`Unable to publish RabbitMQ message to exchange '${exchange}' with bindingKey '${bindingKey}'. Drain event received.`,
+					`Unable to publish RabbitMQ message to exchange '${exchange}' with routingKey '${routingKey}'. Drain event received.`,
 				)
 			})
 		})
@@ -502,14 +502,14 @@ describe("RabbitMQ service", () => {
 				const response = await isolatedRabbitMQ.publish(
 					channel,
 					exchange,
-					bindingKey,
+					routingKey,
 					message,
 				)
 
 				expect(response).toBe(false)
 				expect(mockChannelPublish).toHaveBeenCalled()
 				expect(logger.error).toHaveBeenCalledWith(
-					`Error publishing RabbitMQ message to exchange '${exchange}' with bindingKey '${bindingKey}':`,
+					`Error publishing RabbitMQ message to exchange '${exchange}' with routingKey '${routingKey}':`,
 					errorMessage,
 				)
 				expect(mockChannelClose).toHaveBeenCalled()
@@ -535,14 +535,14 @@ describe("RabbitMQ service", () => {
 				const response = await isolatedRabbitMQ.publish(
 					channel,
 					exchange,
-					bindingKey,
+					routingKey,
 					message,
 				)
 
 				expect(response).toBe(false)
 				expect(mockChannelPublish).toHaveBeenCalled()
 				expect(logger.error).toHaveBeenCalledWith(
-					`Error publishing RabbitMQ message to exchange '${exchange}' with bindingKey '${bindingKey}':`,
+					`Error publishing RabbitMQ message to exchange '${exchange}' with routingKey '${routingKey}':`,
 					publishErrorMessage,
 				)
 				expect(mockChannelClose).toHaveBeenCalled()
@@ -582,7 +582,7 @@ describe("RabbitMQ service", () => {
 						1,
 						queue,
 						exchange,
-						bindingKey,
+						routingKey,
 					)
 					expect(mockChannelBindQueue).toHaveBeenNthCalledWith(
 						2,

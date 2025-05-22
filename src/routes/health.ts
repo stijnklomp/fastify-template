@@ -1,5 +1,6 @@
-import { checkHealthyHandler } from "@/controllers/health"
 import { FastifyInstance } from "fastify"
+
+import { checkHealthyHandler } from "@/controllers/health"
 
 export default (fastify: FastifyInstance) => {
 	fastify.route({
