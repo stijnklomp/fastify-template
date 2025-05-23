@@ -19,7 +19,10 @@ const sharedLoggerConfig: Pick<LoggerOptions, "serializers"> = {
 
 type LoggerEnv = "development" | "production" | "test"
 
-const loggerEnvConfig: Record<LoggerEnv, FastifyServerOptions["logger"]> = {
+export const loggerEnvConfig: Record<
+	LoggerEnv,
+	FastifyServerOptions["logger"]
+> = {
 	development: {
 		redact: ["req.headers.authorization"],
 		serializers: {

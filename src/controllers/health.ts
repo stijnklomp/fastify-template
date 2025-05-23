@@ -1,15 +1,18 @@
 import { FastifyReply } from "fastify"
+import { PrismaClient } from "@prisma/client"
 
 import notesValidator from "@/models/validators/notes"
 import { logger } from "@/common/logger"
-import { prisma } from "@/common/prisma"
 import { FastifyRequestSchemaTypes } from "@/models/types/schemaBuilderTypeExtractor"
 
-const dbConnection = () =>
-	prisma.$connect().then(async () => {
+const dbConnection = async () => {
+	const prisma = new PrismaClient()
+
+	await prisma.$connect().then(async () => {
 		logger.info("Database connection healthy")
 		await prisma.$disconnect()
 	})
+}
 
 export const checkHealthyHandler = async (
 	req: FastifyRequestSchemaTypes<typeof notesValidator.getNotes>,
