@@ -1,4 +1,5 @@
 import fastify, { FastifyServerOptions } from "fastify"
+import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox"
 import autoLoad from "@fastify/autoload"
 import fastifySwagger from "@fastify/swagger"
 import path from "path"
@@ -24,13 +25,6 @@ if (loggerEnv !== "test" && useElasticAPM == "true") {
 }
 
 export const options: FastifyServerOptions = {
-	ajv: {
-		customOptions: {
-			// coerceTypes: true,
-			removeAdditional: "all",
-			useDefaults: true,
-		},
-	},
 	genReqId: () => {
 		return hyperid({ fixedLength: true, urlSafe: true })()
 	},
@@ -40,7 +34,7 @@ export const options: FastifyServerOptions = {
 	},
 }
 
-const fastifySetup = fastify(options)
+const fastifySetup = fastify(options).withTypeProvider<TypeBoxTypeProvider>()
 
 // Automatically generate Swagger & OpenAPI docs from route schemas
 void fastifySetup.register(fastifySwagger, {
@@ -113,7 +107,7 @@ export const start = async () => {
 		})
 		fastifySetup.log.info(`Server listening on port ${port.toString()}`)
 
-		return await fastifySetup
+		return fastifySetup
 	} catch (err) {
 		fastifySetup.log.error(err)
 		process.exit(1)
