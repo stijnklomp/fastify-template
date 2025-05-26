@@ -1,0 +1,67 @@
+openapi: 3.1.0
+info:
+  description: Testing the Fastify swagger API
+  title: Test swagger
+  version: 0.1.0
+components:
+  securitySchemes:
+    apiKey:
+      in: header
+      name: apiKey
+      type: apiKey
+  schemas: {}
+paths:
+  /health:
+    get:
+      responses:
+        "200":
+          description: Default Response
+  /v1/notes:
+    get:
+      parameters:
+        - schema:
+            minimum: 1
+            type: number
+          in: query
+          name: page
+          required: true
+        - schema:
+            maximum: 100
+            type: number
+          in: query
+          name: perPage
+          required: true
+      responses:
+        "200":
+          description: Default Response
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                note:
+                  maxLength: 300
+                  type: string
+                owner:
+                  maxLength: 100
+                  type: string
+              required:
+                - note
+                - owner
+        required: true
+      responses:
+        "200":
+          description: Default Response
+servers:
+  - description: Development server
+    url: http://localhost:3000
+tags:
+  - description: User related end-points
+    name: user
+  - description: Code related end-points
+    name: code
+externalDocs:
+  description: Find more info here
+  url: https://swagger.io

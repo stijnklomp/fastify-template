@@ -5,6 +5,7 @@ import fastifySwagger from "@fastify/swagger"
 import path from "path"
 import hyperid from "hyperid"
 import elasticAPM from "elastic-apm-node"
+import { writeFileSync } from "fs"
 
 import { loggerEnv, loggerConfig } from "@/common/logger"
 import { init as initCache } from "@/infrastructure/cache"
@@ -36,7 +37,7 @@ export const options: FastifyServerOptions = {
 
 const fastifySetup = fastify(options).withTypeProvider<TypeBoxTypeProvider>()
 
-// Automatically generate Swagger & OpenAPI docs from route schemas
+// Automatically generate an OpenAPI spec from route schemas
 void fastifySetup.register(fastifySwagger, {
 	openapi: {
 		components: {
@@ -69,18 +70,6 @@ void fastifySetup.register(fastifySwagger, {
 			{ description: "Code related end-points", name: "code" },
 		],
 	},
-	swagger: {
-		consumes: ["application/json"],
-		host: "localhost",
-		info: {
-			description: "My Description.",
-			title: "My Title",
-			version: "1.0.0",
-		},
-		produces: ["application/json"],
-		schemes: ["http", "https"],
-		tags: [{ description: "Default", name: "Default" }],
-	},
 })
 
 // void fastifySetup.register(autoLoad, {
@@ -106,6 +95,11 @@ export const start = async () => {
 			port,
 		})
 		fastifySetup.log.info(`Server listening on port ${port.toString()}`)
+
+		await fastifySetup.ready()
+
+		const openapiSpec = fastifySetup.swagger({ yaml: true })
+		writeFileSync("./openapi.yaml", openapiSpec)
 
 		return fastifySetup
 	} catch (err) {
