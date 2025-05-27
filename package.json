@@ -19,7 +19,7 @@
 		"lint": "eslint --report-unused-disable-directives . --cache",
 		"lint:fix": "npm run sort ; eslint --report-unused-disable-directives . --cache --fix",
 		"merge-coverage-report-jsons": "istanbul-merge --out test/temp-coverage/temp-coverage-final.json test/unit/coverage/coverage-final.json test/feature/coverage/coverage-final.json",
-		"migrate": "npx prisma migrate dev --name init",
+		"migrate": "npx prisma migrate deploy",
 		"prepare": "husky",
 		"sort": "./node_modules/stijnklomp-linting-formatting-config/sortJson.sh './test/tsconfig.json' 'dagger/sdk'",
 		"start": "node dist/app.js",
