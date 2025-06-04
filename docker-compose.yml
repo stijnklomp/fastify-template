@@ -13,15 +13,16 @@ x-playwright: &playwright
       condition: service_completed_successfully
     localstack:
       condition: service_started
-  # networks:
-  #   - internal
-  #   - external
+  environment:
+    CACHE_HOST: cache
+    RABBIT_HOST: rabbitmq
+    DATABASE_URI: "postgresql://dev:admin123@db:5432/fastify?schema=template"
   env_file:
     - path: ./.env
   ports:
     - 3001:3001
 
-x-fastify: &fastify # network_mode: "host"
+x-fastify: &fastify
   tty: true
   # healthcheck:
   #   test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
@@ -39,12 +40,13 @@ x-fastify: &fastify # network_mode: "host"
       condition: service_started
     # otel-collector:
     #   condition: service_healthy
-  # networks:
-  #   - internal
-  #   - external
   networks:
     - default
     - elastic
+  environment:
+    CACHE_HOST: cache
+    RABBIT_HOST: rabbitmq
+    DATABASE_URI: "postgresql://dev:admin123@db:5432/fastify?schema=template"
   env_file:
     - path: ./.env
   ports:
@@ -53,8 +55,6 @@ x-fastify: &fastify # network_mode: "host"
 services:
   local:
     <<: *fastify
-    # extends:
-    #   service: fastify
     build:
       context: .
     profiles:
@@ -63,16 +63,11 @@ services:
 
   dev:
     <<: *fastify
-    # extends:
-    #   service: fastify
     image: node:23-alpine
     volumes:
       - ".:/src"
     working_dir: "/src"
     command: sh -c "[ ! -d node_modules ] && npm ci --force ; npm run dev"
-    environment:
-      - CACHE_HOST=cache
-      - RABBIT_HOST=rabbitmq
     profiles:
       - dev
 
@@ -97,8 +92,6 @@ services:
       interval: 30s
       timeout: 5s
       retries: 5
-    # networks:
-    #   - internal
     volumes:
       - rabbitmq:/var/lib/rabbitmq/data
       - rabbitmq:/var/log/rabbitmq/log
@@ -132,8 +125,6 @@ services:
     #      size: 134217728 # 128*2^20 bytes = 128Mb
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    # networks:
-    #   - internal
     healthcheck:
       test: pg_isready -d $$POSTGRES_DB -U $$POSTGRES_USER
       interval: 20s
@@ -160,8 +151,6 @@ services:
     tty: true
     ports:
       - 3001:3001
-    # networks:
-    #   - internal
     env_file:
       - path: ./.env
     profiles:
@@ -172,8 +161,8 @@ services:
   localstack:
     image: localstack/localstack
     ports:
-      - "127.0.0.1:4566:4566" # LocalStack Gateway
-      - "127.0.0.1:4510-4559:4510-4559" # external services port range
+      - "127.0.0.1:4566:4566" # LocalStack gateway
+      - "127.0.0.1:4510-4559:4510-4559" # External services port range
     environment:
       # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
       - DEBUG=${DEBUG:-0}
@@ -209,8 +198,3 @@ volumes:
 networks:
   cache:
   elastic:
-    #external: true
-#   internal:
-#     driver: bridge
-#   external:
-#     driver: bridge
