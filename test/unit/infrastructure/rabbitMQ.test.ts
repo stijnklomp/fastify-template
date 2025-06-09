@@ -11,6 +11,16 @@ import { logger } from "@/common/logger"
 
 jest.mock("amqplib")
 
+const exchangeDetails = {
+	alternateExchange: "nonRouted",
+	arguments: {
+		// eslint-disable-next-line @typescript-eslint/naming-convention
+		"x-message-ttl": 86400000,
+	},
+	autoDelete: false,
+	durable: true,
+	internal: false,
+}
 const queueDetails = {
 	autoDelete: false,
 	deadLetterExchange: "deadLetter",
@@ -371,11 +381,7 @@ describe("RabbitMQ service", () => {
 					expect(mockChannelAssertExchange).toHaveBeenCalledWith(
 						exchange,
 						"topic",
-						expect.objectContaining({
-							autoDelete: false,
-							durable: true,
-							internal: false,
-						}),
+						expect.objectContaining(exchangeDetails),
 					)
 					expect(mockChannelPublish).toHaveBeenCalled()
 				})
@@ -399,7 +405,7 @@ describe("RabbitMQ service", () => {
 
 					expect(response).toBe(false)
 					expect(logger.error).toHaveBeenCalledWith(
-						`Failed to create RabbitMQ channel:`,
+						`Failed to create RabbitMQ channel '${channel}':`,
 						errorMessage,
 					)
 					expect(mockChannelAssertExchange).not.toHaveBeenCalled()
@@ -556,6 +562,73 @@ describe("RabbitMQ service", () => {
 
 	describe("consume", () => {
 		describe("declare queue", () => {
+			it("should create exchange", async () => {
+				await jest.isolateModulesAsync(async () => {
+					const isolatedRabbitMQ = await import(
+						"@/infrastructure/rabbitMQ"
+					)
+
+					const response = await isolatedRabbitMQ.consume(
+						channel,
+						queue,
+						bindings,
+						() => undefined,
+					)
+					expect(response).toBe(true)
+					expect(mockChannelAssertExchange).toHaveBeenCalledTimes(2)
+					expect(mockChannelAssertExchange).toHaveBeenNthCalledWith(
+						1,
+						Object.keys(bindings)[0],
+						"topic",
+						exchangeDetails,
+					)
+					expect(mockChannelAssertExchange).toHaveBeenNthCalledWith(
+						2,
+						Object.keys(bindings)[1],
+						"topic",
+						exchangeDetails,
+					)
+					expect(mockChannelBindQueue).toHaveBeenCalled()
+				})
+			})
+
+			it("should not create queue when exchange failed to create", async () => {
+				await jest.isolateModulesAsync(async () => {
+					const isolatedRabbitMQ = await import(
+						"@/infrastructure/rabbitMQ"
+					)
+
+					const errorMessage = "Unable to create exchange"
+					mockChannelAssertExchange.mockRejectedValue(
+						new Error(errorMessage),
+					)
+
+					const response = await isolatedRabbitMQ.consume(
+						channel,
+						queue,
+						bindings,
+						() => undefined,
+					)
+
+					expect(response).toBe(false)
+					expect(logger.error).toHaveBeenCalledTimes(2)
+					expect(logger.error).toHaveBeenNthCalledWith(
+						1,
+						`Failed to create RabbitMQ exchange '${Object.keys(bindings)[0]}':`,
+						errorMessage,
+					)
+					expect(logger.error).toHaveBeenNthCalledWith(
+						2,
+						`Failed to create RabbitMQ exchange '${Object.keys(bindings)[1]}':`,
+						errorMessage,
+					)
+					expect(mockChannelAssertExchange).toHaveBeenCalledTimes(2)
+					expect(mockChannelAssertQueue).not.toHaveBeenCalled()
+					expect(mockChannelBindQueue).not.toHaveBeenCalled()
+					expect(mockChannelConsume).not.toHaveBeenCalled()
+				})
+			})
+
 			it("should create queue", async () => {
 				await jest.isolateModulesAsync(async () => {
 					const isolatedRabbitMQ = await import(
@@ -570,6 +643,7 @@ describe("RabbitMQ service", () => {
 					)
 
 					expect(response).toBe(true)
+					expect(mockChannelAssertExchange).toHaveBeenCalled()
 					expect(mockChannelAssertQueue).toHaveBeenCalledWith(queue, {
 						autoDelete: queueDetails.autoDelete,
 						deadLetterExchange: queueDetails.deadLetterExchange,
@@ -614,9 +688,10 @@ describe("RabbitMQ service", () => {
 
 					expect(response).toBe(false)
 					expect(logger.error).toHaveBeenCalledWith(
-						`Failed to create RabbitMQ channel:`,
+						`Failed to create RabbitMQ channel '${channel}':`,
 						errorMessage,
 					)
+					expect(mockChannelAssertExchange).not.toHaveBeenCalled()
 					expect(mockChannelAssertQueue).not.toHaveBeenCalled()
 					expect(mockChannelBindQueue).not.toHaveBeenCalled()
 					expect(mockChannelConsume).not.toHaveBeenCalled()
@@ -642,6 +717,7 @@ describe("RabbitMQ service", () => {
 					)
 
 					expect(response).toBe(false)
+					expect(mockChannelAssertExchange).toHaveBeenCalled()
 					expect(mockChannelAssertQueue).toHaveBeenCalled()
 					expect(logger.error).toHaveBeenCalledWith(
 						`Failed to create RabbitMQ queue '${queue}':`,
@@ -671,6 +747,7 @@ describe("RabbitMQ service", () => {
 					)
 
 					expect(response).toBe(true)
+					expect(mockChannelAssertExchange).toHaveBeenCalled()
 					expect(mockChannelAssertQueue).toHaveBeenCalled()
 					expect(mockChannelBindQueue).toHaveBeenCalledTimes(2)
 					expect(logger.error).toHaveBeenCalledOnce()
@@ -700,6 +777,7 @@ describe("RabbitMQ service", () => {
 				expect(logger.info).toHaveBeenCalledWith(
 					`Started consuming RabbitMQ messages on queue '${queue}'`,
 				)
+				expect(mockChannelConsume).toHaveBeenCalled()
 			})
 		})
 

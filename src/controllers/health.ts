@@ -2,7 +2,7 @@ import { FastifyReply } from "fastify"
 import { PrismaClient } from "@prisma/client"
 
 import notesValidator from "@/models/validators/notes"
-import { logger } from "@/common/logger"
+import { logger, formatError } from "@/common/logger"
 import { FastifyRequestSchemaTypes } from "@/models/types/schemaBuilderTypeExtractor"
 
 const dbConnection = async () => {
@@ -23,8 +23,7 @@ export const checkHealthyHandler = async (
 
 		await res.code(204).send()
 	} catch (err) {
-		logger.error(err)
-		logger.error(typeof err)
-		await res.code(503).send() // Todo: Extract message from error and add it to the response
+		logger.error("Unable to connect to database:", formatError(err))
+		await res.code(503).send()
 	}
 }

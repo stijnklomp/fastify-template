@@ -1,12 +1,12 @@
-import amqplib, { Channel } from "amqplib"
+import amqplib, { ChannelModel, Channel, ConsumeMessage } from "amqplib"
 
 import { logger, formatError } from "@/common/logger"
 
 const fallbackExchangeForNonRoutedMessages = "nonRouted"
 const deadLetterExchange = "deadLetter"
 
-let connection: amqplib.ChannelModel | undefined
-const channels = new Map<string, amqplib.Channel>()
+let connection: ChannelModel | undefined
+const channels = new Map<string, Channel>()
 
 /**
  * Close RabbitMQ connection.
@@ -92,7 +92,10 @@ export const declareChannel = async (channel: string) => {
 		channels.set(channel, await connection!.createChannel())
 		logger.info("RabbitMQ channel successfully created")
 	} catch (err) {
-		logger.error("Failed to create RabbitMQ channel:", formatError(err))
+		logger.error(
+			`Failed to create RabbitMQ channel '${channel}':`,
+			formatError(err),
+		)
 
 		return false
 	}
@@ -205,6 +208,7 @@ export type Bindings = Record<string, string>
  *   'exchangeB': 'binding.key.b'
  * }
  * ```
+ * @remarks At least one entry is required in the `bindings` object
  * @returns Queue declared.
  */
 const declareQueue = async (
@@ -212,7 +216,15 @@ const declareQueue = async (
 	queue: string,
 	bindings: Bindings = {},
 ) => {
-	if (!(await declareChannel(channel))) return false
+	const results = await Promise.allSettled(
+		Object.keys(bindings).map((source) => declareExchange(channel, source)),
+	)
+
+	for (const result of results) {
+		if (result.status === "rejected" || !result.value) {
+			return false
+		}
+	}
 
 	try {
 		await channels.get(channel)?.assertQueue(queue, {
@@ -249,7 +261,11 @@ const declareQueue = async (
 	return true
 }
 
-export type ConsumeCallback = Parameters<Channel["consume"]>[1]
+// export type ConsumeCallback = Parameters<Channel["consume"]>[1]
+export type ConsumeCallback = (
+	msg: ConsumeMessage | null,
+	channel: Channel,
+) => void
 
 /**
  * Consume messages.
@@ -282,7 +298,14 @@ export const consume = async (
 	// await channels.get(channel)?.prefetch(1)
 
 	try {
-		await channels.get(channel)?.consume(queue, callback, { noAck: false })
+		const usedChannel: Channel | undefined = channels.get(channel)
+		await usedChannel?.consume(
+			queue,
+			(msg) => {
+				callback(msg, usedChannel)
+			},
+			{ noAck: false },
+		)
 	} catch (err) {
 		logger.error(
 			`Failed to start consumer on RabbitMQ queue '${queue}':`,
