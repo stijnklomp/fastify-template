@@ -1,11 +1,17 @@
 import { FastifyInstance } from "fastify"
 
-import { checkHealthyHandler } from "@/controllers/health"
+import { livenessHandler, readinessHandler } from "@/controllers/health"
 
 export default (fastify: FastifyInstance) => {
 	fastify.route({
-		handler: checkHealthyHandler,
+		handler: livenessHandler,
 		method: "GET",
-		url: "/health",
+		url: "/healthz",
+	})
+
+	fastify.route({
+		handler: readinessHandler,
+		method: "GET",
+		url: "/readyz",
 	})
 }

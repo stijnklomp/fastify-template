@@ -1,4 +1,9 @@
-import { FastifyServerOptions, FastifyRequest, FastifyError } from "fastify"
+import {
+	FastifyServerOptions,
+	FastifyRequest,
+	FastifyReply,
+	FastifyError,
+} from "fastify"
 import pino, { LevelWithSilentOrString, LoggerOptions } from "pino"
 
 const sharedLoggerConfig: Pick<LoggerOptions, "serializers"> = {
@@ -13,6 +18,14 @@ const sharedLoggerConfig: Pick<LoggerOptions, "serializers"> = {
 			return err.validation
 				? { ...baseError, validation: err.validation }
 				: baseError
+		},
+		res: (res: FastifyReply) => {
+			const req = res.request
+
+			return {
+				path: req.routeOptions.url ?? req.url,
+				statusCode: res.statusCode,
+			}
 		},
 	},
 }
