@@ -11,7 +11,6 @@
 - TypeScript: Static typing with TypeScript, enhancing code quality and developer productivity.
 - Prettier & ESLint: Automatic code formatting and linting for consistent code style and adherence to best practices.
 - Jest: Unit & Feature testing framework for ensuring code quality and functionality.
-- Playwright: Acceptance/Integration testing framework for comprehensive testing of user interactions and browser behavior.
 - Husky: Git hooks for running linting and tests before commits, ensuring code quality standards are met.
 - TypeDoc: Automatic generation of TypeScript documentation for improved code clarity and collaboration.
 - Dagger: Dagger functions are provided to streamline CI/CD pipelines to allow ease of local development and allow for easy platform agnostic CI/CD pipeline integration.
@@ -83,11 +82,13 @@ npx jsonsort "<file_1> <file_2>"
 ```sh
 # Unit tests
 npm run test
+npm run test:unit:coverage
 
 # Feature tests
 npm run test:feature
+npm run test:feature:coverage
 
-# Test coverage
+# Test combined coverage of unit and feature tests
 npm run test:coverage
 ```
 
@@ -95,6 +96,7 @@ npm run test:coverage
 
 ```sh
 npm run test:acceptance
+npm run test:acceptance:coverage
 ```
 
 #### With Docker Compose

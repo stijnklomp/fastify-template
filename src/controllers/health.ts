@@ -1,17 +1,17 @@
 import { FastifyRequest, FastifyReply } from "fastify"
-import { PrismaClient } from "@prisma/client"
 
 import { logger, formatError } from "@/common/logger"
+import { prisma as prismaClient } from "@/common/prisma"
 
 export const livenessHandler = async (
 	req: FastifyRequest,
 	res: FastifyReply,
 ) => {
-	res.code(200).send("OK")
+	res.code(200).send()
 }
 
 const dbConnection = async () => {
-	const prisma = new PrismaClient()
+	const prisma = prismaClient()
 
 	await prisma.$connect().then(async () => {
 		logger.info("Database connection healthy")

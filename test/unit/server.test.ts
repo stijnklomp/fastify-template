@@ -2,21 +2,20 @@ import { FastifyInstance } from "fastify"
 import { createClient, RedisClientType } from "redis"
 import amqplib, { ChannelModel } from "amqplib"
 import { PrismaClient } from "@prisma/client"
-import { DeepMockProxy, mockDeep } from "jest-mock-extended"
 
 import { start } from "@/src/app"
 import { build } from "@/helper"
+import { prisma } from "@/common/prisma"
 
 jest.mock("redis")
 jest.mock("amqplib")
-jest.mock("@prisma/client", () => ({
+jest.mock("@/common/prisma", () => ({
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	PrismaClient: jest.fn(() => ({
+	__esModule: true,
+	prisma: jest.fn(() => ({
 		$connect: jest.fn(),
 		$disconnect: jest.fn(),
 	})),
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	__esModule: true,
 }))
 
 describe("server", () => {
@@ -26,7 +25,7 @@ describe("server", () => {
 		connect: jest.fn(),
 		on: jest.fn(),
 	} as unknown as RedisClientType
-	let mockPrismaClient: DeepMockProxy<PrismaClient>
+	let mockPrisma: jest.Mocked<PrismaClient>
 
 	let app: FastifyInstance
 	const instance: () => FastifyInstance = build()
@@ -42,11 +41,11 @@ describe("server", () => {
 		)
 		mockedCacheCreateClient = createClient as jest.Mock
 		mockedCacheCreateClient.mockImplementation(() => mockCacheClient)
-		mockPrismaClient = mockDeep<PrismaClient>()
+		mockPrisma = prisma() as jest.Mocked<PrismaClient>
 	})
 
 	it("should start the server without errors", async () => {
-		mockPrismaClient.$connect.mockResolvedValue()
+		mockPrisma.$connect.mockResolvedValue()
 
 		const response = await start()
 
@@ -57,16 +56,26 @@ describe("server", () => {
 	})
 
 	it("should respond with 2xx on healthy state", async () => {
-		mockPrismaClient.$connect.mockResolvedValue()
+		const response = await app.inject({
+			method: "GET",
+			url: "/healthz",
+		})
+
+		expect(response.statusCode).toEqual(200)
+		expect(response.payload).toBe("")
+	})
+
+	it("should respond with 2xx on ready state", async () => {
+		mockPrisma.$connect.mockResolvedValue()
 
 		const response = await app.inject({
 			method: "GET",
-			url: "/health",
+			url: "/readyz",
 		})
 
 		expect(response.statusCode).toEqual(204)
 		expect(response.payload).toBe("")
-		expect(mockPrismaClient.$connect).toHaveBeenCalled()
-		expect(mockPrismaClient.$disconnect).toHaveBeenCalled()
+		expect(mockPrisma.$connect).toHaveBeenCalled()
+		expect(mockPrisma.$disconnect).toHaveBeenCalled()
 	})
 })

@@ -11,7 +11,12 @@ components:
       type: apiKey
   schemas: {}
 paths:
-  /health:
+  /healthz:
+    get:
+      responses:
+        "200":
+          description: Default Response
+  /readyz:
     get:
       responses:
         "200":
