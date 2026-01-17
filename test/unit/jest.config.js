@@ -1,9 +1,6 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-import type { Config } from "jest"
+import { coreConfig, coverageConfig } from "../jest.config.ts"
 
-import { coreConfig, coverageConfig } from "../jest.config"
-
-const config: Config = {
+const config = {
 	...coreConfig,
 	...coverageConfig,
 	coverageDirectory: "<rootDir>/test/unit/coverage",

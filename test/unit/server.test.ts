@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify"
 import { createClient, RedisClientType } from "redis"
 import amqplib, { ChannelModel } from "amqplib"
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient } from "@/prismaClient"
 
 import { start } from "@/src/app"
 import { build } from "@/helper"
@@ -25,7 +25,7 @@ describe("server", () => {
 		connect: jest.fn(),
 		on: jest.fn(),
 	} as unknown as RedisClientType
-	let mockPrisma: jest.Mocked<PrismaClient>
+	let mockPrisma: PrismaClient
 
 	let app: FastifyInstance
 	const instance: () => FastifyInstance = build()
@@ -41,11 +41,11 @@ describe("server", () => {
 		)
 		mockedCacheCreateClient = createClient as jest.Mock
 		mockedCacheCreateClient.mockImplementation(() => mockCacheClient)
-		mockPrisma = prisma() as jest.Mocked<PrismaClient>
+		mockPrisma = prisma()
 	})
 
 	it("should start the server without errors", async () => {
-		mockPrisma.$connect.mockResolvedValue()
+		jest.mocked(mockPrisma.$connect).mockResolvedValue()
 
 		const response = await start()
 
@@ -66,7 +66,7 @@ describe("server", () => {
 	})
 
 	it("should respond with 2xx on ready state", async () => {
-		mockPrisma.$connect.mockResolvedValue()
+		jest.mocked(mockPrisma.$connect).mockResolvedValue()
 
 		const response = await app.inject({
 			method: "GET",

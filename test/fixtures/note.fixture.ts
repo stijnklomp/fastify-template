@@ -1,4 +1,4 @@
-import { Note } from "@prisma/client"
+import { Note } from "@/prismaClient"
 
 export const noteDb: Note = {
 	createdAt: new Date(),

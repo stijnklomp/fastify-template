@@ -1,8 +1,6 @@
-import type { Config } from "jest"
+import { coreConfig, coverageConfig } from "../jest.config.ts"
 
-import { coreConfig, coverageConfig } from "../jest.config"
-
-const config: Config = {
+const config = {
 	...coreConfig,
 	...coverageConfig,
 	displayName: "acceptance",
@@ -23,7 +21,6 @@ const config: Config = {
 	setupFilesAfterEnv: [...(coreConfig.setupFilesAfterEnv ?? [])],
 	testMatch: ["<rootDir>/test/acceptance/**/(*.)+(spec|test).[jt]s"],
 	transform: {
-		// eslint-disable-next-line @typescript-eslint/naming-convention
 		"^.+\\.(t|j)s$": [
 			"ts-jest",
 			{

@@ -10,7 +10,7 @@ const gitignorePath = path.resolve(__dirname, ".gitignore")
 
 const finalConfig = config({
 	strict: true,
-	tsconfigRootDir: ".",
+	tsconfigRootDir: __dirname,
 	typescript: true,
 })
 
@@ -32,11 +32,22 @@ finalConfig.push(includeIgnoreFile(gitignorePath), {
 		".husky/*",
 		"prisma/*",
 		"rabbitmq/*",
-		"dagger/sdk/*",
 		"test/acceptance/reports/*",
 		"test/combined-coverage/*",
 		"secrets/*",
+		".prettierrc.js",
 	],
+})
+
+finalConfig.push({
+	languageOptions: {
+		parserOptions: {
+			project: null,
+			projectService: true,
+			tsconfigRootDir: __dirname,
+		},
+	},
+	name: "Override @typescript-eslint parserOptions",
 })
 
 export default tseslint.config(finalConfig)

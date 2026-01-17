@@ -16,7 +16,7 @@ x-acceptance: &acceptance
   environment:
     CACHE_HOST: cache
     RABBIT_HOST: rabbitmq
-    DATABASE_URI: "postgresql://dev:admin123@db:5432/fastify?schema=template"
+    DATABASE_URL: "postgresql://dev:admin123@db:5432/fastify?schema=template"
   env_file:
     - path: ./.env
   ports:
@@ -46,7 +46,7 @@ x-fastify: &fastify
   environment:
     CACHE_HOST: cache
     RABBIT_HOST: rabbitmq
-    DATABASE_URI: "postgresql://dev:admin123@db:5432/fastify?schema=template"
+    DATABASE_URL: "postgresql://dev:admin123@db:5432/fastify?schema=template"
   env_file:
     - path: ./.env
   ports:

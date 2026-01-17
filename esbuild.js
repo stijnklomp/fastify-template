@@ -3,20 +3,22 @@ import serve from "@es-exec/esbuild-plugin-serve"
 import { glob } from "glob"
 
 void (async function () {
-	const tsfiles = await glob("src/**/*.ts")
+	const tsfiles = await glob("src/app.ts")
 
 	const options = {
 		bundle: true,
 		entryPoints: tsfiles,
 		// external: ["elastic-apm-node"],
-		format: "cjs",
+		format: "esm",
 		logLevel: "info",
 		minify: true,
 		minifyIdentifiers: true,
 		minifyWhitespace: true,
 		outdir: "dist",
+		packages: "external",
 		platform: "node",
 		sourcemap: false,
+		target: ["ESNext"],
 		tsconfig: "tsconfig.production.json",
 	}
 	const args = process.argv.slice(2)

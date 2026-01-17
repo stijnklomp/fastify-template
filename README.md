@@ -13,7 +13,6 @@
 - Jest: Unit & Feature testing framework for ensuring code quality and functionality.
 - Husky: Git hooks for running linting and tests before commits, ensuring code quality standards are met.
 - TypeDoc: Automatic generation of TypeScript documentation for improved code clarity and collaboration.
-- Dagger: Dagger functions are provided to streamline CI/CD pipelines to allow ease of local development and allow for easy platform agnostic CI/CD pipeline integration.
 
 ## Installation
 

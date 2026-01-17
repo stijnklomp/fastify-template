@@ -2,6 +2,7 @@
 	"compilerOptions": {
 		"noEmit": false,
 		"paths": {
+			"@/prismaClient": ["generated/prisma/client.ts"],
 			"@/src/*": ["src/*"],
 			"@/common/*": ["src/common/*"],
 			"@/config/*": ["src/config/*"],

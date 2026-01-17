@@ -45,6 +45,9 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - note
+                - owner
               properties:
                 note:
                   maxLength: 300
@@ -52,9 +55,6 @@ paths:
                 owner:
                   maxLength: 100
                   type: string
-              required:
-                - note
-                - owner
         required: true
       responses:
         "200":

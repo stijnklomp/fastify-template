@@ -1,7 +1,10 @@
 import type { Config } from "jest"
 import { pathsToModuleNameMapper } from "ts-jest"
+import { createRequire } from "node:module"
 
-import { compilerOptions } from "../tsconfig.json"
+const require = createRequire(import.meta.url)
+const { compilerOptions } =
+	require("../tsconfig.json") as typeof import("../tsconfig.json")
 
 export const coreConfig: Config = {
 	automock: false,
@@ -28,7 +31,6 @@ export const coverageConfig: Config = {
 		"<rootDir>/.husky/",
 		"<rootDir>/dist/",
 		"<rootDir>/doc/",
-		"<rootDir>/dagger/",
 	],
 	coverageReporters: ["html", "text", "json"],
 	coverageThreshold: {

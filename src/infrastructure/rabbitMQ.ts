@@ -19,7 +19,10 @@ export const close = async () => {
 		await connection.close()
 		logger.info("RabbitMQ connection closed")
 	} catch (err) {
-		logger.error("Error closing RabbitMQ connection:", formatError(err))
+		logger.error({
+			err: formatError(err),
+			msg: "Error closing RabbitMQ connection",
+		})
 
 		throw err
 	}
@@ -66,7 +69,10 @@ export const init = async () => {
 		connection = await amqplib.connect(connectionUrl)
 		logger.info(`RabbitMQ connected on port '${rabbitPort}'`)
 	} catch (err) {
-		logger.error("Error initializing RabbitMQ:", formatError(err))
+		logger.error({
+			err: formatError(err),
+			msg: "Error initializing RabbitMQ",
+		})
 		process.exit(1)
 	}
 
@@ -92,10 +98,10 @@ export const declareChannel = async (channel: string) => {
 		channels.set(channel, await connection!.createChannel())
 		logger.info("RabbitMQ channel successfully created")
 	} catch (err) {
-		logger.error(
-			`Failed to create RabbitMQ channel '${channel}':`,
-			formatError(err),
-		)
+		logger.error({
+			err: formatError(err),
+			msg: `Failed to create RabbitMQ channel '${channel}'`,
+		})
 
 		return false
 	}
@@ -122,10 +128,10 @@ const declareExchange = async (channel: string, exchange = "main") => {
 			internal: false,
 		})
 	} catch (err) {
-		logger.error(
-			`Failed to create RabbitMQ exchange '${exchange}':`,
-			formatError(err),
-		)
+		logger.error({
+			err: formatError(err),
+			msg: `Failed to create RabbitMQ exchange '${exchange}'`,
+		})
 
 		return false
 	}
@@ -156,18 +162,18 @@ export const publish = async (
 
 		if (!success) {
 			channels.get(channel)?.once("drain", () => {
-				logger.error(
-					`Unable to publish RabbitMQ message ${locationMessage}. Drain event received.`,
-				)
+				logger.error({
+					msg: `Unable to publish RabbitMQ message ${locationMessage}. Drain event received.`,
+				})
 			})
 
 			return false
 		}
 	} catch (err) {
-		logger.error(
-			`Error publishing RabbitMQ message ${locationMessage}:`,
-			err instanceof Error ? err.message : String(err),
-		)
+		logger.error({
+			err: formatError(err),
+			msg: `Error publishing RabbitMQ message ${locationMessage}`,
+		})
 
 		await channels
 			.get(channel)
@@ -176,10 +182,10 @@ export const publish = async (
 				logger.debug(`Closed channel '${channel}'`)
 			})
 			.catch((closeErr: unknown) => {
-				logger.warn(
-					`Error closing channel '${channel}':`,
-					formatError(closeErr),
-				)
+				logger.warn({
+					err: formatError(closeErr),
+					msg: `Error closing channel '${channel}'`,
+				})
 			})
 
 		channels.delete(channel)
@@ -216,11 +222,11 @@ const declareQueue = async (
 	queue: string,
 	bindings: Bindings = {},
 ) => {
-	const results = await Promise.allSettled(
+	const exchangeDeclarationResults = await Promise.allSettled(
 		Object.keys(bindings).map((source) => declareExchange(channel, source)),
 	)
 
-	for (const result of results) {
+	for (const result of exchangeDeclarationResults) {
 		if (result.status === "rejected" || !result.value) {
 			return false
 		}
@@ -235,27 +241,34 @@ const declareQueue = async (
 			messageTtl: 3600000, // 1 hour
 		})
 	} catch (err) {
-		logger.error(
-			`Failed to create RabbitMQ queue '${queue}':`,
-			formatError(err),
-		)
+		logger.error({
+			err: formatError(err),
+			msg: `Failed to create RabbitMQ queue '${queue}'`,
+		})
 
 		return false
 	}
 
-	await Promise.allSettled(
-		Object.keys(bindings).map((source) =>
-			channels.get(channel)?.bindQueue(queue, source, bindings[source]),
+	const ch = channels.get(channel)
+	const entries = Object.entries(bindings)
+	const queueBindingResults = await Promise.allSettled(
+		entries.map(([source, binding]) =>
+			ch
+				? ch.bindQueue(queue, source, binding)
+				: Promise.reject(
+						new Error(`RabbitMQ channel '${channel}' not found`),
+					),
 		),
-	).then((results) => {
-		results.forEach((result, index) => {
-			if (result.status === "rejected") {
-				logger.error(
-					`Failed to bind '${Object.values(bindings)[index]}' to RabbitMQ exchange '${Object.keys(bindings)[index]}' for queue '${queue}':`,
-					formatError(result.reason),
-				)
-			}
-		})
+	)
+
+	queueBindingResults.forEach((result, index) => {
+		if (result.status === "rejected") {
+			const [source, binding] = entries[index]
+			logger.error({
+				err: formatError(result.reason),
+				msg: `Failed to bind '${binding}' to RabbitMQ exchange '${source}' for queue '${queue}'`,
+			})
+		}
 	})
 
 	return true
@@ -307,10 +320,10 @@ export const consume = async (
 			{ noAck: false },
 		)
 	} catch (err) {
-		logger.error(
-			`Failed to start consumer on RabbitMQ queue '${queue}':`,
-			formatError(err),
-		)
+		logger.error({
+			err: formatError(err),
+			msg: `Failed to start consumer on RabbitMQ queue '${queue}'`,
+		})
 
 		return false
 	}

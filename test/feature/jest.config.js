@@ -1,15 +1,13 @@
-import type { Config } from "jest"
+import { coreConfig, coverageConfig } from "../jest.config.ts"
 
-import { coreConfig, coverageConfig } from "../jest.config"
-
-const config: Config = {
+const config = {
 	...coreConfig,
 	...coverageConfig,
 	coverageDirectory: "<rootDir>/test/feature/coverage",
 	displayName: "feature",
 	moduleNameMapper: {
 		...coreConfig.moduleNameMapper,
-		// eslint-disable-next-line @typescript-eslint/naming-convention
+
 		"^@/context$": "<rootDir>/test/context.ts",
 	},
 	reporters: [
@@ -29,7 +27,6 @@ const config: Config = {
 	],
 	testMatch: ["<rootDir>/test/feature/**/(*.)+(spec|test).[jt]s"],
 	transform: {
-		// eslint-disable-next-line @typescript-eslint/naming-convention
 		"^.+\\.(t|j)s$": [
 			"ts-jest",
 			{
