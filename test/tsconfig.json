@@ -1,28 +1,32 @@
 {
 	"compilerOptions": {
-		"noEmit": false,
 		"paths": {
-			"@/prismaClient": ["generated/prisma/client.ts"],
-			"@/src/*": ["src/*"],
 			"@/common/*": ["src/common/*"],
 			"@/config/*": ["src/config/*"],
+			"@/context": ["test/context.ts"],
 			"@/controllers/*": ["src/controllers/*"],
+			"@/fixtures/*": ["test/fixtures/*"],
+			"@/helper": ["test/helper.ts"],
 			"@/infrastructure/*": ["src/infrastructure/*"],
 			"@/middleware/*": ["src/middleware/*"],
-			"@/serializers/*": ["src/models/serializers/*"],
-			"@/types/*": ["src/models/types/*"],
-			"@/validators/*": ["src/models/validators/*"],
 			"@/models/*": ["src/models/*"],
+			"@/prismaClient": ["generated/prisma/client.ts"],
 			"@/repositories/*": ["src/repositories/*"],
 			"@/routes/*": ["src/routes/*"],
+			"@/serializers/*": ["src/models/serializers/*"],
 			"@/services/*": ["src/services/*"],
-
-			"@/fixtures/*": ["test/fixtures/*"],
-			"@/context": ["test/context.ts"],
-			"@/helper": ["test/helper.ts"]
+			"@/src/*": ["src/*"],
+			"@/types/*": ["src/models/types/*"],
+			"@/validators/*": ["src/models/validators/*"]
 		}
 	},
+	"exclude": [
+		"node_modules",
+		".husky",
+		"dist",
+		"test/**/coverage/**",
+		"test/**/reports/**"
+	],
 	"extends": "../tsconfig.json",
-	"include": ["**/*.ts", "../", "../.", "../*", "../**/*"],
-	"exclude": ["../node_modules", "../.husky", "../dist"]
+	"include": ["test/**/*.ts", "src/**/*.ts", "generated/**/*.ts"]
 }

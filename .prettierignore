@@ -1,9 +1,21 @@
-node_modules
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-package-lock.json
+bun.lock
 README.md
+node_modules
+LICENSE
+.env
 
 .dockerignore
-secrets/*
+secrets
+prisma
+dist
+.husky
+.eslintcache
+generated
+rabbitmq
+test/acceptance/reports
+test/feature/coverage
+test/feature/reports
+test/unit/coverage
+test/unit/reports
+openapi.yaml

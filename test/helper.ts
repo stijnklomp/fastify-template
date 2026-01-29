@@ -1,8 +1,16 @@
-import fastifySetup, { FastifyServerOptions, FastifyInstance } from "fastify"
+import fastifySetup, {
+	type FastifyServerOptions,
+	type FastifyInstance,
+} from "fastify"
 import autoLoad from "@fastify/autoload"
-import path from "path"
+import path from "node:path"
+import { fileURLToPath } from "node:url"
+import { afterAll, beforeAll, jest } from "bun:test"
 
 import { options } from "@/src/app"
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 export const build = (overrideOptions: Partial<FastifyServerOptions> = {}) => {
 	let fastify: FastifyInstance

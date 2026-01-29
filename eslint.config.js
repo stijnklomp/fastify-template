@@ -6,7 +6,6 @@ import { fileURLToPath } from "node:url"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-const gitignorePath = path.resolve(__dirname, ".gitignore")
 
 const finalConfig = config({
 	strict: true,
@@ -15,28 +14,20 @@ const finalConfig = config({
 })
 
 const addedConfigs = [
-	{
-		files: ["test/unit/**/*.ts"],
-		name: "Typescript -> Unit tests",
-		rules: {
-			"@typescript-eslint/no-unsafe-assignment": "off", // Disabled for tests to avoid verbose type casting when using Jest mocks
-			"@typescript-eslint/unbound-method": "off",
-		},
-	},
+	// {
+	// 	files: ["test/unit/**/*.ts"],
+	// 	name: "Typescript -> Unit tests",
+	// 	rules: {
+	// 		"@typescript-eslint/no-unsafe-assignment": "off", // Disabled for tests to avoid verbose type casting when using Jest mocks
+	// 		"@typescript-eslint/unbound-method": "off",
+	// 	},
+	// },
 ]
-
 finalConfig.push(...addedConfigs)
 
+const gitignorePath = path.resolve(__dirname, ".gitignore")
 finalConfig.push(includeIgnoreFile(gitignorePath), {
-	ignores: [
-		".husky/*",
-		"prisma/*",
-		"rabbitmq/*",
-		"test/acceptance/reports/*",
-		"test/combined-coverage/*",
-		"secrets/*",
-		".prettierrc.js",
-	],
+	ignores: ["test/**/reports/**", "test/**/coverage/**", ".prettierrc.js"],
 })
 
 finalConfig.push({

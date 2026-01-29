@@ -1,25 +1,26 @@
-import fastify, { FastifyServerOptions } from "fastify"
+import fastify, { type FastifyServerOptions } from "fastify"
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox"
 import autoLoad from "@fastify/autoload"
 import fastifySwagger from "@fastify/swagger"
-import path from "path"
+import path from "node:path"
+import { fileURLToPath } from "node:url"
 import hyperid from "hyperid"
 import elasticAPM from "elastic-apm-node"
-import { writeFileSync } from "fs"
+import { writeFileSync } from "node:fs"
 
 import { loggerEnv, loggerConfig } from "@/common/logger"
 import { init as initCache } from "@/infrastructure/cache"
 import { init as initRabbitMQ } from "@/infrastructure/rabbitMQ"
 
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
 const useElasticAPM = process.env.USE_ELASTIC_APM ?? "true"
 
-if (loggerEnv !== "test" && useElasticAPM == "true") {
+if (loggerEnv !== "test" && useElasticAPM === "true") {
 	elasticAPM.start({
-		// apiKey: "./secrets/certs/apm-server/apm-server.key",
-		captureBody: loggerEnv != "production" ? "all" : "off",
-		// secretToken: "./secrets/certs/apm-server/apm-server.crt",
+		captureBody: loggerEnv !== "production" ? "all" : "off",
 		secretToken: "secrettokengoeshere",
-		// serverCaCertFile: "./secrets/certs/apm-server/apm-server.crt",
 		serverUrl: "https://apm-server:8200",
 		verifyServerCert: false,
 	})
@@ -72,16 +73,12 @@ void fastifySetup.register(fastifySwagger, {
 	},
 })
 
-// void fastifySetup.register(autoLoad, {
-// 	dir: path.join(__dirname, "/config"),
-// })
-
 void fastifySetup.register(autoLoad, {
-	dir: path.join(__dirname, "/middleware"),
+	dir: path.join(__dirname, "middleware"),
 })
 
 void fastifySetup.register(autoLoad, {
-	dir: path.join(__dirname, "/routes"),
+	dir: path.join(__dirname, "routes"),
 	dirNameRoutePrefix: true,
 })
 
@@ -90,10 +87,12 @@ export const start = async () => {
 		await initCache()
 		await initRabbitMQ()
 		const port = Number(process.env.API_PORT ?? 3000)
+
 		await fastifySetup.listen({
 			host: "0.0.0.0",
 			port,
 		})
+
 		fastifySetup.log.info(`Server listening on port ${port.toString()}`)
 
 		await fastifySetup.ready()

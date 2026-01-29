@@ -10,14 +10,14 @@
 - Fastify: A fast and low overhead web framework for Node.js.
 - TypeScript: Static typing with TypeScript, enhancing code quality and developer productivity.
 - Prettier & ESLint: Automatic code formatting and linting for consistent code style and adherence to best practices.
-- Jest: Unit & Feature testing framework for ensuring code quality and functionality.
+- Bun: Runtime environment and unit, feature, and acceptance tests.
 - Husky: Git hooks for running linting and tests before commits, ensuring code quality standards are met.
 - TypeDoc: Automatic generation of TypeScript documentation for improved code clarity and collaboration.
 
 ## Installation
 
 ```sh
-npm ci
+bun install --frozen-lockfile
 ```
 
 ## Prerequisites
@@ -28,10 +28,10 @@ Create a `.env` file in the root directory if one does not already exist and cop
 
 ```sh
 # Development in watch mode
-npm run dev
+bun run dev
 
 # Production mode
-npm run build && npm run start
+bun run build && bun run start
 ```
 
 ### With Docker
@@ -51,11 +51,11 @@ docker compose --profile=PROFILE up --build
 
 #### Database
 
-You may need to run `npx prisma migrate dev --name init` in your terminal if you haven't already initialized the database. This only needs to be done the first time the database is created. (Or whenever the database has been recreated) This will happen automatically when using any profile in Docker Compose.
+You may need to run `bunx --bun prisma migrate dev --name init` in your terminal if you haven't already initialized the database. This only needs to be done the first time the database is created. (Or whenever the database has been recreated) This will happen automatically when using any profile in Docker Compose.
 
 ## Endpoints documentation (API specification)
 
-Once the app is running, documentation will be available at `API_URL:PORT/docs`.
+Once the app is running, documentation will be available at `API_URL:API_PORT/docs`.
 
 ## Test
 
@@ -65,11 +65,11 @@ Eslint is used as a linter and uses Prettier to format code.
 
 ```sh
 # ESLint
-npm run lint
+bun run lint
 
 # ESLint and fix (also sorts JSON files)
 # Prefix with `EXCLUDE_PATHS="<file_1> <file_2>"` to exclude files/directories (using GLOB pattern)
-npm run lint:fix
+bun run lint:fix
 
 # Sort a specific JSON file and/or directory
 # Important: Don't run this command without a specified file/directory (using GLOB pattern)
@@ -80,22 +80,22 @@ npx jsonsort "<file_1> <file_2>"
 
 ```sh
 # Unit tests
-npm run test
-npm run test:unit:coverage
+bun run test
+bun run test:unit:coverage
 
 # Feature tests
-npm run test:feature
-npm run test:feature:coverage
+bun run test:feature
+bun run test:feature:coverage
 
 # Test combined coverage of unit and feature tests
-npm run test:coverage
+bun run test:coverage
 ```
 
 ### Acceptance tests
 
 ```sh
-npm run test:acceptance
-npm run test:acceptance:coverage
+bun run test:acceptance
+bun run test:acceptance:coverage
 ```
 
 #### With Docker Compose
@@ -108,15 +108,15 @@ docker compose --profile=test up --build --attach acceptance-once --exit-code-fr
 # There are multiple profiles that can be run for the acceptance tests:
 # dev
 # local
-docker compose --profile=PROFILE up --build -d && docker compose --profile=PROFILE exec -ti dev sh -c "npm run test:acceptance"
+docker compose --profile=PROFILE up --build -d && docker compose --profile=PROFILE exec -ti dev sh -c "bun run test:acceptance"
 ```
 
 ### Integrity
 
-Run this after an npm install to verify that everything still works.
+Run this after a Bun install to verify that everything still works.
 
 ```sh
-npm run integrity
+bun run integrity
 ```
 
 ## License
