@@ -1,4 +1,4 @@
-import { FastifyRequest, FastifyReply } from "fastify"
+import { type FastifyRequest, type FastifyReply } from "fastify"
 
 import { logger, formatError } from "@/common/logger"
 import { prisma as prismaClient } from "@/common/prisma"

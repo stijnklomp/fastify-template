@@ -50,5 +50,12 @@
 		}
 	},
 	"include": ["src/**/*.ts", "generated/**/*.ts"],
-	"exclude": ["node_modules", ".husky", "dist", "test"]
+	"exclude": [
+		"node_modules",
+		".husky",
+		"dist",
+		"test",
+		"typedoc.config.js",
+		"prisma.config.ts"
+	]
 }

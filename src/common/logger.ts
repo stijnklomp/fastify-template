@@ -1,10 +1,10 @@
 import {
-	FastifyServerOptions,
-	FastifyRequest,
-	FastifyReply,
-	FastifyError,
+	type FastifyServerOptions,
+	type FastifyRequest,
+	type FastifyReply,
+	type FastifyError,
 } from "fastify"
-import pino, { LevelWithSilentOrString, LoggerOptions } from "pino"
+import pino, { type LevelWithSilentOrString, type LoggerOptions } from "pino"
 
 const sharedLoggerConfig: Pick<LoggerOptions, "serializers"> = {
 	serializers: {

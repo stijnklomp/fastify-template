@@ -1,4 +1,8 @@
-import amqplib, { ChannelModel, Channel, ConsumeMessage } from "amqplib"
+import amqplib, {
+	type ChannelModel,
+	type Channel,
+	type ConsumeMessage,
+} from "amqplib"
 
 import { logger, formatError } from "@/common/logger"
 

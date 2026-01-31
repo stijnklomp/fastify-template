@@ -1,5 +1,5 @@
-import { FastifyRequest } from "fastify"
-import { Static, TSchema } from "@sinclair/typebox"
+import { type FastifyRequest } from "fastify"
+import { type Static, type TSchema } from "@sinclair/typebox"
 
 type RequestParams = {
 	body?: TSchema

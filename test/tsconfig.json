@@ -21,12 +21,12 @@
 		}
 	},
 	"exclude": [
-		"node_modules",
-		".husky",
-		"dist",
-		"test/**/coverage/**",
-		"test/**/reports/**"
+		"../node_modules",
+		"../.husky",
+		"../dist",
+		"**/coverage/**",
+		"**/reports/**"
 	],
 	"extends": "../tsconfig.json",
-	"include": ["test/**/*.ts", "src/**/*.ts", "generated/**/*.ts"]
+	"include": ["**/*.ts", "../src/**/*.ts", "../generated/**/*.ts"]
 }

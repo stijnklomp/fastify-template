@@ -27,7 +27,13 @@ finalConfig.push(...addedConfigs)
 
 const gitignorePath = path.resolve(__dirname, ".gitignore")
 finalConfig.push(includeIgnoreFile(gitignorePath), {
-	ignores: ["test/**/reports/**", "test/**/coverage/**", ".prettierrc.js"],
+	ignores: [
+		"test/**/reports/**",
+		"test/**/coverage/**",
+		".prettierrc.js",
+		"typedoc.config.js",
+		"prisma.config.ts",
+	],
 })
 
 finalConfig.push({

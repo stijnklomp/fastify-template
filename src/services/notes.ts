@@ -1,4 +1,4 @@
-import { StaticRequestSchemaTypes } from "@/types/schemaBuilderTypeExtractor"
+import { type StaticRequestSchemaTypes } from "@/types/schemaBuilderTypeExtractor"
 import noteValidator from "@/models/validators/notes"
 import notesRepository from "@/repositories/notes"
 

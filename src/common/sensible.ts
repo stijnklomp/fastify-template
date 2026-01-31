@@ -1,5 +1,5 @@
 import fp from "fastify-plugin"
-import sensible, { FastifySensibleOptions } from "@fastify/sensible"
+import sensible, { type FastifySensibleOptions } from "@fastify/sensible"
 
 // TODO: This utility requires implementation for the JSON schema: https://github.com/fastify/fastify-sensible
 
