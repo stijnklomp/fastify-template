@@ -19,8 +19,8 @@ jest.mock("@/common/prisma", () => ({
 }))
 
 describe("server", () => {
-	let mockRabbitMQConnect: jest.MockedFunction<typeof amqplib.connect>
-	let mockedCacheCreateClient: jest.MockedFunction<() => RedisClientType>
+	let mockRabbitMQConnect: jest.Mock<typeof amqplib.connect>
+	let mockedCacheCreateClient: jest.Mock<() => RedisClientType>
 	const mockCacheClient = {
 		connect: jest.fn(),
 		on: jest.fn(),
