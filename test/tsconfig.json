@@ -1,32 +1,5 @@
 {
-	"compilerOptions": {
-		"paths": {
-			"@/common/*": ["src/common/*"],
-			"@/config/*": ["src/config/*"],
-			"@/context": ["test/context.ts"],
-			"@/controllers/*": ["src/controllers/*"],
-			"@/fixtures/*": ["test/fixtures/*"],
-			"@/helper": ["test/helper.ts"],
-			"@/infrastructure/*": ["src/infrastructure/*"],
-			"@/middleware/*": ["src/middleware/*"],
-			"@/models/*": ["src/models/*"],
-			"@/prismaClient": ["generated/prisma/client.ts"],
-			"@/repositories/*": ["src/repositories/*"],
-			"@/routes/*": ["src/routes/*"],
-			"@/serializers/*": ["src/models/serializers/*"],
-			"@/services/*": ["src/services/*"],
-			"@/src/*": ["src/*"],
-			"@/types/*": ["src/models/types/*"],
-			"@/validators/*": ["src/models/validators/*"]
-		}
-	},
-	"exclude": [
-		"../node_modules",
-		"../.husky",
-		"../dist",
-		"**/coverage/**",
-		"**/reports/**"
-	],
+	"exclude": ["**/coverage/**", "**/reports/**"],
 	"extends": "../tsconfig.json",
 	"include": ["**/*.ts", "../src/**/*.ts", "../generated/**/*.ts"]
 }

@@ -5,10 +5,9 @@ import fastifySwagger from "@fastify/swagger"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import hyperid from "hyperid"
-import elasticAPM from "elastic-apm-node"
 import { writeFileSync } from "node:fs"
 
-import { loggerEnv, loggerConfig } from "@/common/logger"
+import { logger, loggerEnv, loggerConfig } from "@/common/logger"
 import { init as initCache } from "@/infrastructure/cache"
 import { init as initRabbitMQ } from "@/infrastructure/rabbitMQ"
 
@@ -16,17 +15,6 @@ import { init as initRabbitMQ } from "@/infrastructure/rabbitMQ"
 const __filename = fileURLToPath(import.meta.url)
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const __dirname = path.dirname(__filename)
-
-const elasticApmDisabled = process.env.ELASTIC_APM_DISABLED ?? "false"
-
-if (loggerEnv !== "test" && elasticApmDisabled === "false") {
-	elasticAPM.start({
-		captureBody: loggerEnv !== "production" ? "all" : "off",
-		secretToken: "secrettokengoeshere",
-		serverUrl: "https://apm-server:8200",
-		verifyServerCert: false,
-	})
-}
 
 export const options: FastifyServerOptions = {
 	genReqId: () => {
@@ -84,14 +72,11 @@ void fastifySetup.register(autoLoad, {
 	dirNameRoutePrefix: true,
 })
 
-const cacheDisabled = process.env.CACHE_DISABLED ?? "false"
-const rabbitDisabled = process.env.RABBIT_DISABLED ?? "false"
-
 export const start = async () => {
 	try {
-		if (cacheDisabled === "false") await initCache()
+		await initCache()
 
-		if (rabbitDisabled === "false") await initRabbitMQ()
+		await initRabbitMQ()
 
 		const port = Number(process.env.API_PORT ?? 3000)
 		await fastifySetup.listen({
@@ -108,7 +93,7 @@ export const start = async () => {
 
 		return fastifySetup
 	} catch (err) {
-		fastifySetup.log.error(err)
+		logger.error(err)
 		process.exit(1)
 	}
 }

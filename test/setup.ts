@@ -6,9 +6,21 @@ import * as actualLogger from "@/common/logger"
 await mock.module("@/common/logger", () => ({
 	...actualLogger,
 	logger: {
-		debug: jest.fn(),
-		error: jest.fn(),
-		info: jest.fn(),
-		warn: jest.fn(),
+		debug: mock((err) => {
+			// eslint-disable-next-line no-console
+			console.log(err)
+		}),
+		error: mock((err) => {
+			// eslint-disable-next-line no-console
+			console.log(err)
+		}),
+		info: mock((err) => {
+			// eslint-disable-next-line no-console
+			console.log(err)
+		}),
+		warn: mock((err) => {
+			// eslint-disable-next-line no-console
+			console.log(err)
+		}),
 	},
 }))

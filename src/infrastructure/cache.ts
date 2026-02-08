@@ -7,11 +7,13 @@ const CACHE_PORT = process.env.CACHE_PORT ?? "6379"
 const CACHE_HOST = process.env.CACHE_HOST ?? "localhost"
 const CACHE_PASSWORD = process.env.CACHE_PASSWORD ?? ""
 
+const cacheDisabled = process.env.CACHE_DISABLED ?? "false"
+
 /**
  * @remarks Exits the process on connection failure.
  */
 export const init = async () => {
-	if (typeof client !== "undefined") return
+	if (cacheDisabled !== "false" || typeof client !== "undefined") return
 
 	const createdClient = createClient({
 		password: CACHE_PASSWORD,

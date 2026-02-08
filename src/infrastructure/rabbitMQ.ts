@@ -57,6 +57,7 @@ const cleanupOnExit = () => {
 	})
 }
 
+const rabbitDisabled = process.env.RABBIT_DISABLED ?? "false"
 const { RABBIT_HOST, RABBIT_USER, RABBIT_PASS, RABBIT_PORT, RABBIT_TRANSPORT } =
 	process.env
 
@@ -64,7 +65,7 @@ const { RABBIT_HOST, RABBIT_USER, RABBIT_PASS, RABBIT_PORT, RABBIT_TRANSPORT } =
  * @remarks Exits the process on connection failure.
  */
 export const init = async () => {
-	if (typeof connection !== "undefined") return
+	if (rabbitDisabled !== "false" || typeof connection !== "undefined") return
 
 	const rabbitPort = RABBIT_PORT ?? "5671"
 	const connectionUrl = `${RABBIT_TRANSPORT ?? "amqp"}://${RABBIT_USER ?? "guest"}:${RABBIT_PASS ?? "guest"}@${RABBIT_HOST ?? "0.0.0.0"}:${rabbitPort}`
