@@ -33,6 +33,7 @@ finalConfig.push(includeIgnoreFile(gitignorePath), {
 		".prettierrc.js",
 		"typedoc.config.js",
 		"prisma.config.ts",
+		"eslint.config.js",
 	],
 })
 

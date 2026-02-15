@@ -8,7 +8,6 @@ minimumReleaseAge = 259200 # 3 days
 scanner = "@socketsecurity/bun-security-scanner"
 
 [test]
-coverage = false
 coverageDir = "test/unit/coverage"
 coverageSkipTestFiles = true
 coverageThreshold = 1

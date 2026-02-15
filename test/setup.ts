@@ -1,7 +1,7 @@
-/// <reference types="bun-types/test-globals" />
+import { mock, beforeEach } from "bun:test"
 
-import { mock } from "bun:test"
 import * as actualLogger from "@/common/logger"
+import { prismaMock } from "@/context"
 
 await mock.module("@/common/logger", () => ({
 	...actualLogger,
@@ -24,3 +24,7 @@ await mock.module("@/common/logger", () => ({
 		}),
 	},
 }))
+
+beforeEach(() => {
+	prismaMock._reset()
+})

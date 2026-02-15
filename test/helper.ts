@@ -1,40 +1,13 @@
-import fastifySetup, {
-	type FastifyServerOptions,
-	type FastifyInstance,
-} from "fastify"
-import autoLoad from "@fastify/autoload"
-import path from "node:path"
-import { fileURLToPath } from "node:url"
-import { afterAll, beforeAll, jest } from "bun:test"
+import { mock } from "bun:test"
 
-import { options } from "@/src/app"
+import { start } from "@/src/app"
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-
-export const build = (overrideOptions: Partial<FastifyServerOptions> = {}) => {
-	let fastify: FastifyInstance
-
-	beforeAll(async () => {
-		fastify = fastifySetup({
-			...options,
-			...overrideOptions,
-		})
-
-		await fastify.register(autoLoad, {
-			dir: path.join(__dirname, "../src/plugins"),
-		})
-		await fastify.register(autoLoad, {
-			dir: path.join(__dirname, "../src/routes"),
-		})
+export const startApp = async (overrideOptions?: Parameters<typeof start>[0]) =>
+	start({
+		listen: false,
+		writeOpenapi: false,
+		...overrideOptions,
 	})
-
-	afterAll(async () => {
-		await fastify.close()
-	})
-
-	return () => fastify
-}
 
 /**
  * Give any asynchronous handlers a tick to run.
@@ -43,15 +16,18 @@ export const runAsyncHandlers = async () => new Promise((r) => setImmediate(r))
 
 let originalProcessExit: typeof process.exit
 
-export const mockProcessExit = () => {
+export const processExitMock = () => {
 	originalProcessExit = process.exit.bind(process)
-	process.exit = jest.fn() as never
+	const exitMock = mock() as unknown as typeof mock<typeof process.exit>
+	process.exit = exitMock as never
+
+	return exitMock
 }
 
 /**
  * @remarks Called after `mockProcessExit`.
  */
-export const restoreProcessExit = () => {
+export const restoreProcessExitMock = () => {
 	process.exit = originalProcessExit
 }
 

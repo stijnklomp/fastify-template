@@ -46,7 +46,11 @@
 			"@/services/*": ["src/services/*"],
 			"@/src/*": ["src/*"],
 			"@/types/*": ["src/models/types/*"],
-			"@/validators/*": ["src/models/validators/*"]
+			"@/validators/*": ["src/models/validators/*"],
+
+			// Tests only
+			"@/context": ["test/context.ts"],
+			"@/helper": ["test/helper.ts"]
 		}
 	},
 	"include": ["src/**/*.ts", "generated/**/*.ts"],

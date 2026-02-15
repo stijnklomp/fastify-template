@@ -2,61 +2,75 @@ import { createClient } from "redis"
 
 import { logger, formatError } from "@/common/logger"
 
-let client: ReturnType<typeof createClient> | undefined
-const CACHE_PORT = process.env.CACHE_PORT ?? "6379"
-const CACHE_HOST = process.env.CACHE_HOST ?? "localhost"
-const CACHE_PASSWORD = process.env.CACHE_PASSWORD ?? ""
+export const createCacheClient = () => {
+	let client: ReturnType<typeof createClient> | undefined
 
-const cacheDisabled = process.env.CACHE_DISABLED ?? "false"
+	/**
+	 * @remarks Exits the process on connection failure.
+	 */
+	const init = async () => {
+		const cacheDisabled = process.env.CACHE_DISABLED ?? "false"
 
-/**
- * @remarks Exits the process on connection failure.
- */
-export const init = async () => {
-	if (cacheDisabled !== "false" || typeof client !== "undefined") return
+		if (cacheDisabled !== "false" || client) return
 
-	const createdClient = createClient({
-		password: CACHE_PASSWORD,
-		socket: {
-			host: CACHE_HOST,
-			port: Number(CACHE_PORT),
-		},
-	})
+		const CACHE_PORT = process.env.CACHE_PORT ?? "6379"
+		const CACHE_HOST = process.env.CACHE_HOST ?? "localhost"
+		const CACHE_PASSWORD = process.env.CACHE_PASSWORD ?? ""
 
-	createdClient.on("error", (err: Error) => {
-		logger.error("Error initializing cache client:", formatError(err))
-		process.exit(1)
-	})
+		const createdClient = createClient({
+			password: CACHE_PASSWORD,
+			socket: {
+				host: CACHE_HOST,
+				port: Number(CACHE_PORT),
+			},
+		})
 
-	createdClient.on("connect", () => {
-		logger.info(`Cache client connected on port '${CACHE_PORT}'`)
-	})
+		createdClient.on("error", (err: Error) => {
+			logger.error("Error initializing cache client:", formatError(err))
+			process.exit(1)
+		})
 
-	await createdClient.connect()
+		createdClient.on("connect", () => {
+			logger.info(`Cache client connected on port '${CACHE_PORT}'`)
+		})
 
-	client = createdClient
+		await createdClient.connect()
+
+		client = createdClient
+	}
+
+	/**
+	 * @remarks Throws if the cache client is not initialized.
+	 */
+	const getClient = () => {
+		if (typeof client === "undefined")
+			throw new Error("Cache client not initialized")
+
+		return client
+	}
+
+	/**
+	 * @remarks Throws if the cache client is not initialized.
+	 */
+	const get = async (key: string) => getClient().get(key)
+
+	/**
+	 * @remarks Throws if the cache client is not initialized.
+	 */
+	const set = async (key: string, value: string) =>
+		getClient().set(key, value)
+
+	/**
+	 * @remarks Throws if the cache client is not initialized.
+	 */
+	const del = async (key: string) => getClient().del(key)
+
+	return {
+		del,
+		get,
+		init,
+		set,
+	}
 }
 
-/**
- * @remarks Throws if the cache client is not initialized.
- */
-const getClient = () => {
-	if (typeof client === "undefined")
-		throw new Error("Cache client not initialized")
-
-	return client
-}
-
-export const get = async (key: string) => getClient().get(key)
-
-export const set = async (key: string, value: string) =>
-	getClient().set(key, value)
-
-export const del = async (key: string) => getClient().del(key)
-
-export default {
-	del,
-	get,
-	init,
-	set,
-}
+export const cacheClient = createCacheClient()
