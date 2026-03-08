@@ -99,7 +99,7 @@ export const start = async (
 				port,
 			})
 
-			app.log.info(`Server listening on port ${port.toString()}`)
+			logger.info(`Server listening on port ${port.toString()}`)
 		}
 
 		if (writeOpenapi) {

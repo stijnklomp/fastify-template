@@ -13,8 +13,6 @@ export const livenessHandler = async (
 const dbConnection = async () => {
 	const prisma = prismaClient()
 
-	console.log("dbConnection prisma:", prisma)
-
 	await prisma.$connect().then(async () => {
 		logger.info("Database connection healthy")
 		await prisma.$disconnect()
@@ -26,13 +24,10 @@ export const readinessHandler = async (
 	res: FastifyReply,
 ) => {
 	try {
-		console.log("readinessHandler 1")
 		await dbConnection()
-		console.log("readinessHandler 2")
 
 		await res.code(204).send()
 	} catch (err) {
-		console.log("readinessHandler 3:", err)
 		logger.error("Unable to connect to database:", formatError(err))
 		await res.code(503).send()
 	}

@@ -6,21 +6,29 @@ import { prismaMock } from "@/context"
 await mock.module("@/common/logger", () => ({
 	...actualLogger,
 	logger: {
-		debug: mock((err) => {
-			// eslint-disable-next-line no-console
-			console.log(err)
+		debug: mock((msg) => {
+			if (process.env.SHOW_LOGS) {
+				// eslint-disable-next-line no-console
+				console.log(msg)
+			}
 		}),
-		error: mock((err) => {
-			// eslint-disable-next-line no-console
-			console.log(err)
+		error: mock((msg) => {
+			if (process.env.SHOW_LOGS) {
+				// eslint-disable-next-line no-console
+				console.log(msg)
+			}
 		}),
-		info: mock((err) => {
-			// eslint-disable-next-line no-console
-			console.log(err)
+		info: mock((msg) => {
+			if (process.env.SHOW_LOGS) {
+				// eslint-disable-next-line no-console
+				console.log(msg)
+			}
 		}),
-		warn: mock((err) => {
-			// eslint-disable-next-line no-console
-			console.log(err)
+		warn: mock((msg) => {
+			if (process.env.SHOW_LOGS) {
+				// eslint-disable-next-line no-console
+				console.log(msg)
+			}
 		}),
 	},
 }))

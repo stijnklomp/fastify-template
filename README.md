@@ -77,6 +77,7 @@ npx jsonsort "<file_1> <file_2>"
 ```sh
 # Unit tests
 bun run test
+SHOW_LOGS=true bun run test # With logs
 bun run test:unit:coverage
 
 # Feature tests
