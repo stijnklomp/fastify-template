@@ -31,6 +31,7 @@ let mockChannelBindQueue: ReturnType<typeof mock<amqplib.Channel["bindQueue"]>>
 let mockChannelPublish: ReturnType<typeof mock<amqplib.Channel["publish"]>>
 let mockChannelOnce: ReturnType<typeof mock<amqplib.Channel["once"]>>
 let mockChannelConsume: ReturnType<typeof mock<amqplib.Channel["consume"]>>
+let createdChannelMock: amqplib.Channel
 let mockCreateChannel: ReturnType<
 	typeof mock<amqplib.ChannelModel["createChannel"]>
 >
@@ -88,7 +89,7 @@ describe("RabbitMQ service", () => {
 			},
 		)
 		mockChannelConsume = mock().mockReturnValue(true)
-		mockCreateChannel = mock().mockResolvedValue({
+		createdChannelMock = {
 			assertExchange: mockChannelAssertExchange,
 			assertQueue: mockChannelAssertQueue,
 			bindQueue: mockChannelBindQueue,
@@ -96,7 +97,8 @@ describe("RabbitMQ service", () => {
 			consume: mockChannelConsume,
 			once: mockChannelOnce,
 			publish: mockChannelPublish,
-		})
+		} as Partial<amqplib.Channel> as amqplib.Channel
+		mockCreateChannel = mock().mockResolvedValue(createdChannelMock)
 		mockConnect.mockResolvedValue({
 			close: mockClose,
 			createChannel: mockCreateChannel,
@@ -208,7 +210,9 @@ describe("RabbitMQ service", () => {
 			const queueClient = createQueueClient()
 			await queueClient.init()
 
-			expect(queueClient.declareChannel("channel")).resolves.toBe(true)
+			expect(queueClient.declareChannel("channel")).resolves.toBe(
+				createdChannelMock,
+			)
 			expect(mockConnect).toHaveBeenCalled()
 			expect(mockCreateChannel).toHaveBeenCalled()
 		})
@@ -292,7 +296,7 @@ describe("RabbitMQ service", () => {
 
 			const response = await queueClient.declareChannel("channelA")
 
-			expect(response).toBe(true)
+			expect(response).toBe(createdChannelMock)
 			expect(mockCreateChannel).toHaveBeenCalled()
 		})
 
@@ -303,7 +307,7 @@ describe("RabbitMQ service", () => {
 			await queueClient.declareChannel("channelA")
 			const response = await queueClient.declareChannel("channelA")
 
-			expect(response).toBe(true)
+			expect(response).toBe(createdChannelMock)
 			expect(mockCreateChannel).toHaveBeenCalledTimes(1)
 		})
 
@@ -315,7 +319,7 @@ describe("RabbitMQ service", () => {
 
 			const response = await queueClient.declareChannel("errorChannel")
 
-			expect(response).toBe(false)
+			expect(response).toBe(undefined)
 		})
 	})
 

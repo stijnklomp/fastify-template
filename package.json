@@ -21,13 +21,13 @@
 		"prisma:generate": "bunx prisma generate",
 		"sort": "./node_modules/stijnklomp-linting-formatting-config/sortJson.sh ./tsconfig.json ./test/tsconfig.json ./.lintstagedrc.json",
 		"start": "bun run dist/app.js",
-		"test": "bun run test:unit",
-		"test:acceptance": "ENV=test LOGS=test bun test test/acceptance",
-		"test:coverage": "bun run test:unit:coverage",
-		"test:feature": "ENV=test LOGS=test bun test test/feature",
-		"test:unit": "ENV=test LOGS=test bun test test/unit",
-		"test:unit:ci": "ENV=test LOGS=test bun test --ci test/unit --coverage",
-		"test:unit:coverage": "ENV=test LOGS=test bun test --cov test/unit --coverage"
+		"test": "bun test --env ENV=test --env LOGS=test test/unit",
+		"test:acceptance": "bun test --env ENV=test --env LOGS=test test/acceptance",
+		"test:coverage": "bun test --env ENV=test --env LOGS=test --coverage test/unit --coverage-reporter text",
+		"test:feature": "bun test --env ENV=test --env LOGS=test test/feature",
+		"test:unit": "bun test --env ENV=test --env LOGS=test test/unit",
+		"test:unit:ci": " bun test --env ENV=test --env LOGS=test --coverage test/unit --cov-config test.reporter --coverage-reporter text --coverage-reporter lcov",
+		"test:unit:coverage": "bun test --env ENV=test --env LOGS=test --coverage test/unit --coverage-reporter text"
 	},
 	"dependencies": {
 		"@fastify/autoload": "^6.3.1",

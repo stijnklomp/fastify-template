@@ -109,37 +109,39 @@ export const createQueueClient = () => {
 	 * @returns Channel declared.
 	 */
 	const declareChannel = async (channel: string) => {
-		console.log("declareChannel called")
 		await init()
 
-		if (channels.has(channel)) return true
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		if (channels.has(channel)) return channels.get(channel)!
 
 		try {
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			channels.set(channel, await connection!.createChannel())
+			const newChannel = await connection!.createChannel()
+
+			channels.set(channel, newChannel)
 			logger.info("RabbitMQ channel successfully created")
+
+			return newChannel
 		} catch (err) {
-			console.log("FAILED TO CREATE RABBITMQ CHANNEL")
 			logger.error({
 				err: formatError(err),
 				msg: `Failed to create RabbitMQ channel '${channel}'`,
 			})
 
-			return false
+			return undefined
 		}
-
-		return true
 	}
 
 	/**
-	 * @param channel Key of the channel to use.
+	 * @param exchange Name of the exchange. Defaults to `"main"`.
 	 * @returns Exchange declared.
 	 */
-	const declareExchange = async (channel: string, exchange = "main") => {
-		if (!(await declareChannel(channel))) return false
-
+	const declareExchange = async (
+		channel: amqplib.Channel,
+		exchange = "main",
+	) => {
 		try {
-			await channels.get(channel)?.assertExchange(exchange, "topic", {
+			await channel.assertExchange(exchange, "topic", {
 				alternateExchange: fallbackExchangeForNonRoutedMessages,
 				arguments: {
 					// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -173,17 +175,29 @@ export const createQueueClient = () => {
 		routingKey: string,
 		message: string,
 	) => {
-		if (!(await declareExchange(channel, exchange))) return false
+		const createdChannel = await declareChannel(channel)
+
+		if (createdChannel === undefined) {
+			logger.error({
+				msg: `RabbitMQ channel '${channel}' not found`,
+			})
+
+			return false
+		}
+
+		if (!(await declareExchange(createdChannel, exchange))) return false
 
 		const locationMessage = `to exchange '${exchange}' with routingKey '${routingKey}'`
 
 		try {
-			const success = channels
-				.get(channel)
-				?.publish(exchange, routingKey, Buffer.from(message))
+			const success = createdChannel.publish(
+				exchange,
+				routingKey,
+				Buffer.from(message),
+			)
 
 			if (!success) {
-				channels.get(channel)?.once("drain", () => {
+				createdChannel.once("drain", () => {
 					logger.error({
 						msg: `Unable to publish RabbitMQ message ${locationMessage}. Drain event received.`,
 					})
@@ -197,9 +211,8 @@ export const createQueueClient = () => {
 				msg: `Error publishing RabbitMQ message ${locationMessage}`,
 			})
 
-			await channels
-				.get(channel)
-				?.close()
+			await createdChannel
+				.close()
 				.then(() => {
 					logger.debug(`Closed channel '${channel}'`)
 				})
@@ -244,9 +257,19 @@ export const createQueueClient = () => {
 		queue: string,
 		bindings: Bindings = {},
 	) => {
+		const createdChannel = await declareChannel(channel)
+
+		if (createdChannel === undefined) {
+			logger.error({
+				msg: `RabbitMQ channel '${channel}' not found`,
+			})
+
+			return false
+		}
+
 		const exchangeDeclarationResults = await Promise.allSettled(
 			Object.keys(bindings).map((source) =>
-				declareExchange(channel, source),
+				declareExchange(createdChannel, source),
 			),
 		)
 
@@ -257,7 +280,7 @@ export const createQueueClient = () => {
 		}
 
 		try {
-			await channels.get(channel)?.assertQueue(queue, {
+			await createdChannel.assertQueue(queue, {
 				autoDelete: false,
 				deadLetterExchange,
 				durable: true,
@@ -273,26 +296,33 @@ export const createQueueClient = () => {
 			return false
 		}
 
-		const ch = channels.get(channel)
 		const entries = Object.entries(bindings)
-		const queueBindingResults = await Promise.allSettled(
-			entries.map(([source, binding]) =>
-				ch
-					? ch.bindQueue(queue, source, binding)
-					: Promise.reject(
-							new Error(
-								`RabbitMQ channel '${channel}' not found`,
-							),
-						),
-			),
+		const queueBindingResults = await Promise.all(
+			entries.map(async ([source, binding]) => {
+				try {
+					await createdChannel.bindQueue(queue, source, binding)
+
+					return {
+						binding,
+						source,
+						status: "fulfilled",
+					}
+				} catch (reason) {
+					return {
+						binding,
+						reason,
+						source,
+						status: "rejected",
+					}
+				}
+			}),
 		)
 
-		queueBindingResults.forEach((result, index) => {
+		queueBindingResults.forEach((result) => {
 			if (result.status === "rejected") {
-				const [source, binding] = entries[index]
 				logger.error({
 					err: formatError(result.reason),
-					msg: `Failed to bind '${binding}' to RabbitMQ exchange '${source}' for queue '${queue}'`,
+					msg: `Failed to bind '${result.binding}' to RabbitMQ exchange '${result.source}' for queue '${queue}'`,
 				})
 			}
 		})

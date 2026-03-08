@@ -21,11 +21,7 @@ coveragePathIgnorePatterns = [
 ]
 preload = ["test/setup.ts", "test/context.ts"]
 
-[test.cov]
-coverageReporter = ["text"]
-
 [test.ci]
-coverageReporter = ["text", "lcov"]
 smol = true
 timeout = 30000
 

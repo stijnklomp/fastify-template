@@ -41,6 +41,7 @@ paths:
           description: Default Response
     post:
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -55,7 +56,6 @@ paths:
                 owner:
                   maxLength: 100
                   type: string
-        required: true
       responses:
         "200":
           description: Default Response
