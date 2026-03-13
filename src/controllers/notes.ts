@@ -1,18 +1,16 @@
-import { type FastifyReply } from "fastify"
-
-import notesValidator from "@/models/validators/notes"
 import { logger } from "@/common/logger"
-import notesService from "@/services/notes"
-import { type FastifyRequestSchemaTypes } from "@/models/types/schemaBuilderTypeExtractor"
+import { getNotesSchema, createNoteSchema } from "@/models/schemas/notes"
+import { getNotesService, createNoteService } from "@/services/notes"
+import { type RouteHandler } from "@/models/types/schemaTypeExtractor"
 
-export const getNotesHandler = async (
-	req: FastifyRequestSchemaTypes<typeof notesValidator.getNotes>,
-	res: FastifyReply,
+export const getNotesHandler: RouteHandler<typeof getNotesSchema> = async (
+	req,
+	res,
 ) => {
 	try {
-		const notes = await notesService.getNotes({ ...req.query })
+		const notes = await getNotesService({ ...req.query })
 
-		await res.code(201).send({
+		await res.code(200).send({
 			notes,
 		})
 	} catch (err) {
@@ -23,14 +21,14 @@ export const getNotesHandler = async (
 	}
 }
 
-export const createNoteHandler = async (
-	req: FastifyRequestSchemaTypes<typeof notesValidator.createNote>,
-	res: FastifyReply,
+export const createNoteHandler: RouteHandler<typeof createNoteSchema> = async (
+	req,
+	res,
 ) => {
 	try {
-		const note = await notesService.createNote({ ...req.body })
+		const note = await createNoteService({ ...req.body })
 
-		await res.code(200).send({
+		await res.code(201).send({
 			message: "Note Created",
 			note,
 		})

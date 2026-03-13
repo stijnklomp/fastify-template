@@ -102,12 +102,12 @@ export const start = async (
 			logger.info(`Server listening on port ${port.toString()}`)
 		}
 
+		await app.ready()
+
 		if (writeOpenapi) {
 			const openapiSpec = app.swagger({ yaml: true })
 			writeFileSync("./openapi.yaml", openapiSpec)
 		}
-
-		await app.ready()
 
 		return app
 	} catch (err) {

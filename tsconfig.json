@@ -46,7 +46,7 @@
 			"@/services/*": ["src/services/*"],
 			"@/src/*": ["src/*"],
 			"@/types/*": ["src/models/types/*"],
-			"@/validators/*": ["src/models/validators/*"],
+			"@/validators/*": ["src/models/schemas/*"],
 
 			// Tests only
 			"@/context": ["test/context.ts"],

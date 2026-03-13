@@ -1,18 +1,12 @@
-import { type StaticRequestSchemaTypes } from "@/types/schemaBuilderTypeExtractor"
-import noteValidator from "@/models/validators/notes"
-import notesRepository from "@/repositories/notes"
+import { type Static } from "@sinclair/typebox"
 
-export const getNotes = async (
-	data: StaticRequestSchemaTypes<
-		typeof noteValidator.getNotes
-	>["querystring"],
-) => await notesRepository.getNotes(data)
+import { getNotesSchema, createNoteSchema } from "@/models/schemas/notes"
+import { getNotesRepo, createNoteRepo } from "@/repositories/notes"
 
-export const createNote = async (
-	data: StaticRequestSchemaTypes<typeof noteValidator.createNote>["body"],
-) => await notesRepository.createNote(data)
+export const getNotesService = async (
+	data: Static<typeof getNotesSchema.querystring>,
+) => await getNotesRepo(data)
 
-export default {
-	createNote,
-	getNotes,
-}
+export const createNoteService = async (
+	data: Static<typeof createNoteSchema.body>,
+) => await createNoteRepo(data)
