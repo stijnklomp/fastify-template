@@ -1,4 +1,3 @@
-import tseslint from "typescript-eslint"
 import config from "stijnklomp-linting-formatting-config/dist/index.js"
 import { includeIgnoreFile } from "@eslint/compat"
 import path from "node:path"
@@ -14,14 +13,39 @@ const finalConfig = config({
 })
 
 const addedConfigs = [
-	// {
-	// 	files: ["test/unit/**/*.ts"],
-	// 	name: "Typescript -> Unit tests",
-	// 	rules: {
-	// 		"@typescript-eslint/no-unsafe-assignment": "off", // Disabled for tests to avoid verbose type casting when using Jest mocks
-	// 		"@typescript-eslint/unbound-method": "off",
-	// 	},
-	// },
+	{
+		files: ["**/*.ts", "**/*.js"],
+		rules: {
+			"@typescript-eslint/naming-convention": [
+				"error",
+				{
+					format: ["camelCase"],
+					selector: "default",
+				},
+				{
+					format: ["camelCase", "UPPER_CASE"],
+					selector: "variable",
+				},
+				{
+					format: ["camelCase"],
+					leadingUnderscore: "allow",
+					selector: "parameter",
+				},
+				{
+					format: ["PascalCase"],
+					selector: "typeLike",
+				},
+				{
+					selector: "objectLiteralProperty",
+					format: null,
+					filter: {
+						regex: "^[0-9]+$",
+						match: true,
+					},
+				},
+			],
+		},
+	},
 ]
 finalConfig.push(...addedConfigs)
 
@@ -48,4 +72,4 @@ finalConfig.push({
 	name: "Override @typescript-eslint parserOptions",
 })
 
-export default tseslint.config(finalConfig)
+export default finalConfig
