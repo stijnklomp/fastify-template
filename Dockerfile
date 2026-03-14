@@ -18,7 +18,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/generated ./generated
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /.env.production .env.production
+COPY --from=builder /app/.env.production .env.production
 COPY package.json ./
 EXPOSE ${API_PORT}
 CMD ["bun", "run", "dist/app.js"]
