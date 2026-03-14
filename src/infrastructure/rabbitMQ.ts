@@ -4,7 +4,7 @@ import amqplib, {
 	type ConsumeMessage,
 } from "amqplib"
 
-import { logger, formatError } from "@/common/logger"
+import { logger } from "@/common/logger"
 
 const fallbackExchangeForNonRoutedMessages = "nonRouted"
 const deadLetterExchange = "deadLetter"
@@ -70,7 +70,7 @@ export const createQueueClient = () => {
 			logger.info(`RabbitMQ connected on port '${rabbitPort}'`)
 		} catch (err) {
 			logger.error({
-				err: formatError(err),
+				err,
 				msg: "Error initializing RabbitMQ",
 			})
 			process.exit(1)
@@ -89,7 +89,7 @@ export const createQueueClient = () => {
 			logger.info("RabbitMQ connection closed")
 		} catch (err) {
 			logger.error({
-				err: formatError(err),
+				err,
 				msg: "Error closing RabbitMQ connection",
 			})
 
@@ -124,7 +124,7 @@ export const createQueueClient = () => {
 			return newChannel
 		} catch (err) {
 			logger.error({
-				err: formatError(err),
+				err,
 				msg: `Failed to create RabbitMQ channel '${channel}'`,
 			})
 
@@ -153,7 +153,7 @@ export const createQueueClient = () => {
 			})
 		} catch (err) {
 			logger.error({
-				err: formatError(err),
+				err,
 				msg: `Failed to create RabbitMQ exchange '${exchange}'`,
 			})
 
@@ -207,7 +207,7 @@ export const createQueueClient = () => {
 			}
 		} catch (err) {
 			logger.error({
-				err: formatError(err),
+				err,
 				msg: `Error publishing RabbitMQ message ${locationMessage}`,
 			})
 
@@ -218,7 +218,7 @@ export const createQueueClient = () => {
 				})
 				.catch((closeErr: unknown) => {
 					logger.warn({
-						err: formatError(closeErr),
+						err: closeErr,
 						msg: `Error closing channel '${channel}'`,
 					})
 				})
@@ -289,7 +289,7 @@ export const createQueueClient = () => {
 			})
 		} catch (err) {
 			logger.error({
-				err: formatError(err),
+				err,
 				msg: `Failed to create RabbitMQ queue '${queue}'`,
 			})
 
@@ -321,7 +321,7 @@ export const createQueueClient = () => {
 		queueBindingResults.forEach((result) => {
 			if (result.status === "rejected") {
 				logger.error({
-					err: formatError(result.reason),
+					err: result.reason,
 					msg: `Failed to bind '${result.binding}' to RabbitMQ exchange '${result.source}' for queue '${queue}'`,
 				})
 			}
@@ -371,7 +371,7 @@ export const createQueueClient = () => {
 			)
 		} catch (err) {
 			logger.error({
-				err: formatError(err),
+				err,
 				msg: `Failed to start consumer on RabbitMQ queue '${queue}'`,
 			})
 

@@ -65,11 +65,13 @@ const buildApp = (
 
 	void app.register(autoLoad, {
 		dir: path.join(__dirname, "middleware"),
+		matchFilter: (path) => path.endsWith(".ts") || path.endsWith(".js"),
 	})
 
 	void app.register(autoLoad, {
 		dir: path.join(__dirname, "routes"),
 		dirNameRoutePrefix: true,
+		matchFilter: (path) => path.endsWith(".ts") || path.endsWith(".js"),
 	})
 
 	return app

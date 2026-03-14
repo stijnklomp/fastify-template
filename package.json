@@ -10,7 +10,7 @@
 		"test": "test"
 	},
 	"scripts": {
-		"build": "rm -rf dist && bun build src/app.ts --tsconfig=tsconfig.production.json --target=bun --format=esm --outdir=dist --minify --sourcemap=none",
+		"build": "rm -rf dist && bun build src/app.ts --outdir dist --target bun --format esm --external @prisma/client && cp -r src/routes dist && cp -r src/middleware dist",
 		"dev": "ENV=development LOGS=development bun --watch src/app.ts",
 		"doc": "typedoc",
 		"integrity": "./scripts/integrity.sh",

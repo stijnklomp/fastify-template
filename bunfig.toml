@@ -7,6 +7,9 @@ minimumReleaseAge = 259200 # 3 days
 [install.security]
 scanner = "@socketsecurity/bun-security-scanner"
 
+[resolve]
+alias = { "@" = "./src" }
+
 [test]
 coverageDir = "test/unit/coverage"
 coverageSkipTestFiles = true

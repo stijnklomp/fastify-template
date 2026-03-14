@@ -1,6 +1,6 @@
 import { createClient } from "redis"
 
-import { logger, formatError } from "@/common/logger"
+import { logger } from "@/common/logger"
 
 export const createCacheClient = () => {
 	let client: ReturnType<typeof createClient> | undefined
@@ -26,7 +26,8 @@ export const createCacheClient = () => {
 		})
 
 		createdClient.on("error", (err: Error) => {
-			logger.error("Error initializing cache client:", formatError(err))
+			// logger.error("Error initializing cache client:", err
+			logger.error(err)
 			process.exit(1)
 		})
 
