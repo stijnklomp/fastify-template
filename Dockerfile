@@ -1,14 +1,11 @@
-FROM oven/bun:latest AS deps
-ARG DATABASE_URL
-ENV DATABASE_URL=${DATABASE_URL}
+FROM oven/bun:alpine AS deps
 WORKDIR /app
 COPY bun.lock package.json ./
-COPY /prisma ./prisma
-RUN bun install --frozen-lockfile --ignore-scripts
-RUN bunx prisma generate
+COPY prisma ./prisma
+RUN bun install --frozen-lockfile --ignore-scripts \
+    && bunx prisma generate
 
 FROM oven/bun:latest AS builder
-ENV NODE_ENV=build
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -21,7 +18,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/generated ./generated
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/.env.production .env.production
+COPY --from=builder /.env.production .env.production
 COPY package.json ./
-EXPOSE 3000
+EXPOSE ${API_PORT}
 CMD ["bun", "run", "dist/app.js"]
