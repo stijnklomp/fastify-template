@@ -1,5 +1,5 @@
 x-acceptance: &acceptance
-  image: node:23-alpine
+  image: oven/bun:alpine
   volumes:
     - ".:/src"
   working_dir: "/src"
@@ -18,14 +18,14 @@ x-acceptance: &acceptance
     RABBIT_HOST: rabbitmq
     DATABASE_URL: "postgresql://dev:admin123@db:5432/fastify?schema=template"
   env_file:
-    - path: ./.env
+    - path: ./.env.development
   ports:
     - 3001:3001
 
 x-fastify: &fastify
   tty: true
   # healthcheck:
-  #   test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+  #   test: ["CMD", "curl", "-f", "http://localhost:3000/healthz"]
   #   interval: 30s
   #   timeout: 5s
   #   retries: 4
@@ -48,7 +48,7 @@ x-fastify: &fastify
     RABBIT_HOST: rabbitmq
     DATABASE_URL: "postgresql://dev:admin123@db:5432/fastify?schema=template"
   env_file:
-    - path: ./.env
+    - path: ./.env.development
   ports:
     - ${API_PORT:-3000}:3000
 
@@ -63,7 +63,7 @@ services:
 
   dev:
     <<: *fastify
-    image: node:23-alpine
+    image: oven/bun:alpine
     volumes:
       - ".:/src"
     working_dir: "/src"
@@ -135,12 +135,12 @@ services:
       - POSTGRES_PASSWORD=$DATABASE_PASSWORD
       - POSTGRES_DB=$DATABASE_DB
     env_file:
-      - path: ./.env
+      - path: ./.env.development
     ports:
       - ${DATABASE_PORT:-5432}:5432
 
   db-migration:
-    image: node:23-alpine
+    image: oven/bun:alpine
     volumes:
       - ".:/src"
     working_dir: "/src"
@@ -152,7 +152,7 @@ services:
     ports:
       - 3001:3001
     env_file:
-      - path: ./.env
+      - path: ./.env.development
     profiles:
       - local
       - dev
