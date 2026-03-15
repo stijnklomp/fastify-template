@@ -6,5 +6,6 @@ import { type PrismaClient } from "@/prismaClient"
 export const prismaMock = createPrismaMock<PrismaClient>()
 
 await mock.module("@/common/prisma", () => ({
-	prisma: () => prismaMock,
+	newPrismaClient: prismaMock,
+	prismaClient: prismaMock,
 }))

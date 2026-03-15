@@ -84,6 +84,3 @@ const logLvl =
 	(process.env.LOG_LEVEL as LevelWithSilentOrString | undefined) ?? "info"
 
 export const logger = pino({ level: logLvl })
-
-// export const formatError = (err: unknown) =>
-// 	err instanceof Error ? err.message : String(err)

@@ -8,9 +8,6 @@ const mockCache = {
 }
 const mockRabbitMQ = mock()
 
-await mock.module("@/common/prisma", () => ({
-	prisma: mock(),
-}))
 await mock.module("@/infrastructure/cache", () => ({
 	cacheClient: mockCache,
 }))

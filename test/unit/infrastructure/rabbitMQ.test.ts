@@ -168,14 +168,14 @@ describe("RabbitMQ service", () => {
 		test("should exit on connection error", async () => {
 			const mockProcessExit = processExitMock()
 
-			const errorMessage = "RabbitMQ username or password invalid"
-			mockConnect.mockRejectedValue(new Error(errorMessage))
+			const error = new Error("RabbitMQ username or password invalid")
+			mockConnect.mockRejectedValue(error)
 
 			await createQueueClient().init()
 
 			expect(mockConnect).toHaveBeenCalled()
 			expect(logger.error).toHaveBeenCalledWith({
-				err: errorMessage,
+				err: error,
 				msg: "Error initializing RabbitMQ",
 			})
 			expect(mockProcessExit).toHaveBeenCalled()
@@ -267,8 +267,8 @@ describe("RabbitMQ service", () => {
 			test.each(["SIGINT", "SIGTERM"] as const)(
 				"should log error message when unable to close connection on %s",
 				async (signal) => {
-					const errorMessage = "Unable to close connection"
-					mockClose.mockRejectedValue(new Error(errorMessage))
+					const error = new Error("Unable to close connection")
+					mockClose.mockRejectedValue(error)
 
 					const queueClient = createQueueClient()
 					await queueClient.init()
@@ -280,7 +280,7 @@ describe("RabbitMQ service", () => {
 					expect(onSpy).toHaveBeenCalled()
 					expect(mockClose).toHaveBeenCalled()
 					expect(logger.error).toHaveBeenCalledWith({
-						err: errorMessage,
+						err: error,
 						msg: `Error closing RabbitMQ connection`,
 					})
 					expect(exitMock).toHaveBeenCalledWith(1)
@@ -349,8 +349,8 @@ describe("RabbitMQ service", () => {
 				const queueClient = createQueueClient()
 				await queueClient.init()
 
-				const errorMessage = "Unable to create channel"
-				mockCreateChannel.mockRejectedValue(new Error(errorMessage))
+				const error = new Error("Unable to create channel")
+				mockCreateChannel.mockRejectedValue(error)
 
 				const response = await queueClient.publish(
 					channel,
@@ -361,7 +361,7 @@ describe("RabbitMQ service", () => {
 
 				expect(response).toBe(false)
 				expect(logger.error).toHaveBeenCalledWith({
-					err: errorMessage,
+					err: error,
 					msg: `Failed to create RabbitMQ channel '${channel}'`,
 				})
 				expect(mockChannelAssertExchange).not.toHaveBeenCalled()
@@ -372,10 +372,8 @@ describe("RabbitMQ service", () => {
 				const queueClient = createQueueClient()
 				await queueClient.init()
 
-				const errorMessage = "Unable to assert exchange"
-				mockChannelAssertExchange.mockRejectedValue(
-					new Error(errorMessage),
-				)
+				const error = new Error("Unable to assert exchange")
+				mockChannelAssertExchange.mockRejectedValue(error)
 
 				const response = await queueClient.publish(
 					channel,
@@ -387,7 +385,7 @@ describe("RabbitMQ service", () => {
 				expect(response).toBe(false)
 				expect(mockChannelAssertExchange).toHaveBeenCalled()
 				expect(logger.error).toHaveBeenCalledWith({
-					err: errorMessage,
+					err: error,
 					msg: `Failed to create RabbitMQ exchange '${exchange}'`,
 				})
 				expect(mockChannelPublish).not.toHaveBeenCalled()
@@ -444,9 +442,9 @@ describe("RabbitMQ service", () => {
 			const queueClient = createQueueClient()
 			await queueClient.init()
 
-			const errorMessage = "Unable to assert exchange"
+			const error = new Error("Unable to assert exchange")
 			mockChannelPublish.mockImplementation(() => {
-				throw new Error(errorMessage)
+				throw error
 			})
 
 			const response = await queueClient.publish(
@@ -459,7 +457,7 @@ describe("RabbitMQ service", () => {
 			expect(response).toBe(false)
 			expect(mockChannelPublish).toHaveBeenCalled()
 			expect(logger.error).toHaveBeenCalledWith({
-				err: errorMessage,
+				err: error,
 				msg: `Error publishing RabbitMQ message to exchange '${exchange}' with routingKey '${routingKey}'`,
 			})
 			expect(mockChannelClose).toHaveBeenCalled()
@@ -472,12 +470,12 @@ describe("RabbitMQ service", () => {
 			const queueClient = createQueueClient()
 			await queueClient.init()
 
-			const publishErrorMessage = "Unable to assert exchange"
+			const error = new Error("Unable to assert exchange")
 			mockChannelPublish.mockImplementation(() => {
-				throw new Error(publishErrorMessage)
+				throw error
 			})
-			const closeErrorMessage = "Unable to assert exchange"
-			mockChannelClose.mockRejectedValue(new Error(closeErrorMessage))
+			const closeError = new Error("Unable to assert exchange")
+			mockChannelClose.mockRejectedValue(closeError)
 
 			const response = await queueClient.publish(
 				channel,
@@ -489,12 +487,12 @@ describe("RabbitMQ service", () => {
 			expect(response).toBe(false)
 			expect(mockChannelPublish).toHaveBeenCalled()
 			expect(logger.error).toHaveBeenCalledWith({
-				err: publishErrorMessage,
+				err: error,
 				msg: `Error publishing RabbitMQ message to exchange '${exchange}' with routingKey '${routingKey}'`,
 			})
 			expect(mockChannelClose).toHaveBeenCalled()
 			expect(logger.warn).toHaveBeenCalledWith({
-				err: closeErrorMessage,
+				err: closeError,
 				msg: `Error closing channel '${channel}'`,
 			})
 		})
@@ -533,10 +531,8 @@ describe("RabbitMQ service", () => {
 				const queueClient = createQueueClient()
 				await queueClient.init()
 
-				const errorMessage = "Unable to create exchange"
-				mockChannelAssertExchange.mockRejectedValue(
-					new Error(errorMessage),
-				)
+				const error = new Error("Unable to create exchange")
+				mockChannelAssertExchange.mockRejectedValue(error)
 
 				const response = await queueClient.consume(
 					channel,
@@ -548,12 +544,12 @@ describe("RabbitMQ service", () => {
 				expect(response).toBe(false)
 				expect(logger.error).toHaveBeenCalledTimes(2)
 				expect(logger.error).toHaveBeenNthCalledWith(1, {
-					err: errorMessage,
+					err: error,
 					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 					msg: `Failed to create RabbitMQ exchange '${Object.keys(bindings)[0]!}'`,
 				})
 				expect(logger.error).toHaveBeenNthCalledWith(2, {
-					err: errorMessage,
+					err: error,
 					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 					msg: `Failed to create RabbitMQ exchange '${Object.keys(bindings)[1]!}'`,
 				})
@@ -605,8 +601,8 @@ describe("RabbitMQ service", () => {
 				const queueClient = createQueueClient()
 				await queueClient.init()
 
-				const errorMessage = "Unable to create channel"
-				mockCreateChannel.mockRejectedValue(new Error(errorMessage))
+				const error = new Error("Unable to create channel")
+				mockCreateChannel.mockRejectedValue(error)
 
 				const response = await queueClient.consume(
 					channel,
@@ -617,7 +613,7 @@ describe("RabbitMQ service", () => {
 
 				expect(response).toBe(false)
 				expect(logger.error).toHaveBeenCalledWith({
-					err: errorMessage,
+					err: error,
 					msg: `Failed to create RabbitMQ channel '${channel}'`,
 				})
 				expect(mockChannelAssertExchange).not.toHaveBeenCalled()
@@ -630,10 +626,8 @@ describe("RabbitMQ service", () => {
 				const queueClient = createQueueClient()
 				await queueClient.init()
 
-				const errorMessage = "Unable to create queue"
-				mockChannelAssertQueue.mockRejectedValue(
-					new Error(errorMessage),
-				)
+				const error = new Error("Unable to create queue")
+				mockChannelAssertQueue.mockRejectedValue(error)
 
 				const response = await queueClient.consume(
 					channel,
@@ -646,7 +640,7 @@ describe("RabbitMQ service", () => {
 				expect(mockChannelAssertExchange).toHaveBeenCalled()
 				expect(mockChannelAssertQueue).toHaveBeenCalled()
 				expect(logger.error).toHaveBeenCalledWith({
-					err: errorMessage,
+					err: error,
 					msg: `Failed to create RabbitMQ queue '${queue}'`,
 				})
 				expect(mockChannelBindQueue).not.toHaveBeenCalled()
@@ -657,10 +651,10 @@ describe("RabbitMQ service", () => {
 				const queueClient = createQueueClient()
 				await queueClient.init()
 
-				const errorMessage = "Unable to create queue"
+				const error = new Error("Unable to create queue")
 				mockChannelBindQueue
 					.mockResolvedValueOnce(true)
-					.mockRejectedValueOnce(new Error(errorMessage))
+					.mockRejectedValueOnce(error)
 
 				const response = await queueClient.consume(
 					channel,
@@ -675,7 +669,7 @@ describe("RabbitMQ service", () => {
 				expect(mockChannelBindQueue).toHaveBeenCalledTimes(2)
 				expect(logger.error).toHaveBeenCalledTimes(1)
 				expect(logger.error).toHaveBeenCalledWith({
-					err: errorMessage,
+					err: error,
 					msg: `Failed to bind 'fastifyTemplate.unitTest.B' to RabbitMQ exchange 'exchangeB' for queue '${queue}'`,
 				})
 				expect(mockChannelConsume).toHaveBeenCalled()
@@ -700,12 +694,12 @@ describe("RabbitMQ service", () => {
 			expect(mockChannelConsume).toHaveBeenCalled()
 		})
 
-		test("should log error message message when unable to consume", async () => {
+		test("should log error message when unable to consume", async () => {
 			const queueClient = createQueueClient()
 			await queueClient.init()
 
-			const errorMessage = "Unable to create queue"
-			mockChannelConsume.mockRejectedValue(new Error(errorMessage))
+			const error = new Error("Unable to create queue")
+			mockChannelConsume.mockRejectedValue(error)
 
 			const response = await queueClient.consume(
 				channel,
@@ -716,7 +710,7 @@ describe("RabbitMQ service", () => {
 
 			expect(response).toBe(false)
 			expect(logger.error).toHaveBeenCalledWith({
-				err: errorMessage,
+				err: error,
 				msg: `Failed to start consumer on RabbitMQ queue '${queue}'`,
 			})
 		})

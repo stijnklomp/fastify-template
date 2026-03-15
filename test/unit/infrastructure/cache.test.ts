@@ -114,13 +114,10 @@ describe("Cache service", () => {
 
 			await createCacheClient().init()
 
-			const errorMessage = "Connection failed"
-			errorHandler?.(new Error(errorMessage))
+			const error = new Error("Connection failed")
+			errorHandler?.(error)
 
-			expect(logger.error).toHaveBeenCalledWith(
-				"Error initializing cache client:",
-				errorMessage,
-			)
+			expect(logger.error).toHaveBeenCalledWith(error)
 			expect(mockProcessExit).toHaveBeenCalledWith(1)
 
 			restoreProcessExitMock()

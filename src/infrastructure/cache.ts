@@ -26,7 +26,6 @@ export const createCacheClient = () => {
 		})
 
 		createdClient.on("error", (err: Error) => {
-			// logger.error("Error initializing cache client:", err
 			logger.error(err)
 			process.exit(1)
 		})

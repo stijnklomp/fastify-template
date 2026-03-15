@@ -9,6 +9,14 @@ if (!connectionString) {
 }
 
 const adapter = new PrismaPg({ connectionString })
-const prisma = new PrismaClient({ adapter })
+let prisma: PrismaClient | undefined
 
-export { prisma }
+export const prismaClient = () => {
+	if (typeof prisma !== "undefined") return prisma
+
+	prisma = new PrismaClient({ adapter })
+
+	return prisma
+}
+
+export const newPrismaClient = () => new PrismaClient({ adapter })

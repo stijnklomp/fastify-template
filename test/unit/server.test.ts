@@ -5,9 +5,6 @@ import { startApp } from "@/helper"
 const mockCacheClient = mock()
 const mockQueueClient = mock()
 
-await mock.module("@/common/prisma", () => ({
-	prisma: mock(),
-}))
 await mock.module("@/infrastructure/cache", () => ({
 	cacheClient: { init: mockCacheClient },
 }))
