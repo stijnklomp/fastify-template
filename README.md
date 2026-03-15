@@ -49,10 +49,6 @@ docker compose --profile <PROFILE> up --build
 
 You may need to run `bunx --bun prisma migrate dev --name init` in your terminal if you haven't already initialized the database. This only needs to be done the first time the database is created. (Or whenever the database has been recreated) This will happen automatically when using any profile in Docker Compose.
 
-## Endpoints documentation (API specification)
-
-Once the app is running, documentation will be available at `API_URL:API_PORT/docs`.
-
 ## Test
 
 ### Lint
@@ -64,12 +60,12 @@ Eslint is used as a linter and uses Prettier to format code.
 bun run lint
 
 # ESLint and fix (also sorts JSON files)
-# Prefix with `EXCLUDE_PATHS="<file_1> <file_2>"` to exclude files/directories (using GLOB pattern)
+# Prefix with `EXCLUDE_PATHS="<file_1> <file_2>"` to exclude files/directories (using GLOB pattern) from being auto-sorted
 bun run lint:fix
 
 # Sort a specific JSON file and/or directory
 # Important: Don't run this command without a specified file/directory (using GLOB pattern)
-npx jsonsort "<file_1> <file_2>"
+bunx jsonsort "<file_1> <file_2>"
 ```
 
 ### Unit & Feature tests
@@ -77,15 +73,12 @@ npx jsonsort "<file_1> <file_2>"
 ```sh
 # Unit tests
 bun run test
-SHOW_LOGS=true bun run test # With logs
-bun run test:unit:coverage
+bun run test:coverage
 
 # Feature tests
 bun run test:feature
-bun run test:feature:coverage
 
-# Test combined coverage of unit and feature tests
-bun run test:coverage
+# Prefix either command with `SHOW_LOGS=true` to show logs
 ```
 
 ### Acceptance tests
