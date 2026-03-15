@@ -1,8 +1,8 @@
 x-acceptance: &acceptance
   image: oven/bun:alpine
   volumes:
-    - ".:/src"
-  working_dir: "/src"
+    - .:/src
+  working_dir: /src
   tty: true
   depends_on:
     rabbitmq:
@@ -18,7 +18,7 @@ x-acceptance: &acceptance
     RABBIT_HOST: rabbitmq
     DATABASE_URL: "postgresql://dev:admin123@db:5432/fastify?schema=template"
   env_file:
-    - path: ./.env.development
+    - path: .env.development
   ports:
     - 3001:3001
 
@@ -42,13 +42,13 @@ x-fastify: &fastify
     #   condition: service_healthy
   networks:
     - default
-    - elastic
+    # - elastic
   environment:
     CACHE_HOST: cache
     RABBIT_HOST: rabbitmq
     DATABASE_URL: "postgresql://dev:admin123@db:5432/fastify?schema=template"
   env_file:
-    - path: ./.env.development
+    - path: .env.development
   ports:
     - ${API_PORT:-3000}:3000
 
@@ -65,22 +65,41 @@ services:
     <<: *fastify
     image: oven/bun:alpine
     volumes:
-      - ".:/src"
-    working_dir: "/src"
-    command: sh -c "[ ! -d node_modules ] && npm ci --force ; npm run dev"
+      - .:/src
+    working_dir: /src
+    command: |
+      sh -c "
+        if [ ! -d node_modules ]; then
+          bun install --frozen-lockfile --ignore-scripts
+        fi
+        bun run prisma:generate
+        bun run dev
+      "
     profiles:
       - dev
 
   acceptance:
     <<: *acceptance
-    command: sh -c "[ ! -d node_modules ] && npm ci --force ; sleep infinity"
+    command: |
+      sh -c "
+        if [ ! -d node_modules ]; then
+          bun install --frozen-lockfile --ignore-scripts
+        fi
+        sleep infinity
+      "
     profiles:
       - local
       - dev
 
   acceptance-once:
     <<: *acceptance
-    command: sh -c "[ ! -d node_modules ] && npm ci --force ; npm run test:acceptance"
+    command: |
+      sh -c "
+        if [ ! -d node_modules ]; then
+          bun install --frozen-lockfile --ignore-scripts
+        fi
+        bun run test:acceptance
+      "
     profiles:
       - test
 
@@ -95,6 +114,11 @@ services:
     volumes:
       - rabbitmq:/var/lib/rabbitmq/data
       - rabbitmq:/var/log/rabbitmq/log
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBIT_USER:-guest}
+      RABBITMQ_DEFAULT_PASSWORD: ${RABBIT_password:-guest}
+    env_file:
+      - path: .env.development
     ports:
       - ${RABBIT_PORT:-5672}:5672
       - 15672:15672
@@ -106,9 +130,11 @@ services:
       valkey-server --save "" --appendonly no
       --notify-keyspace-events Ex
       --loglevel notice
-      --requirepass ${CACHE_PASSWORD}
+      --requirepass admin123
     volumes:
       - cache:/data
+    env_file:
+      - path: .env.development
     ports:
       - ${CACHE_PORT:-6379}:6379
 
@@ -117,7 +143,7 @@ services:
     restart: always
     # set shared memory limit when using docker-compose
     shm_size: 128mb
-    # or set shared memory limit when deploy via swarm stack
+    # or set shared memory limit when deploying via swarm stack
     #volumes:
     #  - type: tmpfs
     #    target: /dev/shm
@@ -131,19 +157,20 @@ services:
       timeout: 5s
       retries: 6
     environment:
-      - POSTGRES_USER=$DATABASE_USERNAME
-      - POSTGRES_PASSWORD=$DATABASE_PASSWORD
-      - POSTGRES_DB=$DATABASE_DB
+      DATABASE_URL: "postgresql://dev:admin123@db:5432/fastify?schema=template"
+      POSTGRES_USER: ${DATABASE_USERNAME:-dev}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-admin123}
+      POSTGRES_DB: ${DATABASE_DB:-fastify}
     env_file:
-      - path: ./.env.development
+      - path: .env.development
     ports:
       - ${DATABASE_PORT:-5432}:5432
 
   db-migration:
     image: oven/bun:alpine
     volumes:
-      - ".:/src"
-    working_dir: "/src"
+      - .:/src
+    working_dir: /src
     command: sh ./scripts/dockerComposeMigrate.sh
     depends_on:
       db:
@@ -151,8 +178,10 @@ services:
     tty: true
     ports:
       - 3001:3001
+    environment:
+      DATABASE_URL: "postgresql://dev:admin123@db:5432/fastify?schema=template"
     env_file:
-      - path: ./.env.development
+      - path: .env.development
     profiles:
       - local
       - dev
@@ -197,4 +226,4 @@ volumes:
 
 networks:
   cache:
-  elastic:
+  # elastic:

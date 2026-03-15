@@ -77,3 +77,6 @@ dist
 
 # Linting/Formatting
 .eslintcache
+
+# Cache
+cache

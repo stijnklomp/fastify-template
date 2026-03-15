@@ -20,7 +20,7 @@
 		"prepare": "husky",
 		"prisma:generate": "bunx prisma generate",
 		"sort": "./node_modules/stijnklomp-linting-formatting-config/sortJson.sh ./tsconfig.json ./test/tsconfig.json ./.lintstagedrc.json",
-		"start": "bun run dist/app.js",
+		"start": "bun dist/app.js",
 		"test": "ENV=test LOGS=test bun test test/unit",
 		"test:acceptance": "ENV=test LOGS=test bun test test/acceptance",
 		"test:coverage": "ENV=test LOGS=test bun test --coverage test/unit --coverage-reporter text",

@@ -10,7 +10,7 @@
 - Fastify: A fast and low overhead web framework for Node.js.
 - TypeScript: Static typing with TypeScript, enhancing code quality and developer productivity.
 - Prettier & ESLint: Automatic code formatting and linting for consistent code style and adherence to best practices.
-- Bun: Runtime environment and unit, feature, and acceptance tests.
+- Bun: Runtime environment, bundler and unit, feature, and acceptance tests.
 - Husky: Git hooks for running linting and tests before commits, ensuring code quality standards are met.
 - TypeDoc: Automatic generation of TypeScript documentation for improved code clarity and collaboration.
 
@@ -42,7 +42,7 @@ docker build -t fastify-template . && docker run --rm fastify-template
 # There are multiple profiles that can be run:
 # dev -> Mounts the current directory to the container and runs the service in watch mode
 # local -> Builds and runs the application image from the current code
-docker compose --profile=PROFILE up --build
+docker compose --profile <PROFILE> up --build
 ```
 
 #### Database
@@ -99,13 +99,13 @@ bun run test:acceptance:coverage
 
 ```sh
 # Run once and exit
-docker compose --profile=test up --build --attach acceptance-once --exit-code-from acceptance-once
+docker compose --profile test up --build --attach acceptance-once --exit-code-from acceptance-once
 
 # Run multiple times
 # There are multiple profiles that can be run for the acceptance tests:
 # dev
 # local
-docker compose --profile=PROFILE up --build -d && docker compose --profile=PROFILE exec -ti dev sh -c "bun run test:acceptance"
+docker compose --profile <PROFILE> up --build -d && docker compose --profile <PROFILE> exec -ti dev sh -c "bun run test:acceptance"
 ```
 
 ### Integrity
