@@ -29,6 +29,8 @@ export const readinessHandler = async (
 		await res.code(204).send()
 	} catch (err) {
 		logger.error(err)
-		await res.code(503).send()
+		await res.code(503).send({
+			message: "Internal Server Error",
+		})
 	}
 }

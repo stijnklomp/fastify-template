@@ -26,13 +26,19 @@ paths:
   /healthz:
     get:
       responses:
-        "200":
+        "204":
           description: Default Response
   /readyz:
     get:
       responses:
-        "200":
+        "204":
           description: Default Response
+        "503":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
   /v1/notes:
     get:
       parameters:
