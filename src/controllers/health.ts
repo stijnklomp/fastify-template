@@ -1,13 +1,13 @@
-import { FastifyRequest, FastifyReply } from "fastify"
+import { type FastifyRequest, type FastifyReply } from "fastify"
 
-import { logger, formatError } from "@/common/logger"
+import { logger } from "@/common/logger"
 import { prisma as prismaClient } from "@/common/prisma"
 
 export const livenessHandler = async (
-	req: FastifyRequest,
+	_req: FastifyRequest,
 	res: FastifyReply,
 ) => {
-	res.code(200).send()
+	res.code(204).send()
 }
 
 const dbConnection = async () => {
@@ -20,7 +20,7 @@ const dbConnection = async () => {
 }
 
 export const readinessHandler = async (
-	req: FastifyRequest,
+	_req: FastifyRequest,
 	res: FastifyReply,
 ) => {
 	try {
@@ -28,7 +28,8 @@ export const readinessHandler = async (
 
 		await res.code(204).send()
 	} catch (err) {
-		logger.error("Unable to connect to database:", formatError(err))
+		// logger.error("Unable to connect to database:", err)
+		logger.error(err)
 		await res.code(503).send()
 	}
 }

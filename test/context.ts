@@ -1,19 +1,10 @@
-import { PrismaClient } from "@/prismaClient"
-import { mockDeep, mockReset } from "jest-mock-extended"
-import { prisma } from "@/common/prisma"
+import { mock } from "bun:test"
+import { createPrismaMock } from "bun-mock-prisma"
 
-jest.mock("@/common/prisma", () => {
-	const prismaMock = mockDeep<PrismaClient>()
+import { type PrismaClient } from "@/prismaClient"
 
-	return {
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		__esModule: true,
-		prisma: () => prismaMock,
-	}
-})
+export const prismaMock = createPrismaMock<PrismaClient>()
 
-export const prismaMock = prisma()
-
-afterEach(() => {
-	mockReset(prismaMock)
-})
+await mock.module("@/common/prisma", () => ({
+	prisma: () => prismaMock,
+}))

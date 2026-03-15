@@ -1,10 +1,8 @@
 *
-!.env
-!prisma
-!rabbitmq
-!src
-!esbuild.mjs
 !package.json
-!package-lock.json
+!bun.lock
+!bunfig.toml
 !tsconfig.json
-!tsconfig.production.json
+!prisma/**
+!src/**
+!.env.production

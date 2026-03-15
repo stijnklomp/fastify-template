@@ -9,7 +9,19 @@ components:
       in: header
       name: apiKey
       type: apiKey
-  schemas: {}
+  schemas:
+    def-0:
+      type: object
+      properties:
+        statusCode:
+          type: number
+        code:
+          type: string
+        error:
+          type: string
+        message:
+          type: string
+      title: HttpError
 paths:
   /healthz:
     get:
@@ -39,8 +51,52 @@ paths:
       responses:
         "200":
           description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - notes
+                properties:
+                  notes:
+                    type: array
+                    items:
+                      type: object
+                      allOf:
+                        - type: object
+                          required:
+                            - note
+                            - owner
+                          properties:
+                            note:
+                              maxLength: 300
+                              type: string
+                            owner:
+                              maxLength: 100
+                              type: string
+                        - type: object
+                          required:
+                            - createdAt
+                            - id
+                            - updatedAt
+                          properties:
+                            createdAt:
+                              format: date-time
+                              type: string
+                            id:
+                              type: number
+                            updatedAt:
+                              format: date-time
+                              type: string
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
     post:
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -55,10 +111,53 @@ paths:
                 owner:
                   maxLength: 100
                   type: string
-        required: true
       responses:
-        "200":
+        "201":
           description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                  - note
+                properties:
+                  message:
+                    type: string
+                  note:
+                    type: object
+                    allOf:
+                      - type: object
+                        required:
+                          - note
+                          - owner
+                        properties:
+                          note:
+                            maxLength: 300
+                            type: string
+                          owner:
+                            maxLength: 100
+                            type: string
+                      - type: object
+                        required:
+                          - createdAt
+                          - id
+                          - updatedAt
+                        properties:
+                          createdAt:
+                            format: date-time
+                            type: string
+                          id:
+                            type: number
+                          updatedAt:
+                            format: date-time
+                            type: string
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
 servers:
   - description: Development server
     url: http://localhost:3000

@@ -1,25 +1,25 @@
-FROM node:20-alpine AS deps
-ARG DATABASE_URL
-ENV DATABASE_URL=${DATABASE_URL}
+FROM oven/bun:alpine AS deps
 WORKDIR /app
-COPY package*.json ./
-COPY /prisma ./prisma
-RUN npm ci --ignore-scripts --force
-RUN npx prisma generate
+COPY bun.lock package.json ./
+COPY prisma ./prisma
+RUN bun install --frozen-lockfile --ignore-scripts
 
-FROM node:20-alpine AS builder
-ENV NODE_ENV build
+FROM oven/bun:latest AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY --chown=node:node . .
-RUN npm run build
+COPY .env.production .env
+COPY . .
+RUN bun run build
+RUN bun run prisma:generate
 
-FROM node:20-alpine AS runner
-ENV NODE_ENV production
-ENV PORT 3000
+FROM oven/bun:latest AS runner
+ARG API_PORT=3000
+ENV API_PORT=${API_PORT}
 WORKDIR /app
-COPY --from=deps --chown=node:node /app/package.json ./
-COPY --from=builder --chown=node:node /app/dist/ ./dist/
-COPY --from=builder --chown=node:node /app/node_modules/.prisma/client ./.prisma/client
-EXPOSE 3000
-CMD ["npm", "run", "start"]
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=builder /app/generated ./generated
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/.env .env
+COPY package.json ./
+EXPOSE ${API_PORT}
+CMD ["bun", "dist/app.js"]

@@ -1,25 +1,19 @@
-import { prisma } from "@/common/prisma"
-import { StaticRequestSchemaTypes } from "@/types/schemaBuilderTypeExtractor"
-import notesValidator from "@/models/validators/notes"
+import { type Static } from "@sinclair/typebox"
 
-export const getNotes = async (
-	data: StaticRequestSchemaTypes<
-		typeof notesValidator.getNotes
-	>["querystring"],
+import { prisma } from "@/common/prisma"
+import { getNotesSchema, createNoteSchema } from "@/models/schemas/notes"
+
+export const getNotesRepo = async (
+	data: Static<typeof getNotesSchema.querystring>,
 ) =>
-	prisma().note.findMany({
+	prisma.note.findMany({
 		skip: data.page - 1,
 		take: data.perPage,
 	})
 
-export const createNote = async (
-	data: StaticRequestSchemaTypes<typeof notesValidator.createNote>["body"],
+export const createNoteRepo = async (
+	data: Static<typeof createNoteSchema.body>,
 ) =>
-	prisma().note.create({
+	prisma.note.create({
 		data,
 	})
-
-export default {
-	createNote,
-	getNotes,
-}
