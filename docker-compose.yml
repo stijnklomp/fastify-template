@@ -11,8 +11,8 @@ x-acceptance: &acceptance
       condition: service_started
     db-migration:
       condition: service_completed_successfully
-    localstack:
-      condition: service_started
+    # localstack:
+    #   condition: service_started
   environment:
     CACHE_HOST: cache
     RABBIT_HOST: rabbitmq
@@ -36,8 +36,8 @@ x-fastify: &fastify
       condition: service_started
     db-migration:
       condition: service_completed_successfully
-    localstack:
-      condition: service_started
+    # localstack:
+    #   condition: service_started
     # otel-collector:
     #   condition: service_healthy
   networks:
@@ -139,7 +139,7 @@ services:
       - ${CACHE_PORT:-6379}:6379
 
   db:
-    image: postgres
+    image: postgres:latest
     restart: always
     # set shared memory limit when using docker-compose
     shm_size: 128mb
@@ -150,7 +150,7 @@ services:
     #    tmpfs:
     #      size: 134217728 # 128*2^20 bytes = 128Mb
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql
     healthcheck:
       test: pg_isready -d $$POSTGRES_DB -U $$POSTGRES_USER
       interval: 20s
@@ -187,21 +187,21 @@ services:
       - dev
       - test
 
-  localstack:
-    image: localstack/localstack
-    ports:
-      - "127.0.0.1:4566:4566" # LocalStack gateway
-      - "127.0.0.1:4510-4559:4510-4559" # External services port range
-    environment:
-      # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
-      - DEBUG=${DEBUG:-0}
-    volumes:
-      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
-      - "/var/run/docker.sock:/var/run/docker.sock"
-    profiles:
-      - local
-      - dev
-      - test
+  # localstack:
+  #   image: localstack/localstack
+  #   ports:
+  #     - "127.0.0.1:4566:4566" # LocalStack gateway
+  #     - "127.0.0.1:4510-4559:4510-4559" # External services port range
+  #   environment:
+  #     # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
+  #     - DEBUG=${DEBUG:-0}
+  #   volumes:
+  #     - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+  #     - "/var/run/docker.sock:/var/run/docker.sock"
+  #   profiles:
+  #     - local
+  #     - dev
+  #     - test
 
   # otel-collector:
   #   image: otel/opentelemetry-collector-contrib
