@@ -1,7 +1,6 @@
 # Routes directory
 
 Routes define the endpoints/REST interface. They call on **controllers** to handle the HTTP requests.
-*Note that routes are automatically imported and available.*
 
 In this directory you should define all the routes that define the endpoints of your API.
 Each service is a [Fastify plugin](https://fastify.dev/docs/latest/Reference/Plugins/), it is encapsulated (it can have its own independent plugins) and it is typically stored in a file; be careful to group your routes logically, e.g. all `/users` routes go to the `users.js` file. A `root.js` file exists accessible through '/'.
