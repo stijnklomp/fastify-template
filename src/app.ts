@@ -1,20 +1,15 @@
 import fastify, { type FastifyServerOptions } from "fastify"
 import { type TypeBoxTypeProvider } from "@fastify/type-provider-typebox"
-import autoLoad from "@fastify/autoload"
 import fastifySwagger from "@fastify/swagger"
-import path from "node:path"
-import { fileURLToPath } from "node:url"
 import hyperid from "hyperid"
 import { writeFileSync } from "node:fs"
 
 import { logger, loggerEnv, loggerConfig } from "@/common/logger"
+import { registerMiddleware } from "@/middleware/index"
+import { registerRoutes } from "@/routes/index"
 import { cacheClient } from "@/infrastructure/cache"
 import { queueClient } from "@/infrastructure/rabbitMQ"
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const __filename = fileURLToPath(import.meta.url)
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const __dirname = path.dirname(__filename)
 const gen = hyperid({ fixedLength: true, urlSafe: true })
 
 const buildApp = (
@@ -63,16 +58,8 @@ const buildApp = (
 		},
 	})
 
-	void app.register(autoLoad, {
-		dir: path.join(__dirname, "middleware"),
-		matchFilter: (path) => path.endsWith(".ts") || path.endsWith(".js"),
-	})
-
-	void app.register(autoLoad, {
-		dir: path.join(__dirname, "routes"),
-		dirNameRoutePrefix: true,
-		matchFilter: (path) => path.endsWith(".ts") || path.endsWith(".js"),
-	})
+	void registerMiddleware(app)
+	void registerRoutes(app)
 
 	return app
 }

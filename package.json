@@ -10,7 +10,7 @@
 		"test": "test"
 	},
 	"scripts": {
-		"build": "rm -rf dist && bun build src/app.ts --outdir dist --target bun --format esm --external @prisma/client && cp -r src/routes dist && cp -r src/middleware dist",
+		"build": "rm -rf dist && bun build src/app.ts --outdir dist --target bun --format esm --external @prisma/client --minify",
 		"dev": "ENV=development LOGS=development bun --watch src/app.ts",
 		"doc": "typedoc",
 		"integrity": "./scripts/integrity.sh",
@@ -30,7 +30,6 @@
 		"test:unit:coverage": "ENV=test LOGS=test bun test --coverage test/unit --coverage-reporter text"
 	},
 	"dependencies": {
-		"@fastify/autoload": "^6.3.1",
 		"@fastify/helmet": "^13.0.2",
 		"@fastify/sensible": "^6.0.4",
 		"@fastify/swagger": "^9.7.0",
