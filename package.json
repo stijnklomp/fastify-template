@@ -27,7 +27,8 @@
 		"test:feature": "ENV=test LOGS=test bun test test/feature",
 		"test:unit": "ENV=test LOGS=test bun test test/unit",
 		"test:unit:ci": " ENV=test LOGS=test bun test --coverage test/unit --cov-config test.reporter --coverage-reporter text --coverage-reporter lcov",
-		"test:unit:coverage": "ENV=test LOGS=test bun test --coverage test/unit --coverage-reporter text"
+		"test:unit:coverage": "ENV=test LOGS=test bun test --coverage test/unit --coverage-reporter text",
+		"test:unit:coverage:html": "docker build -t bun-coverage -f test/unit/coverage/Dockerfile . && docker run -it --rm -u $(id -u):$(id -g) -v $(pwd):/app -w /app bun-coverage"
 	},
 	"dependencies": {
 		"@fastify/helmet": "^13.0.2",

@@ -81,6 +81,18 @@ bun run test:feature
 # Prefix either command with `SHOW_LOGS=true` to show logs
 ```
 
+Bun currently doesn't support HTML as a test coverage reporter. Therefore, a Dockerfile is provided which uses genhtml to generate the HTML coverage report. This can be run using:
+
+```sh
+bun run test:unit:coverage:html
+```
+
+You can then open `test/unit/coverage/html/index.html` to view the results:
+
+```sh
+xdg-open test/unit/coverage/html/index.html
+```
+
 ### Acceptance tests
 
 ```sh
