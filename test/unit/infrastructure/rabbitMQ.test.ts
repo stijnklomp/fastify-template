@@ -8,7 +8,7 @@ import {
 	spyOn,
 } from "bun:test"
 import { EventEmitter } from "events"
-import amqplib from "amqplib"
+import amqplib, { type ConsumeMessage } from "amqplib"
 
 import {
 	processExitMock,
@@ -17,7 +17,10 @@ import {
 	runAsyncHandlers,
 } from "@/helper"
 import { logger } from "@/common/logger"
-import { createQueueClient } from "@/infrastructure/rabbitMQ"
+import {
+	createQueueClient,
+	type ConsumeCallback,
+} from "@/infrastructure/rabbitMQ"
 
 let mockClose: ReturnType<typeof mock<amqplib.ChannelModel["close"]>>
 let mockChannelClose: ReturnType<typeof mock<amqplib.Channel["close"]>>
@@ -88,7 +91,7 @@ describe("RabbitMQ service", () => {
 				return {} as amqplib.Channel
 			},
 		)
-		mockChannelConsume = mock().mockReturnValue(true)
+		mockChannelConsume = mock().mockResolvedValue(undefined)
 		createdChannelMock = {
 			assertExchange: mockChannelAssertExchange,
 			assertQueue: mockChannelAssertQueue,
@@ -677,6 +680,15 @@ describe("RabbitMQ service", () => {
 		})
 
 		test("should consume messages", async () => {
+			const callbackMock = mock<ConsumeCallback>()
+			mockChannelConsume.mockImplementation((_queue, handler, _opts) => {
+				handler(message as unknown as ConsumeMessage)
+
+				return Promise.resolve({
+					consumerTag: "consumer",
+				})
+			})
+
 			const queueClient = createQueueClient()
 			await queueClient.init()
 
@@ -684,7 +696,7 @@ describe("RabbitMQ service", () => {
 				channel,
 				queue,
 				bindings,
-				() => undefined,
+				callbackMock,
 			)
 
 			expect(response).toBe(true)
@@ -692,6 +704,13 @@ describe("RabbitMQ service", () => {
 				`Started consuming RabbitMQ messages on queue '${queue}'`,
 			)
 			expect(mockChannelConsume).toHaveBeenCalled()
+			const [[msgArg, channelArg]] = callbackMock.mock.calls as [
+				[ConsumeMessage, typeof createdChannelMock],
+			]
+			expect(msgArg).toBe(message as unknown as ConsumeMessage)
+			expect(channelArg).toMatchObject({
+				consume: mockChannelConsume,
+			})
 		})
 
 		test("should log error message when unable to consume", async () => {
