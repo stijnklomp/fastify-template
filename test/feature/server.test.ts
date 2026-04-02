@@ -1,18 +1,16 @@
 import { describe, test, afterEach, expect, mock } from "bun:test"
 
-import { startApp } from "@/helper"
+import { startApp } from "@/utils/process"
 import { prismaMock } from "@/context"
 
-const mockCache = {
-	init: mock(),
-}
-const mockRabbitMQ = mock()
+const mockCacheClient = mock()
+const mockQueueClient = mock()
 
 await mock.module("@/infrastructure/cache", () => ({
-	cacheClient: mockCache,
+	cacheClient: { init: mockCacheClient },
 }))
 await mock.module("@/infrastructure/rabbitMQ", () => ({
-	init: mockRabbitMQ,
+	queueClient: { init: mockQueueClient },
 }))
 
 describe("server", () => {
@@ -28,8 +26,8 @@ describe("server", () => {
 			url: "/healthz",
 		})
 
-		expect(mockCache.init).toHaveBeenCalled()
-		expect(mockRabbitMQ).toHaveBeenCalled()
+		expect(mockCacheClient).toHaveBeenCalled()
+		expect(mockQueueClient).toHaveBeenCalled()
 
 		expect(response.statusCode).toEqual(204)
 		expect(response.payload).toBe("")
@@ -38,7 +36,7 @@ describe("server", () => {
 	})
 
 	test("should respond with 2xx on ready state", async () => {
-		prismaMock.$connect.mockResolvedValue()
+		prismaMock.$connect = mock().mockResolvedValue(undefined)
 
 		const app = await startApp()
 
@@ -47,8 +45,8 @@ describe("server", () => {
 			url: "/readyz",
 		})
 
-		expect(mockCache.init).toHaveBeenCalled()
-		expect(mockRabbitMQ).toHaveBeenCalled()
+		expect(mockCacheClient).toHaveBeenCalled()
+		expect(mockQueueClient).toHaveBeenCalled()
 
 		expect(response.statusCode).toEqual(204)
 		expect(response.payload).toBe("")

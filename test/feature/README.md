@@ -1,3 +1,3 @@
 # Feature tests
 
-Ensure the API is compliant with the behavior requirements from the design. (White-box and/or black-box)
+Ensure the API meets the design's behavior requirements. (White-box or black-box testing; preferably black-box)

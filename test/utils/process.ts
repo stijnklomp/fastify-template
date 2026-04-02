@@ -2,12 +2,11 @@ import { mock } from "bun:test"
 
 import { start } from "@/src/app"
 
-export const startApp = async (overrideOptions?: Parameters<typeof start>[0]) =>
-	start({
-		listen: false,
+export const startApp = async (
+	overrideOptions: Parameters<typeof start>[0] = {
 		writeOpenapi: false,
-		...overrideOptions,
-	})
+	},
+) => start(overrideOptions)
 
 /**
  * Give any asynchronous handlers a tick to run.

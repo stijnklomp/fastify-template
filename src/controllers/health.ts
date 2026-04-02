@@ -13,10 +13,9 @@ export const livenessHandler = async (
 const dbConnection = async () => {
 	const prisma = newPrismaClient()
 
-	await prisma.$connect().then(async () => {
-		logger.info("Database connection healthy")
-		await prisma.$disconnect()
-	})
+	await prisma.$connect()
+	logger.info("Database connection healthy")
+	await prisma.$disconnect()
 }
 
 export const readinessHandler = async (

@@ -17,10 +17,11 @@ coverageThreshold = 1
 coveragePathIgnorePatterns = [
 	"test/**",
 	"dist/**",
-	"prisma/**",
+	"prisma/*.",
 	"generated/**",
 	"src/config/**",
-	"src/models/types/**"
+	"src/models/types/**",
+	"src/common/logger.ts"
 ]
 preload = ["test/setup.ts", "test/context.ts"]
 

@@ -14,7 +14,7 @@ import {
 	processExitMock,
 	restoreEnvVars,
 	restoreProcessExitMock,
-} from "@/helper"
+} from "@/utils/process"
 import { createCacheClient } from "@/infrastructure/cache"
 
 let mockConnect: ReturnType<typeof mock<RedisClient["connect"]>>

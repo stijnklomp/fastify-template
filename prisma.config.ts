@@ -1,9 +1,9 @@
 import { existsSync } from "fs"
-import { config as dotenvConfig } from "dotenv"
+import { config } from "dotenv"
 import { defineConfig, env } from "prisma/config"
 
 const envFile = existsSync(".env") ? ".env" : ".env.development"
-dotenvConfig({ path: envFile })
+config({ path: envFile })
 
 export default defineConfig({
 	datasource: {

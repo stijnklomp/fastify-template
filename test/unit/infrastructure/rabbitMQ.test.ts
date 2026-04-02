@@ -15,7 +15,7 @@ import {
 	restoreEnvVars,
 	restoreProcessExitMock,
 	runAsyncHandlers,
-} from "@/helper"
+} from "@/utils/process"
 import { logger } from "@/common/logger"
 import {
 	createQueueClient,

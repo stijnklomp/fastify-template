@@ -50,7 +50,7 @@
 
 			// Tests only
 			"@/context": ["test/context.ts"],
-			"@/helper": ["test/helper.ts"]
+			"@/utils/*": ["test/utils/*"]
 		}
 	},
 	"include": ["src/**/*.ts", "generated/**/*.ts"],

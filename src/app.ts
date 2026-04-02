@@ -10,8 +10,8 @@ import { registerRoutes } from "@/routes/index"
 import { cacheClient } from "@/infrastructure/cache"
 import { queueClient } from "@/infrastructure/rabbitMQ"
 
+const port = Number(process.env.API_PORT ?? 3000)
 const gen = hyperid({ fixedLength: true, urlSafe: true })
-
 const buildApp = (
 	fastifyOptions: FastifyServerOptions = {
 		genReqId: () => gen(),
@@ -48,7 +48,7 @@ const buildApp = (
 			servers: [
 				{
 					description: "Development server",
-					url: "http://localhost:3000",
+					url: `http://localhost:${port}`,
 				},
 			],
 			tags: [
@@ -66,13 +66,12 @@ const buildApp = (
 
 export const start = async (
 	appOptions?: {
-		listen?: boolean
 		writeOpenapi?: boolean
 	},
 	fastifyOptions?: FastifyServerOptions,
 ) => {
-	const listen = appOptions?.listen ?? true
-	const writeOpenapi = appOptions?.writeOpenapi ?? true
+	const writeOpenapi =
+		appOptions?.writeOpenapi ?? process.env.NODE_ENV !== "production"
 
 	try {
 		const app = buildApp(fastifyOptions)
@@ -81,15 +80,12 @@ export const start = async (
 
 		await queueClient.init()
 
-		if (listen) {
-			const port = Number(process.env.API_PORT ?? 3000)
-			await app.listen({
-				host: "0.0.0.0",
-				port,
-			})
+		await app.listen({
+			host: "0.0.0.0",
+			port,
+		})
 
-			logger.info(`Server listening on port ${port.toString()}`)
-		}
+		logger.info(`Server listening on port ${port.toString()}`)
 
 		await app.ready()
 
