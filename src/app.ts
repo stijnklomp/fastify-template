@@ -48,7 +48,7 @@ const buildApp = (
 			servers: [
 				{
 					description: "Development server",
-					url: `http://localhost:${port}`,
+					url: `http://localhost:${port.toString()}`,
 				},
 			],
 			tags: [
