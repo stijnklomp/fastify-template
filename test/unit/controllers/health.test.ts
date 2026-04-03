@@ -1,4 +1,4 @@
-import { describe, test, afterEach, expect, mock } from "bun:test"
+import { describe, test, beforeEach, afterEach, expect, mock } from "bun:test"
 
 import { newPrismaMock } from "@/context"
 import { createMockRequest, createMockResponse } from "@/utils/http"
@@ -6,6 +6,11 @@ import { livenessHandler, readinessHandler } from "@/controllers/health"
 import { loggerMocks } from "test/setup"
 
 describe("Cache service", () => {
+	beforeEach(() => {
+		newPrismaMock.$connect.mockClear()
+		newPrismaMock.$disconnect.mockClear()
+	})
+
 	afterEach(() => {
 		mock.clearAllMocks()
 	})

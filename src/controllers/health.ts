@@ -1,7 +1,7 @@
 import { type FastifyRequest, type FastifyReply } from "fastify"
 
 import { logger } from "@/common/logger"
-import { newPrismaClient } from "@/common/prisma"
+import { createPrismaClient } from "@/common/prisma"
 
 export const livenessHandler = async (
 	_req: FastifyRequest,
@@ -11,7 +11,7 @@ export const livenessHandler = async (
 }
 
 const dbConnection = async () => {
-	const prisma = newPrismaClient()
+	const prisma = createPrismaClient()
 
 	await prisma.$connect()
 	logger.info("Database connection healthy")

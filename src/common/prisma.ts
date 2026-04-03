@@ -2,21 +2,17 @@ import "dotenv/config"
 import { PrismaPg } from "@prisma/adapter-pg"
 import { PrismaClient } from "@/prismaClient"
 
-const connectionString = process.env.DATABASE_URL
+const createAdapter = () => {
+	const connectionString = process.env.DATABASE_URL
 
-if (!connectionString) {
-	throw new Error("DATABASE_URL environment variable is not defined")
+	if (!connectionString) {
+		throw new Error("DATABASE_URL environment variable is not defined")
+	}
+
+	return new PrismaPg({ connectionString })
 }
 
-const adapter = new PrismaPg({ connectionString })
-let prisma: PrismaClient | undefined
+export const createPrismaClient = () =>
+	new PrismaClient({ adapter: createAdapter() })
 
-export const prismaClient = () => {
-	if (typeof prisma !== "undefined") return prisma
-
-	prisma = new PrismaClient({ adapter })
-
-	return prisma
-}
-
-export const newPrismaClient = () => new PrismaClient({ adapter })
+export const prismaClient = createPrismaClient()

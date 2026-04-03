@@ -63,7 +63,11 @@ describe("server", () => {
 
 		await app.close()
 
-		if (originalNodeEnv) process.env.NODE_ENV = originalNodeEnv
+		if (originalNodeEnv) {
+			process.env.NODE_ENV = originalNodeEnv
+		} else {
+			delete process.env.NODE_ENV
+		}
 	})
 
 	test("should not write OpenAPI spec on production", async () => {
@@ -82,7 +86,11 @@ describe("server", () => {
 
 		await app.close()
 
-		if (originalNodeEnv) process.env.NODE_ENV = originalNodeEnv
+		if (originalNodeEnv) {
+			process.env.NODE_ENV = originalNodeEnv
+		} else {
+			delete process.env.NODE_ENV
+		}
 	})
 
 	test("should exit on error", async () => {

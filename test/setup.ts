@@ -1,6 +1,9 @@
+import { config } from "dotenv"
 import { mock } from "bun:test"
 
 import * as actualLogger from "@/common/logger"
+
+config({ path: ".env.tests" })
 
 export const loggerMocks = {
 	debug: mock((msg) => {

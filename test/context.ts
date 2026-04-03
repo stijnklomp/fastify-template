@@ -3,6 +3,21 @@ import { createPrismaMock } from "bun-mock-prisma"
 import fastify, { type FastifyServerOptions } from "fastify"
 
 import { type PrismaClient } from "@/prismaClient"
+import * as prisma from "@/common/prisma"
+
+export const realCreatePrismaClient = prisma.createPrismaClient
+
+export const prismaPgMock = mock().mockReturnValue(process.env.DATABASE_URL)
+export const prismaClientMock = mock()
+
+await mock.module("@prisma/adapter-pg", () => ({
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	PrismaPg: prismaPgMock,
+}))
+await mock.module("@/prismaClient", () => ({
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	PrismaClient: prismaClientMock,
+}))
 
 export const newPrismaMock = {
 	$connect: mock().mockResolvedValue(undefined),
@@ -10,18 +25,16 @@ export const newPrismaMock = {
 }
 export const prismaMock = createPrismaMock<PrismaClient>()
 
-void mock.module("@/common/prisma", () => ({
-	newPrismaClient: () => newPrismaMock,
+await mock.module("@/common/prisma", () => ({
+	createPrismaClient: () => newPrismaMock,
 	prismaClient: () => prismaMock,
 }))
 
 beforeEach(() => {
-	newPrismaMock.$connect.mockClear()
-	newPrismaMock.$disconnect.mockClear()
 	prismaMock._reset()
 })
 
-const realFastify: typeof fastify = fastify
+const realFastify = fastify
 
 export const listenMock = mock()
 
