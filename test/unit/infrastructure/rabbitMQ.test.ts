@@ -119,7 +119,7 @@ describe("RabbitMQ service", () => {
 		test("should initialize and connect RabbitMQ client", async () => {
 			const originalProcessOn = process.on.bind(process)
 			const processOnMock = mock()
-			process.on = processOnMock as unknown as typeof process.on
+			process.on = processOnMock
 
 			await createQueueClient().init()
 

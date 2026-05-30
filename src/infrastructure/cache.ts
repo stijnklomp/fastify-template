@@ -36,7 +36,7 @@ export const createCacheClient = () => {
 
 		await createdClient.connect()
 
-		client = createdClient
+		client = createdClient as unknown as ReturnType<typeof createClient>
 	}
 
 	/**
