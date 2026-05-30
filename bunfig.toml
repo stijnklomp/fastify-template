@@ -23,7 +23,7 @@ coveragePathIgnorePatterns = [
 	"src/models/types/**",
 	"src/common/logger.ts"
 ]
-preload = ["test/setup.ts", "test/context.ts"]
+preload = ["./test/setup.ts", "./test/context.ts"]
 
 [test.ci]
 smol = true

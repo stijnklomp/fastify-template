@@ -31,27 +31,25 @@
 		"resolveJsonModule": true,
 
 		// Aliases
-		"baseUrl": ".",
-		"ignoreDeprecations": "6.0",
 		"paths": {
-			"@/common/*": ["src/common/*"],
-			"@/config/*": ["src/config/*"],
-			"@/controllers/*": ["src/controllers/*"],
-			"@/infrastructure/*": ["src/infrastructure/*"],
-			"@/middleware/*": ["src/middleware/*"],
-			"@/models/*": ["src/models/*"],
-			"@/prismaClient": ["generated/prisma/client.ts"],
-			"@/repositories/*": ["src/repositories/*"],
-			"@/routes/*": ["src/routes/*"],
-			"@/serializers/*": ["src/models/serializers/*"],
-			"@/services/*": ["src/services/*"],
-			"@/src/*": ["src/*"],
-			"@/types/*": ["src/models/types/*"],
-			"@/validators/*": ["src/models/schemas/*"],
+			"@/common/*": ["./src/common/*"],
+			"@/config/*": ["./src/config/*"],
+			"@/controllers/*": ["./src/controllers/*"],
+			"@/infrastructure/*": ["./src/infrastructure/*"],
+			"@/middleware/*": ["./src/middleware/*"],
+			"@/models/*": ["./src/models/*"],
+			"@/prismaClient": ["./generated/prisma/client.ts"],
+			"@/repositories/*": ["./src/repositories/*"],
+			"@/routes/*": ["./src/routes/*"],
+			"@/serializers/*": ["./src/models/serializers/*"],
+			"@/services/*": ["./src/services/*"],
+			"@/src/*": ["./src/*"],
+			"@/types/*": ["./src/models/types/*"],
+			"@/validators/*": ["./src/models/schemas/*"],
 
 			// Tests only
-			"@/context": ["test/context.ts"],
-			"@/utils/*": ["test/utils/*"]
+			"@/context": ["./test/context.ts"],
+			"@/utils/*": ["./test/utils/*"]
 		}
 	},
 	"include": ["src/**/*.ts", "generated/**/*.ts"],

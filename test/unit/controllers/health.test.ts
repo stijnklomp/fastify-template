@@ -3,7 +3,7 @@ import { describe, test, beforeEach, afterEach, expect, mock } from "bun:test"
 import { newPrismaMock } from "@/context"
 import { createMockRequest, createMockResponse } from "@/utils/http"
 import { livenessHandler, readinessHandler } from "@/controllers/health"
-import { loggerMocks } from "test/setup"
+import { loggerMocks } from "../../setup"
 
 describe("Cache service", () => {
 	beforeEach(() => {

@@ -58,6 +58,7 @@ finalConfig.push(includeIgnoreFile(gitignorePath), {
 		"typedoc.config.js",
 		"prisma.config.ts",
 		"eslint.config.js",
+		".opencode/",
 	],
 })
 

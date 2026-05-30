@@ -1,6 +1,6 @@
 import { describe, test, afterEach, expect, mock } from "bun:test"
 
-import { loggerMocks } from "test/setup"
+import { loggerMocks } from "../setup"
 import { listenMock } from "@/context"
 import {
 	startApp,
