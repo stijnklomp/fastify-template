@@ -52,6 +52,8 @@ bun update --latest
 
 To upgrade across major version boundaries, use `--latest`.
 
+> **Note on `minimumReleaseAge`**: `bunfig.toml` sets `minimumReleaseAge = 259200` (3 days). This means `bun update` will not install releases newer than 3 days old as a security precaution. If the user needs the absolute latest versions regardless of age, they must manually lower or remove this value in `bunfig.toml` themselves. The agentic AI must not modify this setting.
+
 **Option B: Update a specific package**
 
 ```bash
@@ -215,3 +217,4 @@ Include in the commit:
 - **Always run `lint:fix`** after upgrading formatting-related packages (Prettier, ESLint, etc.)
 - **If upgrading Fastify or TypeBox**, verify the OpenAPI spec still generates correctly by checking `openapi.yaml`
 - **When in doubt**, restore `bun.lock` from git and try a more targeted upgrade
+- **Never modify `bunfig.toml`'s `minimumReleaseAge`** — this is a security boundary. If the user needs dependencies newer than the configured age limit, the user must manually update this value themselves. The agentic AI is not allowed to change it.
