@@ -9,7 +9,7 @@ This skill describes the development workflow, commands, and tooling for this Fa
 
 ## Prerequisites
 
-- Bun >= 1.3.8
+- Bun
 - Docker & Docker Compose (for acceptance tests and external services)
 - Node.js (not used directly, but some tools expect it)
 

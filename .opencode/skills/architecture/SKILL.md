@@ -9,10 +9,10 @@ This skill describes the architecture, patterns, and conventions used in this Fa
 
 ## Tech Stack
 
-- **Runtime**: Bun (>=1.3.8)
-- **Framework**: Fastify v5 with TypeBox type provider
+- **Runtime**: Bun
+- **Framework**: Fastify with TypeBox type provider
 - **Language**: TypeScript (strict mode, ESNext, Bundler module resolution)
-- **ORM**: Prisma v7 with PostgreSQL adapter (@prisma/adapter-pg)
+- **ORM**: Prisma with PostgreSQL adapter (@prisma/adapter-pg)
 - **Validation**: @sinclair/typebox (schema-first, generates OpenAPI spec)
 - **Cache**: Redis (redis package, disabled via CACHE_DISABLED in tests)
 - **Queue**: RabbitMQ (amqplib, disabled via RABBIT_DISABLED in tests)
