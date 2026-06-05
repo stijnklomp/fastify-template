@@ -78,5 +78,8 @@ dist
 # Linting/Formatting
 .eslintcache
 
+# docs
+/docs/code/
+
 # Cache
 cache
