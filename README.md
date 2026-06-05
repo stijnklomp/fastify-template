@@ -49,6 +49,10 @@ docker compose --profile <PROFILE> up --build
 
 You may need to run `bunx --bun prisma migrate dev --name init` in your terminal if you haven't already initialized the database. This only needs to be done the first time the database is created. (Or whenever the database has been recreated) This will happen automatically when using any profile in Docker Compose.
 
+#### RabbitMQ
+
+A RabbitMQ service is available via Docker Compose for message queue capabilities. The management UI is accessible at `http://localhost:15672`.
+
 ## Test
 
 ### Lint
