@@ -77,6 +77,34 @@ bun add <package-name>@<version>
 bun add fastify@4.28.0
 ```
 
+### Major Version Upgrades — Always Check Official Migration Docs
+
+When upgrading across a **major version boundary** (e.g., `fastify` 5 → 6, `prisma` 6 → 7, `typescript-eslint` 8 → 9), the official migration guide is the primary source of truth for what needs to change in the project.
+
+**Before running any upgrade command**, search for the package's official migration documentation:
+
+1. **Check the package's official docs** — Look for a "Migration" or "Upgrading" page in the project's documentation site (e.g., `fastify.dev`, `prisma.io`, `typescript-eslint.io`, `eslint.org`).
+2. **Check the GitHub releases page** — Major version releases often include a detailed migration guide or breaking changes section.
+3. **Check the changelog** — Look for `BREAKING CHANGES` or `Migration` headings.
+
+**What to do with the migration guide:**
+
+- Read the migration guide **before** making any changes.
+- Follow the guide's instructions exactly — they often include required config changes, renamed rules, removed APIs, or new peer dependencies.
+- The migration guide dictates what needs to be updated in the project (e.g., updating route handlers for Fastify, regenerating Prisma client, updating TypeBox schemas, etc.).
+- Do **not** guess what needs to change — always follow the official migration guide.
+
+**Example workflow for a major version upgrade:**
+
+```bash
+# 1. Read the migration guide for the package
+# 2. Follow the guide's instructions to update the project code
+# 3. Update the package version
+bun add <package-name>@<new-major-version>
+
+# 4. Continue with the verification steps below
+```
+
 ### Step 2: Reinstall from Lockfile
 
 After updating the lockfile, reinstall to ensure `node_modules` matches:
