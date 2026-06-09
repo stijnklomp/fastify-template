@@ -52,7 +52,7 @@
 			"@/utils/*": ["./test/utils/*"]
 		}
 	},
-	"include": ["src/**/*.ts", "generated/**/*.ts"],
+	"include": ["src/**/*.ts", "generated/**/*.ts", "scripts/**/*.ts"],
 	"exclude": [
 		"node_modules",
 		".husky",
