@@ -88,7 +88,7 @@ Provides `prismaMock` (a fully mocked Prisma client) and `newPrismaMock` (basic 
 import { prismaMock, newPrismaMock } from "@/context"
 
 beforeEach(() => {
-  prismaMock._reset()
+	prismaMock._reset()
 })
 
 // In a test:
@@ -115,7 +115,12 @@ expect(statusCode()).toBe(200)
 ### Process Utilities (`test/utils/process.ts`)
 
 ```typescript
-import { startApp, processExitMock, restoreProcessExitMock, restoreEnvVars } from "@/utils/process"
+import {
+	startApp,
+	processExitMock,
+	restoreProcessExitMock,
+	restoreEnvVars,
+} from "@/utils/process"
 
 // Start app for feature tests
 const app = await startApp()
@@ -137,7 +142,7 @@ restoreEnvVars()
 const mockCacheClient = mock()
 
 await mock.module("@/infrastructure/cache", () => ({
-  cacheClient: { init: mockCacheClient },
+	cacheClient: { init: mockCacheClient },
 }))
 ```
 
@@ -145,7 +150,7 @@ await mock.module("@/infrastructure/cache", () => ({
 
 ```typescript
 await mock.module("redis", () => ({
-  createClient: mockCreateClient,
+	createClient: mockCreateClient,
 }))
 ```
 
@@ -188,24 +193,24 @@ import { myHandler } from "@/controllers/myFeature"
 import { loggerMocks } from "test/setup"
 
 describe("MyFeature controller", () => {
-  beforeEach(() => {
-    prismaMock._reset()
-  })
+	beforeEach(() => {
+		prismaMock._reset()
+	})
 
-  afterEach(() => {
-    mock.clearAllMocks()
-  })
+	afterEach(() => {
+		mock.clearAllMocks()
+	})
 
-  test("should do something", async () => {
-    prismaMock.note.findMany.mockResolvedValue([])
+	test("should do something", async () => {
+		prismaMock.note.findMany.mockResolvedValue([])
 
-    const req = createMockRequest()
-    const { reply, statusCode } = createMockResponse()
+		const req = createMockRequest()
+		const { reply, statusCode } = createMockResponse()
 
-    await myHandler(req, reply)
+		await myHandler(req, reply)
 
-    expect(statusCode()).toBe(200)
-  })
+		expect(statusCode()).toBe(200)
+	})
 })
 ```
 
@@ -214,10 +219,10 @@ describe("MyFeature controller", () => {
 - Minimum threshold: 1 (configured in `bunfig.toml`)
 - Coverage directory: `test/unit/coverage`
 - HTML coverage requires Docker because Bun doesn't support HTML reporter natively:
-  ```bash
-  bun run test:unit:coverage:html
-  # Then open test/unit/coverage/html/index.html
-  ```
+    ```bash
+    bun run test:unit:coverage:html
+    # Then open test/unit/coverage/html/index.html
+    ```
 - Ignored from coverage: tests, dist, prisma, generated, config, types, and logger
 
 ## Important Testing Conventions

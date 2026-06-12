@@ -18,6 +18,7 @@
 
 ```sh
 bun install --frozen-lockfile
+bun run prisma:generate
 ```
 
 ## Running the app

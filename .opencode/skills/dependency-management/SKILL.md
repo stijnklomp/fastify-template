@@ -161,13 +161,13 @@ If all three pass, the upgrade is safe to commit.
 
 **Causes & Fixes**:
 
-| Upgrade | Common Breakage | Fix |
-|---------|----------------|-----|
-| Fastify major | `FastifyInstance` type changes | Update route handler signatures; check `withTypeProvider<TypeBoxTypeProvider>()` still works |
-| Prisma major | Generated client API changes | Run `prisma:generate`, update repository queries for new API |
-| TypeScript major | Stricter checks | Fix type errors surfaced by new strictness; `exactOptionalPropertyTypes` and `noUncheckedIndexedAccess` are already on |
-| @sinclair/typebox | Schema API changes | Update `Type.*` calls; check for renamed or removed modifiers |
-| ESLint / plugins | Rule renames or new rules | Fix new violations; update `.eslintrc` if needed |
+| Upgrade           | Common Breakage                | Fix                                                                                                                    |
+| ----------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| Fastify major     | `FastifyInstance` type changes | Update route handler signatures; check `withTypeProvider<TypeBoxTypeProvider>()` still works                           |
+| Prisma major      | Generated client API changes   | Run `prisma:generate`, update repository queries for new API                                                           |
+| TypeScript major  | Stricter checks                | Fix type errors surfaced by new strictness; `exactOptionalPropertyTypes` and `noUncheckedIndexedAccess` are already on |
+| @sinclair/typebox | Schema API changes             | Update `Type.*` calls; check for renamed or removed modifiers                                                          |
+| ESLint / plugins  | Rule renames or new rules      | Fix new violations; update `.eslintrc` if needed                                                                       |
 
 **General approach**:
 
@@ -184,6 +184,7 @@ bun run lint:fix
 **Symptom**: Tests pass but the app crashes on startup.
 
 **Checklist**:
+
 1. Did `prisma:generate` run? (Missing generated client is a common culprit)
 2. Are environment variables still valid? (Some libraries change env var names in major versions)
 3. Check `src/common/logger.ts` — Pino or pino-pretty upgrades can change serializer APIs
@@ -194,6 +195,7 @@ bun run lint:fix
 **Symptom**: Acceptance tests fail in Docker but pass locally.
 
 **Causes**:
+
 - Image base changed (`oven/bun:alpine` or `oven/bun:latest` updated)
 - PostgreSQL, Redis, or RabbitMQ image updated with breaking changes
 - New Bun version behaves differently in Alpine vs Debian
@@ -234,6 +236,7 @@ git commit -m "chore(deps): update dependencies"
 ```
 
 Include in the commit:
+
 - `package.json` (updated version ranges)
 - `bun.lock` (the new resolved lockfile)
 - Any code changes required to fix breaking changes

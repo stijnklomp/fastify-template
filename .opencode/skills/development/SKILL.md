@@ -20,22 +20,24 @@ This skill describes the development workflow, commands, and tooling for this Fa
 ## Installation
 
 Inside a Docker Compose container:
+
 ```bash
 docker compose --profile dev run --rm dev bun install --frozen-lockfile
 ```
 
 If Prisma client is not generated inside the container:
+
 ```bash
 docker compose --profile dev run --rm dev bun run prisma:generate
 ```
 
 ## Environment Configuration
 
-| File | Purpose |
-|------|---------|
-| `.env.development` | Local development defaults |
-| `.env.production` | Production build variables |
-| `.env.tests` | Test environment (loaded by `test/setup.ts`) |
+| File               | Purpose                                      |
+| ------------------ | -------------------------------------------- |
+| `.env.development` | Local development defaults                   |
+| `.env.production`  | Production build variables                   |
+| `.env.tests`       | Test environment (loaded by `test/setup.ts`) |
 
 Key environment variables:
 
@@ -211,6 +213,7 @@ docker compose --profile dev run --rm dev bun run doc
 ```
 
 **Fallback:**
+
 ```bash
 bun run doc
 ```
@@ -221,11 +224,11 @@ bun run doc
 
 ### Profiles
 
-| Profile | Services | Purpose |
-|-----------|----------|---------|
-| `dev` | dev, db, cache, rabbitmq, db-migration | Local development with hot reload |
-| `local` | local, db, cache, rabbitmq, db-migration | Build and run production image locally |
-| `test` | local, db, cache, rabbitmq, db-migration, acceptance-once | Run acceptance tests once |
+| Profile | Services                                                  | Purpose                                |
+| ------- | --------------------------------------------------------- | -------------------------------------- |
+| `dev`   | dev, db, cache, rabbitmq, db-migration                    | Local development with hot reload      |
+| `local` | local, db, cache, rabbitmq, db-migration                  | Build and run production image locally |
+| `test`  | local, db, cache, rabbitmq, db-migration, acceptance-once | Run acceptance tests once              |
 
 ### Start Development Environment
 
@@ -236,6 +239,7 @@ docker compose --profile dev up --build
 This mounts the current directory into the container and runs `bun run dev`.
 
 To run subsequent commands inside the already-running container:
+
 ```bash
 docker compose --profile dev exec dev <COMMAND>
 ```
@@ -285,6 +289,7 @@ bun build src/app.ts --outdir dist --target bun --format esm --external @prisma/
 - Minified for production
 
 **Run inside a Docker Compose container:**
+
 ```bash
 docker compose --profile dev run --rm dev bun build src/app.ts --outdir dist --target bun --format esm --external @prisma/client --minify
 ```
@@ -292,6 +297,7 @@ docker compose --profile dev run --rm dev bun build src/app.ts --outdir dist --t
 ### Dockerfile
 
 Multi-stage build:
+
 1. **deps** — Install dependencies with lockfile
 2. **builder** — Generate Prisma client and build
 3. **runner** — Copy only dist, generated, and .env; run `bun dist/app.js`
@@ -304,7 +310,7 @@ Pre-commit runs `lint-staged` with `.lintstagedrc.json`:
 
 ```json
 {
-  "*.{js,cjs,mjs,ts,json,yml,yaml}": ["prettier --write"]
+	"*.{js,cjs,mjs,ts,json,yml,yaml}": ["prettier --write"]
 }
 ```
 
@@ -319,28 +325,34 @@ Swagger config is in `src/app.ts`. Tags and metadata are hardcoded there — upd
 ## Troubleshooting
 
 ### "Cache client not initialized"
+
 - Set `CACHE_DISABLED=true` in your `.env` for local dev without Redis
 - Or start the cache service: `docker compose up cache -d`
 
 ### "RabbitMQ connection refused"
+
 - Set `RABBIT_DISABLED=true` in your `.env` for local dev without RabbitMQ
 - Or start the queue service: `docker compose up rabbitmq -d`
 
 ### "DATABASE_URL environment variable is not defined"
+
 - Ensure `.env.development` or `.env.tests` exists and is loaded
 - The `prisma.config.ts` auto-detects `.env` first, then falls back to `.env.development`
 
 ### Prisma client not found
+
 - Inside Docker: `docker compose --profile dev run --rm dev bun run prisma:generate`
 - Fallback: `bun run prisma:generate`
 - The alias `@/prismaClient` points to `generated/prisma/client.ts`
 
 ### Bun lockfile out of sync
+
 - Inside Docker: Delete `bun.lock` and run `docker compose --profile dev run --rm dev bun install --frozen-lockfile`
 - Fallback: Delete `bun.lock` and run `bun install --frozen-lockfile`
 - Or just run `bun install` to update the lockfile
 
 ### Linting fails after editing JSON files
+
 - Inside Docker: `docker compose --profile dev run --rm dev bun run lint:fix`
 - Fallback: `bun run lint:fix`
 - Or run `bunx jsonsort "<path>"` for specific files

@@ -30,17 +30,17 @@ Never skip layers or call backwards (e.g., a Service must NOT call a Controller)
 
 ### Directory Responsibilities
 
-| Directory | Purpose | Calls | Called By |
-|-----------|---------|-------|-----------|
-| `src/routes/` | Define HTTP endpoints and wire schemas to handlers | Controllers | App bootstrap |
-| `src/controllers/` | Handle HTTP req/res, delegate to services | Services | Routes |
-| `src/services/` | Business logic | Repositories | Controllers |
-| `src/repositories/` | Database / external data access | Prisma/infra | Services |
-| `src/models/schemas/` | TypeBox validation schemas | — | Routes, Controllers |
-| `src/models/types/` | Shared TypeScript types | — | Any layer |
-| `src/infrastructure/` | External system clients (cache, RabbitMQ) | — | App bootstrap |
-| `src/middleware/` | Fastify plugins (helmet, sensible, etc.) | — | App bootstrap |
-| `src/common/` | Shared utilities (logger, prisma client) | — | Any layer |
+| Directory             | Purpose                                            | Calls        | Called By           |
+| --------------------- | -------------------------------------------------- | ------------ | ------------------- |
+| `src/routes/`         | Define HTTP endpoints and wire schemas to handlers | Controllers  | App bootstrap       |
+| `src/controllers/`    | Handle HTTP req/res, delegate to services          | Services     | Routes              |
+| `src/services/`       | Business logic                                     | Repositories | Controllers         |
+| `src/repositories/`   | Database / external data access                    | Prisma/infra | Services            |
+| `src/models/schemas/` | TypeBox validation schemas                         | —            | Routes, Controllers |
+| `src/models/types/`   | Shared TypeScript types                            | —            | Any layer           |
+| `src/infrastructure/` | External system clients (cache, RabbitMQ)          | —            | App bootstrap       |
+| `src/middleware/`     | Fastify plugins (helmet, sensible, etc.)           | —            | App bootstrap       |
+| `src/common/`         | Shared utilities (logger, prisma client)           | —            | Any layer           |
 
 ## Path Aliases
 
@@ -76,30 +76,30 @@ Example (`src/models/schemas/notes.ts`):
 import { Type } from "@sinclair/typebox"
 
 const noteBase = Type.Object({
-  note: Type.String({ maxLength: 300 }),
-  owner: Type.String({ maxLength: 100 }),
+	note: Type.String({ maxLength: 300 }),
+	owner: Type.String({ maxLength: 100 }),
 })
 
 const noteSchema = Type.Intersect([
-  noteBase,
-  Type.Object({
-    createdAt: Type.String({ format: "date-time" }),
-    id: Type.Number(),
-    updatedAt: Type.String({ format: "date-time" }),
-  }),
+	noteBase,
+	Type.Object({
+		createdAt: Type.String({ format: "date-time" }),
+		id: Type.Number(),
+		updatedAt: Type.String({ format: "date-time" }),
+	}),
 ])
 
 export const getNotesSchema = {
-  querystring: Type.Object({
-    page: Type.Number({ minimum: 1 }),
-    perPage: Type.Number({ maximum: 100 }),
-  }),
-  response: {
-    200: Type.Object({
-      notes: Type.Array(noteSchema),
-    }),
-    500: { $ref: "HttpError" },
-  },
+	querystring: Type.Object({
+		page: Type.Number({ minimum: 1 }),
+		perPage: Type.Number({ maximum: 100 }),
+	}),
+	response: {
+		200: Type.Object({
+			notes: Type.Array(noteSchema),
+		}),
+		500: { $ref: "HttpError" },
+	},
 }
 ```
 
@@ -113,10 +113,13 @@ Controllers use the custom `RouteHandler<typeof schema>` type from `@/models/typ
 import { type RouteHandler } from "@/models/types/schemaTypeExtractor"
 import { getNotesSchema } from "@/models/schemas/notes"
 
-export const getNotesHandler: RouteHandler<typeof getNotesSchema> = async (req, res) => {
-  // req.query is typed as Static<typeof getNotesSchema.querystring>
-  const notes = await getNotesService({ ...req.query })
-  await res.code(200).send({ notes })
+export const getNotesHandler: RouteHandler<typeof getNotesSchema> = async (
+	req,
+	res,
+) => {
+	// req.query is typed as Static<typeof getNotesSchema.querystring>
+	const notes = await getNotesService({ ...req.query })
+	await res.code(200).send({ notes })
 }
 ```
 
@@ -126,11 +129,11 @@ Controllers catch errors, log them, and return a generic 500 message. NEVER leak
 
 ```typescript
 try {
-  const note = await createNoteService({ ...req.body })
-  await res.code(201).send({ message: "Note Created", note })
+	const note = await createNoteService({ ...req.body })
+	await res.code(201).send({ message: "Note Created", note })
 } catch (err) {
-  logger.error(err)
-  await res.code(500).send({ message: "Internal Server Error" })
+	logger.error(err)
+	await res.code(500).send({ message: "Internal Server Error" })
 }
 ```
 
