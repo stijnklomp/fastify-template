@@ -11,10 +11,10 @@ import { cacheClient } from "@/infrastructure/cache"
 import { queueClient } from "@/infrastructure/rabbitMQ"
 
 const port = Number(process.env.API_PORT ?? 3000)
-const gen = hyperid({ fixedLength: true, urlSafe: true })
+const genReqId = hyperid({ fixedLength: true, urlSafe: true })
 const buildApp = (
 	fastifyOptions: FastifyServerOptions = {
-		genReqId: () => gen(),
+		genReqId,
 		logger: loggerConfig ?? false,
 		serializerOpts: {
 			rounding: "trunc",
