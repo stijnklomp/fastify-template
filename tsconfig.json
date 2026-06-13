@@ -32,6 +32,7 @@
 
 		// Aliases
 		"paths": {
+			"@/api/*": ["./src/api/*"],
 			"@/common/*": ["./src/common/*"],
 			"@/config/*": ["./src/config/*"],
 			"@/controllers/*": ["./src/controllers/*"],
@@ -46,6 +47,7 @@
 			"@/src/*": ["./src/*"],
 			"@/types/*": ["./src/models/types/*"],
 			"@/validators/*": ["./src/models/schemas/*"],
+			"@/worker/*": ["./src/worker/*"],
 
 			// Tests only
 			"@/context": ["./test/context.ts"],
