@@ -1,6 +1,6 @@
 import { mock } from "bun:test"
 
-import { start } from "@/src/app"
+import { start } from "@/api/app"
 
 export const startApp = async (
 	overrideOptions: Parameters<typeof start>[0] = {
