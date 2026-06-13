@@ -1,3 +1,5 @@
+import { type Channel, type ConsumeMessage } from "amqplib"
+
 import { logger, loggerEnv } from "@/common/logger"
 import { queueClient } from "@/infrastructure/rabbitMQ"
 
@@ -21,34 +23,67 @@ export const startWorker = async () => {
 	try {
 		await queueClient.init()
 
-		const success = await queueClient.consume(
-			"worker",
-			queueName,
-			{ [exchange]: bindingKey },
-			(msg, channel) => {
-				if (msg === null) return
+		const handleMessage = async (
+			msg: ConsumeMessage | null,
+			channel: Channel,
+		) => {
+			if (msg === null) return
 
-				const content = msg.content.toString()
+			let content = "UNPARSEABLE"
+
+			try {
+				content = msg.content.toString()
+
 				logger.info(
 					{ queue: { ...queueDetails, msg: content } },
 					"Worker received message",
 				)
 
-				try {
-					const result = processTask(content)
+				const result = processTask(content)
 
-					logger.info({ result }, "Worker processed message")
-					channel.ack(msg)
-				} catch (err) {
+				logger.info({ result }, "Worker processed message")
+				channel.ack(msg)
+			} catch (err) {
+				logger.error(
+					{
+						err,
+						queue: { ...queueDetails, msg: content },
+					},
+					"Worker failed to process message",
+				)
+
+				const dlqPayload = JSON.stringify({
+					error: err instanceof Error ? err.message : String(err),
+					errorName: err instanceof Error ? err.name : "Unknown",
+					failedAt: new Date().toISOString(),
+					originalContent: content,
+					queueName,
+				})
+
+				const dlqPublished = await queueClient.publish(
+					"worker",
+					"deadLetter",
+					`${queueName}.failed`,
+					dlqPayload,
+				)
+
+				if (!dlqPublished) {
 					logger.error(
-						{
-							err,
-							queue: { ...queueDetails, msg: content },
-						},
-						"Worker failed to process message",
+						{ err, queue: { ...queueDetails, msg: content } },
+						"Worker failed to publish to DLQ",
 					)
-					channel.nack(msg, false, false)
 				}
+
+				channel.ack(msg)
+			}
+		}
+
+		const success = await queueClient.consume(
+			"worker",
+			queueName,
+			{ [exchange]: bindingKey },
+			(msg, channel) => {
+				void handleMessage(msg, channel)
 			},
 		)
 
