@@ -4,7 +4,15 @@ import { loggerMocks } from "../setup"
 import { queueClient } from "@/infrastructure/rabbitMQ"
 
 const mockInit = mock<() => Promise<void>>()
-const mockPublish = mock<() => Promise<boolean>>()
+const mockPublish =
+	mock<
+		(
+			channel: string,
+			exchange: string,
+			routingKey: string,
+			message: string,
+		) => Promise<boolean>
+	>()
 const mockConsume =
 	mock<
 		(
@@ -42,7 +50,7 @@ const restoreProcessExitMock = () => {
 }
 
 queueClient.init = mockInit
-queueClient.consume = mockConsume
+queueClient.consume = mockConsume as unknown as typeof queueClient.consume
 queueClient.publish = mockPublish
 
 const loadWorker = async () => {
@@ -61,7 +69,7 @@ describe("worker", () => {
 			(_channel, _queue, _bindings, callback) => {
 				callback(mockMessage, mockChannel)
 
-				return true
+				return Promise.resolve(true)
 			},
 		)
 
@@ -78,7 +86,7 @@ describe("worker", () => {
 			(_channel, _queue, _bindings, callback) => {
 				callback({ content: undefined }, mockChannel)
 
-				return true
+				return Promise.resolve(true)
 			},
 		)
 
@@ -93,12 +101,7 @@ describe("worker", () => {
 			expect.any(String),
 		)
 
-		const calls = mockPublish.mock.calls as [
-			string,
-			string,
-			string,
-			string,
-		][]
+		const calls = mockPublish.mock.calls
 		const dlqBody = JSON.parse(calls[0]?.[3] ?? "{}") as {
 			error: string
 			errorName: string
@@ -123,7 +126,7 @@ describe("worker", () => {
 			(_channel, _queue, _bindings, callback) => {
 				callback({ content: undefined }, mockChannel)
 
-				return true
+				return Promise.resolve(true)
 			},
 		)
 
