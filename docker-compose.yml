@@ -61,6 +61,16 @@ services:
       - local
       - test
 
+  worker-local:
+    <<: *fastify
+    build:
+      context: .
+    environment:
+      DEPLOYMENT_MODE: worker
+    profiles:
+      - local
+      - test
+
   dev:
     <<: *fastify
     image: oven/bun:alpine
@@ -92,21 +102,10 @@ services:
           bun install --frozen-lockfile --ignore-scripts
         fi
         bun run prisma:generate
-        bun run dev:worker
+        bun run dev
       "
     profiles:
       - dev
-
-  worker-local:
-    <<: *fastify
-    build:
-      context: .
-    environment:
-      DEPLOYMENT_MODE: worker
-    command: ["bun", "dist/app.js"]
-    profiles:
-      - local
-      - test
 
   acceptance:
     <<: *acceptance

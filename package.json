@@ -13,7 +13,6 @@
 		"build": "rm -rf dist && bun build src/app.ts --outdir dist --target bun --format esm --external @prisma/client --minify",
 		"check-licenses": "bun run scripts/check-licenses.ts",
 		"dev": "ENV=development LOGS=development bun --watch src/app.ts",
-		"dev:worker": "ENV=development LOGS=development DEPLOYMENT_MODE=worker bun --watch src/app.ts",
 		"doc": "typedoc",
 		"format": "prettier --write .",
 		"integrity": "./scripts/integrity.sh",

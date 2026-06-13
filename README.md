@@ -23,27 +23,46 @@ bun run prisma:generate
 
 ## Running the app
 
-```sh
-# Development in watch mode
-bun run dev
+By default the "API" mode is used. Set `DEPLOYMENT_MODE` to `worker` at runtime to use the worker mode.
 
-# Production mode
-bun run build && bun run start
+```sh
+# Development (hot reload)
+bun run dev                        # API
+DEPLOYMENT_MODE=worker bun run dev # Worker
+
+# Production
+bun run build && bun run start                        # API
+bun run build && DEPLOYMENT_MODE=worker bun run start # Worker
 ```
 
 ### With Docker
 
 ```sh
-docker build -t fastify-template . && docker run --rm fastify-template
+docker build -t fastify-template .
+
+# API
+docker run --rm fastify-template
+
+# Worker
+docker run --rm -e DEPLOYMENT_MODE=worker fastify-template
 ```
 
 ### With Docker Compose
 
+Services are organized under profiles. The `dev` profile mounts the source tree for hot reloading; the `local` profile uses the built image.
+
 ```sh
-# There are multiple profiles that can be run:
-# dev -> Mounts the current directory to the container and runs the service in watch mode
-# local -> Builds and runs the application image from the current code
-docker compose --profile <PROFILE> up --build
+# API with hot reload
+docker compose --profile dev up
+
+# Worker with hot reload
+docker compose --profile dev up worker
+
+# Build and run API
+docker compose --profile local up
+
+# Build and run Worker
+docker compose --profile local up worker-local
 ```
 
 #### Database
