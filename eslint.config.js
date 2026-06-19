@@ -6,11 +6,13 @@ import { fileURLToPath } from "node:url"
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const finalConfig = config({
+const baseConfig = await config({
 	strict: true,
 	tsconfigRootDir: __dirname,
 	typescript: true,
 })
+
+const finalConfig = [...baseConfig]
 
 const addedConfigs = [
 	{
