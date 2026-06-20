@@ -1,6 +1,6 @@
 import { type Channel, type ConsumeMessage } from "amqplib"
 
-import { logger, loggerEnv } from "@/common/logger"
+import { logger } from "@/common/logger"
 import { queueClient } from "@/infrastructure/rabbitMQ"
 
 const processTask = (task: string): unknown => {
@@ -105,4 +105,4 @@ export const startWorker = async () => {
 	}
 }
 
-if (loggerEnv !== "test") void startWorker()
+if (process.env.NODE_ENV !== "test") void startWorker()

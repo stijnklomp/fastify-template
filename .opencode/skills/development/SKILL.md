@@ -63,7 +63,8 @@ RABBIT_USER=guest
 RABBIT_PASSWORD=guest
 
 # Logs
-LOGS=development # development | production | test
+REQUEST_LOG_LEVEL=warn
+CUSTOM_LOG_LEVEL=info
 LOG_LEVEL=info
 ```
 

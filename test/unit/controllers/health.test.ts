@@ -55,7 +55,7 @@ describe("Cache service", () => {
 			expect(loggerMocks.error).toHaveBeenCalledWith(error)
 			expect(statusCode()).toBe(503)
 			expect(payload()).toEqual({
-				message: "Internal Server Error",
+				error: "Service Unavailable",
 			})
 		})
 	})

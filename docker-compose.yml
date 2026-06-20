@@ -57,6 +57,8 @@ services:
     <<: *fastify
     build:
       context: .
+    environment:
+      DEPLOYMENT_MODE: api
     profiles:
       - local
       - test
@@ -77,6 +79,8 @@ services:
     volumes:
       - .:/src
     working_dir: /src
+    environment:
+      DEPLOYMENT_MODE: api
     command: |
       sh -c "
         if [ ! -d node_modules ]; then
@@ -109,6 +113,8 @@ services:
 
   acceptance:
     <<: *acceptance
+    environment:
+      DEPLOYMENT_MODE: api
     command: |
       sh -c "
         if [ ! -d node_modules ]; then
@@ -122,6 +128,8 @@ services:
 
   acceptance-once:
     <<: *acceptance
+    environment:
+      DEPLOYMENT_MODE: api
     command: |
       sh -c "
         if [ ! -d node_modules ]; then

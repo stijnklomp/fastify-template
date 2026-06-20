@@ -1,6 +1,6 @@
-import { logger, loggerEnv } from "@/common/logger"
+import { logger } from "@/common/logger"
 
-const deploymentMode = process.env.DEPLOYMENT_MODE ?? "api"
+const deploymentMode = process.env.DEPLOYMENT_MODE
 
 type ApiModule = {
 	start: (opts?: { writeOpenapi?: boolean }) => Promise<unknown>
@@ -8,6 +8,13 @@ type ApiModule = {
 type WorkerModule = { startWorker: () => Promise<void> }
 
 const main = async () => {
+	if (!deploymentMode) {
+		logger.error(
+			"DEPLOYMENT_MODE environment variable is required. Set to 'api' or 'worker'.",
+		)
+		process.exit(1)
+	}
+
 	logger.info({ deploymentMode }, "Starting application")
 
 	if (deploymentMode === "worker") {
@@ -15,8 +22,8 @@ const main = async () => {
 		await worker.startWorker()
 	} else {
 		const api = (await import("@/api/app")) as ApiModule
-		await api.start({ writeOpenapi: loggerEnv !== "production" })
+		await api.start({ writeOpenapi: process.env.NODE_ENV !== "production" })
 	}
 }
 
-if (loggerEnv !== "test") void main()
+if (process.env.NODE_ENV !== "test") void main()

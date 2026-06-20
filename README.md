@@ -47,31 +47,19 @@ docker run --rm fastify-template
 docker run --rm -e DEPLOYMENT_MODE=worker fastify-template
 ```
 
-### With Docker Compose
+## Logging
 
-Services are organized under profiles. The `dev` profile mounts the source tree for hot reloading; the `local` profile uses the built image.
+Two environment variables control log verbosity independently:
+
+- `REQUEST_LOG_LEVEL` — HTTP request logs from Fastify (every endpoint hit). Default: `info`.
+- `CUSTOM_LOG_LEVEL`  — High-level event logs. Default: `info`.
+
+Set either to `debug` for more verbosity:
 
 ```sh
-# API with hot reload
-docker compose --profile dev up
-
-# Worker with hot reload
-docker compose --profile dev up worker
-
-# Build and run API
-docker compose --profile local up
-
-# Build and run Worker
-docker compose --profile local up worker-local
+REQUEST_LOG_LEVEL=info bun run dev # Show all endpoint hits
+CUSTOM_LOG_LEVEL=debug bun run dev # Show debug-level custom events
 ```
-
-#### Database
-
-You may need to run `bunx --bun prisma migrate dev --name init` in your terminal if you haven't already initialized the database. This only needs to be done the first time the database is created. (Or whenever the database has been recreated) This will happen automatically when using any profile in Docker Compose.
-
-#### RabbitMQ
-
-A RabbitMQ service is available via Docker Compose for message queue capabilities. The management UI is accessible at `http://localhost:15672`.
 
 ## Test
 
