@@ -24,6 +24,7 @@
 		"sbom": "bun run scripts/generate-sbom.ts",
 		"sort": "./node_modules/stijnklomp-linting-formatting-config/sortJson.sh ./tsconfig.json ./test/tsconfig.json ./.lintstagedrc.json",
 		"start": "bun dist/app.js",
+		"start:pretty": "bun dist/app.js | pino-pretty",
 		"test": "bun test test/unit",
 		"test:acceptance": "bun test test/acceptance",
 		"test:coverage": "bun test --coverage test/unit --coverage-reporter text",
