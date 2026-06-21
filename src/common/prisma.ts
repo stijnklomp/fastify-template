@@ -15,4 +15,4 @@ const createAdapter = () => {
 export const createPrismaClient = () =>
 	new PrismaClient({ adapter: createAdapter() })
 
-export const prismaClient = createPrismaClient
+export const prismaClient = createPrismaClient()
