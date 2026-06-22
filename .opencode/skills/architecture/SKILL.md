@@ -159,3 +159,44 @@ Follow this exact order when adding a new REST endpoint:
 5. **Route** — Create `src/routes/v1/<feature>.ts` and wire to controller
 6. **Register** — Import and register the route in `src/routes/index.ts`
 7. **Tests** — Add unit tests for each layer and feature tests for the endpoint
+
+## Code Style
+
+### Arrow Functions
+
+Use arrow functions over `function` declarations everywhere:
+
+```ts
+// Correct
+const add = (a: number, b: number): number => a + b
+const handleRequest = () => { ... }
+export const createUser = async () => { ... }
+
+// Incorrect
+function add(a: number, b: number): number { return a + b }
+function handleRequest() { ... }
+export async function createUser() { ... }
+```
+
+This applies to all function forms:
+- `function name() {}` → `const name = () => {}`
+- `async function name() {}` → `const name = async () => {}`
+- `export function name() {}` → `export const name = () => {}`
+
+**Exceptions:** Generator functions (`function*`), class methods, and callbacks passed to utilities that bind `this` explicitly.
+
+### ES Modules
+
+The project uses ES Modules exclusively (enforced by `"type": "module"` in `package.json` and `verbatimModuleSyntax` in `tsconfig.json`):
+
+```ts
+// Correct
+import { foo } from "./bar"
+export const baz = () => {}
+
+// Incorrect
+const foo = require("./bar")
+module.exports = { baz }
+```
+
+No `.cjs` or CJS-style files should be added.
