@@ -235,3 +235,4 @@ describe("MyFeature controller", () => {
 6. **Mock cache and queue clients** in feature tests to avoid connection errors
 7. **Use `app.inject()` for feature tests** instead of real HTTP requests
 8. **Never commit tests with `SHOW_LOGS=true`** — it's for local debugging only
+9. **Run `bun run lint:fix` after writing tests** to auto-fix any lint issues before committing. Prefer this over manual fixes.
