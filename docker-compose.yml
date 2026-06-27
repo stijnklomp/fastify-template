@@ -3,6 +3,7 @@ x-acceptance: &acceptance
   volumes:
     - .:/src
   working_dir: /src
+  user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
   tty: true
   depends_on:
     rabbitmq:
@@ -79,6 +80,7 @@ services:
     volumes:
       - .:/src
     working_dir: /src
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
     environment:
       DEPLOYMENT_MODE: api
     command: |
@@ -98,6 +100,7 @@ services:
     volumes:
       - .:/src
     working_dir: /src
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
     environment:
       DEPLOYMENT_MODE: worker
     command: |
@@ -208,6 +211,7 @@ services:
     volumes:
       - .:/src
     working_dir: /src
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
     command: sh ./scripts/dockerComposeMigrate.sh
     depends_on:
       db:
