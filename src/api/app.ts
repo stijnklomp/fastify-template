@@ -57,6 +57,25 @@ const buildApp = (
 		},
 	})
 
+	app.setErrorHandler((error: FastifyError, _request, reply) => {
+		if (error.validation) {
+			logger.warn(
+				{
+					message: error.message,
+					path: error.validationContext,
+					validation: error.validation,
+				},
+				"Request validation failed",
+			)
+		} else {
+			logger.error(error, "Unhandled error")
+		}
+
+		void reply
+			.status(error.statusCode ?? 500)
+			.send({ error: error.message })
+	})
+
 	void registerMiddleware(app)
 	void registerRoutes(app)
 
