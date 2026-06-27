@@ -1,6 +1,10 @@
-import fastify, { type FastifyServerOptions } from "fastify"
+import fastify, {
+	type FastifySchemaValidationError,
+	type FastifyServerOptions,
+} from "fastify"
 import { type TypeBoxTypeProvider } from "@fastify/type-provider-typebox"
 import fastifySwagger from "@fastify/swagger"
+import { type FastifyError } from "@fastify/error"
 import hyperid from "hyperid"
 import { writeFileSync } from "node:fs"
 
@@ -10,9 +14,15 @@ import { registerRoutes } from "@/routes/index"
 import { cacheClient } from "@/infrastructure/cache"
 import { queueClient } from "@/infrastructure/rabbitMQ"
 
+type FastifyErrorHandlerError = FastifyError & {
+	validation?: FastifySchemaValidationError[]
+	validationContext?: string
+}
+
 const port = Number(process.env.API_PORT ?? 3000)
 const genReqId = hyperid({ fixedLength: true, urlSafe: true })
-const buildApp = (
+
+export const buildApp = (
 	fastifyOptions: FastifyServerOptions = {
 		genReqId,
 		logger: loggerConfig ?? false,
@@ -57,7 +67,7 @@ const buildApp = (
 		},
 	})
 
-	app.setErrorHandler((error: FastifyError, _request, reply) => {
+	app.setErrorHandler<FastifyErrorHandlerError>((error, _request, reply) => {
 		if (error.validation) {
 			logger.warn(
 				{
