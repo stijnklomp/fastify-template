@@ -41,7 +41,7 @@ bun run build && DEPLOYMENT_MODE=worker bun run start # Worker
 docker build -t fastify-template .
 
 # API
-docker run --rm fastify-template
+docker run --rm -p 3000:3000 fastify-template
 
 # Worker
 docker run --rm -e DEPLOYMENT_MODE=worker fastify-template

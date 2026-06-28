@@ -113,20 +113,32 @@ bun run build
 Inside a Docker Compose container:
 
 ```bash
-# Check linting
+# Linting & type checking (ESLint + tsc)
 docker compose --profile dev run --rm dev bun run lint
 
-# Fix linting and auto-sort JSON files
+# Fix linting
 docker compose --profile dev run --rm dev bun run lint:fix
 
 # Sort specific JSON files/directories (GLOB pattern)
 docker compose --profile dev run --rm dev bunx jsonsort "./tsconfig.json ./test/tsconfig.json"
+
+# Format with Prettier
+docker compose --profile dev run --rm dev bun run format
+```
+
+**Fallback:**
+
+```bash
+bun run lint
+bun run lint:fix
+bun run format
 ```
 
 ESLint uses `stijnklomp-linting-formatting-config` with strict TypeScript rules. Key custom rules:
 
 - `camelCase` for variables and functions
 - `PascalCase` for types/classes
+- `UPPER_CASE` allowed for variables
 - Leading underscore allowed for unused parameters
 - Object literal numeric properties exempt from naming
 
