@@ -10,7 +10,7 @@
 		"test": "test"
 	},
 	"scripts": {
-		"build": "rm -rf dist && bun build src/app.ts --outdir dist --target bun --format esm --external @prisma/client --minify",
+		"build": "rm -rf dist && bun build src/app.ts --outdir dist --target bun --format esm --minify --sourcemap --external thread-stream --external real-require",
 		"check-licenses": "bun run scripts/check-licenses.ts",
 		"dev": "ENV=development bun --watch src/app.ts",
 		"doc": "typedoc",
