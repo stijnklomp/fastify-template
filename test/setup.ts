@@ -40,4 +40,5 @@ await mock.module("@/common/logger", () => ({
 		info: loggerMocks.info,
 		warn: loggerMocks.warn,
 	},
+	loggerConfig: false,
 }))

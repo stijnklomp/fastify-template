@@ -38,13 +38,13 @@ bun run build && DEPLOYMENT_MODE=worker bun run start # Worker
 ### With Docker
 
 ```sh
-docker build -t fastify-template .
+docker build -t stijnklomp/fastify-template .
 
 # API
-docker run --rm -p 3000:3000 fastify-template
+docker run --rm -p 3000:3000 stijnklomp/fastify-template
 
 # Worker
-docker run --rm -e DEPLOYMENT_MODE=worker fastify-template
+docker run --rm -e DEPLOYMENT_MODE=worker stijnklomp/fastify-template
 ```
 
 ## Logging
